@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import {
   Feather,
@@ -39,6 +40,7 @@ export function ProductHomePage() {
             <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
               Innocent Writer
             </h1>
+
             <p className="mt-1 text-sm text-muted-foreground">
               Your writing space
             </p>
@@ -53,6 +55,7 @@ export function ProductHomePage() {
                   <p className="max-w-48 truncate text-sm font-medium">
                     {user.name}
                   </p>
+
                   <p className="text-xs text-muted-foreground">
                     {user.role}
                   </p>
@@ -103,16 +106,21 @@ export function ProductHomePage() {
           </h2>
 
           <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-            Authentication is connected to the existing
-            backend. Public browsing remains available, and
-            future writing features will be introduced in
-            their planned implementation days.
+            Discover poems from the writing community. Browse the public
+            library and search by title; sign in when you want to access
+            account features.
           </p>
+
+          <div className="flex flex-wrap gap-3 pt-2">
+            <Button onClick={() => navigate("/app/poems")}>
+              <Feather />
+              Browse poems
+            </Button>
+          </div>
 
           {!isInitializing && !user && (
             <p className="text-sm">
-              Sign in when you want to access account
-              features.{" "}
+              Sign in when you want to access account features.{" "}
               <button
                 type="button"
                 className="font-medium text-primary underline-offset-4 hover:underline"
