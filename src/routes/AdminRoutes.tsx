@@ -1,4 +1,3 @@
-
 import { Route, Routes } from "react-router-dom";
 
 import { AdminLayout } from "../layouts/AdminLayout";
