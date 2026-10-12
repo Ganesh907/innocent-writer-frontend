@@ -21,6 +21,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  createPoem,
+  deletePoem,
+  imageFileToDataUri,
+  updatePoem,
+} from "@/features/poems/poemApi";
+
+import { getAdminPoems } from "@/features/admin/adminApi";
+import { adminQueryKeys } from "@/features/admin/adminQueryKeys";
 
 import type {
   CreatePoemRequest,
@@ -32,13 +41,7 @@ import {
   getPoemAnalytics,
 } from "@/features/analytics/analyticsApi";
 
-import {
-  createPoem,
-  deletePoem,
-  getPoems,
-  imageFileToDataUri,
-  updatePoem,
-} from "@/features/poems/poemApi";
+
 
 import { poemQueryKeys } from "@/features/poems/poemQueryKeys";
 import { getApiErrorMessage } from "@/lib/api/apiError";
@@ -69,17 +72,17 @@ export function AdminHomePage() {
   const [editingPoem, setEditingPoem] = useState<Poem | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
 
-  const poemsQuery = useQuery({
-    queryKey: poemQueryKeys.list({
+ const poemsQuery = useQuery({
+  queryKey: adminQueryKeys.poemList({
+    page: 1,
+    limit: PAGE_SIZE,
+  }),
+  queryFn: () =>
+    getAdminPoems({
       page: 1,
       limit: PAGE_SIZE,
     }),
-    queryFn: () =>
-      getPoems({
-        page: 1,
-        limit: PAGE_SIZE,
-      }),
-  });
+});
 
   const poems = poemsQuery.data?.data ?? [];
 
@@ -133,20 +136,25 @@ export function AdminHomePage() {
   const isSaving =
     createMutation.isPending || updateMutation.isPending;
 
-  async function refreshData() {
-    await Promise.all([
-      queryClient.invalidateQueries({
-        queryKey: poemQueryKeys.lists(),
-      }),
-      queryClient.invalidateQueries({
-        queryKey: poemQueryKeys.details(),
-      }),
-      queryClient.invalidateQueries({
-        queryKey: poemQueryKeys.all,
-      }),
-    ]);
-  }
-
+async function refreshData() {
+  await Promise.all([
+    queryClient.invalidateQueries({
+      queryKey: adminQueryKeys.poems(),
+    }),
+    queryClient.invalidateQueries({
+      queryKey: adminQueryKeys.analytics(),
+    }),
+    queryClient.invalidateQueries({
+      queryKey: poemQueryKeys.lists(),
+    }),
+    queryClient.invalidateQueries({
+      queryKey: poemQueryKeys.details(),
+    }),
+    queryClient.invalidateQueries({
+      queryKey: poemQueryKeys.all,
+    }),
+  ]);
+}
   function resetForm() {
     setForm(EMPTY_FORM);
     setEditingPoem(null);
@@ -478,6 +486,15 @@ export function AdminHomePage() {
                       <p className="mt-1 text-xs text-muted-foreground">
                         By {poem.authorName ?? "Unknown author"}
                       </p>
+                      <p className="mt-1 text-xs font-medium">
+  {poem.published ? (
+    <span className="text-primary">Published</span>
+  ) : (
+    <span className="text-muted-foreground">
+      Unpublished
+    </span>
+  )}
+</p>
                       <p className="mt-2 line-clamp-3 whitespace-pre-wrap text-sm text-muted-foreground">
                         {poem.content}
                       </p>

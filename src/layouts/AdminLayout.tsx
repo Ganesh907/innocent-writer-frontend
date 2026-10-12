@@ -7,6 +7,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/features/auth/authContext";
 
+const navItems = [
+  { to: "/admin", label: "Dashboard", end: true },
+  { to: "/admin/poems", label: "Poem management", end: false },
+  { to: "/admin/moderation", label: "Content moderation", end: false },
+  { to: "/admin/users", label: "Users", end: false },
+];
+
 export function AdminLayout() {
   const { user, logout, hasRole } = useAuth();
   const navigate = useNavigate();
@@ -47,19 +54,22 @@ export function AdminLayout() {
             aria-label="Admin navigation"
             className="mt-5 space-y-1"
           >
-            <NavLink
-              to="/admin"
-              end
-              className={({ isActive }) =>
-                `block rounded-lg px-3 py-2 text-sm ${
-                  isActive
-                    ? "bg-accent font-medium text-accent-foreground"
-                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                }`
-              }
-            >
-              Dashboard
-            </NavLink>
+            {navItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.end}
+                className={({ isActive }) =>
+                  `block rounded-lg px-3 py-2 text-sm transition-colors ${
+                    isActive
+                      ? "bg-accent font-medium text-accent-foreground"
+                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  }`
+                }
+              >
+                {item.label}
+              </NavLink>
+            ))}
           </nav>
         )}
 
