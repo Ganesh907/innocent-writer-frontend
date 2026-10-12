@@ -52,11 +52,12 @@ import {
 import { poemQueryKeys } from "@/features/poems/poemQueryKeys";
 import { getApiErrorMessage } from "@/lib/api/apiError";
 
-const commentQueryKey = (poemId: string) =>
-  ["poem-comments", poemId] as const;
+// const commentQueryKey = (poemId: string) =>
+//   ["poem-comments", poemId] as const;
 
-const analyticsQueryKey = (poemId: string) =>
-  ["poem-analytics", poemId] as const;
+// const analyticsQueryKey = (poemId: string) =>
+//   ["poem-analytics", poemId] as const;
+
 
 const likeMutationKey = (poemId: string) =>
   ["poem-like", poemId] as const;
@@ -177,19 +178,19 @@ export function PoemDetailPage() {
     enabled: Boolean(id),
   });
 
-  const commentsQuery = useQuery<PoemComment[]>({
-    queryKey: commentQueryKey(id ?? ""),
-    queryFn: ({ signal }) =>
-      getCommentsByPoem(id as string, signal),
-    enabled: Boolean(id) && poemQuery.isSuccess,
-  });
+const commentsQuery = useQuery<PoemComment[]>({
+  queryKey: poemQueryKeys.comments(id ?? ""),
+  queryFn: ({ signal }) =>
+    getCommentsByPoem(id as string, signal),
+  enabled: Boolean(id) && poemQuery.isSuccess,
+});
 
-  const analyticsQuery = useQuery({
-    queryKey: analyticsQueryKey(id ?? ""),
-    queryFn: ({ signal }) =>
-      getPoemAnalytics(id as string, signal),
-    enabled: Boolean(id) && poemQuery.isSuccess,
-  });
+const analyticsQuery = useQuery({
+  queryKey: poemQueryKeys.analytics(id ?? ""),
+  queryFn: ({ signal }) =>
+    getPoemAnalytics(id as string, signal),
+  enabled: Boolean(id) && poemQuery.isSuccess,
+});
 
   /*
    * A detail page visit records a view after the poem loads.
@@ -201,15 +202,15 @@ export function PoemDetailPage() {
       return;
     }
 
-    void recordPoemView(id)
-      .then(() =>
-        queryClient.invalidateQueries({
-          queryKey: analyticsQueryKey(id),
-        }),
-      )
-      .catch(() => {
-        // View tracking failure must not block poem reading.
-      });
+  void recordPoemView(id)
+  .then(() =>
+    queryClient.invalidateQueries({
+      queryKey: poemQueryKeys.analytics(id),
+    }),
+  )
+  .catch(() => {
+    // View tracking failure must not block poem reading.
+  });
   }, [id, poemQuery.isSuccess, queryClient]);
 
   const likeMutation = useMutation({
@@ -220,8 +221,8 @@ export function PoemDetailPage() {
       setActionError(null);
 
       await queryClient.invalidateQueries({
-        queryKey: analyticsQueryKey(id as string),
-      });
+  queryKey: poemQueryKeys.analytics(id as string),
+});
     },
     onError: (error) => {
       setActionError(getApiErrorMessage(error));
@@ -229,46 +230,206 @@ export function PoemDetailPage() {
   });
 
   const addCommentMutation = useMutation({
-    mutationFn: (content: string) =>
-      addPoemComment(id as string, content),
-    onSuccess: async () => {
-      setCommentDraft("");
-      setActionError(null);
+  mutationFn: (content: string) =>
+    addPoemComment(id as string, content),
 
-      await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: commentQueryKey(id as string),
-        }),
-        queryClient.invalidateQueries({
-          queryKey: analyticsQueryKey(id as string),
-        }),
-      ]);
-    },
-    onError: (error) => {
-      setActionError(getApiErrorMessage(error));
-    },
-  });
+  onMutate: async (content) => {
+    const queryKey = poemQueryKeys.comments(id as string);
 
-  const deleteCommentMutation = useMutation({
-    mutationFn: (commentId: string) =>
-      deletePoemComment(commentId),
-    onSuccess: async () => {
-      setActionError(null);
+    // Prevent an in-flight fetch from overwriting the optimistic update.
+    await queryClient.cancelQueries({ queryKey });
 
-      await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: commentQueryKey(id as string),
-        }),
-        queryClient.invalidateQueries({
-          queryKey: analyticsQueryKey(id as string),
-        }),
-      ]);
-    },
-    onError: (error) => {
-      setActionError(getApiErrorMessage(error));
-    },
-  });
+    const previousComments =
+      queryClient.getQueryData<PoemComment[]>(queryKey);
 
+    const now = new Date().toISOString();
+    const optimisticId = `optimistic-${Date.now()}`;
+    const currentUserId = user?.id ?? "";
+
+    const optimisticComment: PoemComment = {
+      id: optimisticId,
+      content,
+      createdAt: now,
+      updatedAt: now,
+      userId: currentUserId,
+      poemId: id as string,
+      user: {
+        id: currentUserId,
+        name: user?.name?.trim() || "You",
+      },
+    };
+
+    // Show the comment immediately, before the server responds.
+    queryClient.setQueryData<PoemComment[]>(
+      queryKey,
+      (currentComments) => [
+        optimisticComment,
+        ...(currentComments ?? []),
+      ],
+    );
+
+    setActionError(null);
+
+    return {
+      previousComments,
+      optimisticId,
+    };
+  },
+
+  onSuccess: (createdComment, _content, context) => {
+    const queryKey = poemQueryKeys.comments(id as string);
+
+    setCommentDraft("");
+    setActionError(null);
+
+    // Replace the temporary comment with the server-confirmed record.
+    queryClient.setQueryData<PoemComment[]>(
+      queryKey,
+      (currentComments) => {
+        const remainingComments = (
+          currentComments ?? []
+        ).filter(
+          (comment) =>
+            comment.id !== context?.optimisticId &&
+            comment.id !== createdComment.id,
+        );
+
+        return [createdComment, ...remainingComments].sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() -
+            new Date(a.createdAt).getTime(),
+        );
+      },
+    );
+  },
+
+  onError: (error, _content, context) => {
+    const queryKey = poemQueryKeys.comments(id as string);
+
+    // Roll back the optimistic comment when the request fails.
+    if (context?.previousComments !== undefined) {
+      queryClient.setQueryData(
+        queryKey,
+        context.previousComments,
+      );
+    } else {
+      queryClient.removeQueries({
+        queryKey,
+        exact: true,
+      });
+    }
+
+    setActionError(getApiErrorMessage(error));
+  },
+
+  onSettled: async () => {
+    // Reconcile both the comment list and engagement metrics with the server.
+    await Promise.all([
+      queryClient.invalidateQueries({
+        queryKey: poemQueryKeys.comments(id as string),
+      }),
+      queryClient.invalidateQueries({
+        queryKey: poemQueryKeys.analytics(id as string),
+      }),
+    ]);
+  },
+});
+  // const addCommentMutation = useMutation({
+  //   mutationFn: (content: string) =>
+  //     addPoemComment(id as string, content),
+  //   onSuccess: async () => {
+  //     setCommentDraft("");
+  //     setActionError(null);
+
+  //     await Promise.all([
+  //       queryClient.invalidateQueries({
+  //         queryKey: commentQueryKey(id as string),
+  //       }),
+  //       queryClient.invalidateQueries({
+  //         queryKey: analyticsQueryKey(id as string),
+  //       }),
+  //     ]);
+  //   },
+  //   onError: (error) => {
+  //     setActionError(getApiErrorMessage(error));
+  //   },
+  // });
+
+  // const deleteCommentMutation = useMutation({
+  //   mutationFn: (commentId: string) =>
+  //     deletePoemComment(commentId),
+  //   onSuccess: async () => {
+  //     setActionError(null);
+
+  //     await Promise.all([
+  //       queryClient.invalidateQueries({
+  //         queryKey: commentQueryKey(id as string),
+  //       }),
+  //       queryClient.invalidateQueries({
+  //         queryKey: analyticsQueryKey(id as string),
+  //       }),
+  //     ]);
+  //   },
+  //   onError: (error) => {
+  //     setActionError(getApiErrorMessage(error));
+  //   },
+  // });
+const deleteCommentMutation = useMutation({
+  mutationFn: (commentId: string) =>
+    deletePoemComment(commentId),
+
+  onMutate: async (commentId) => {
+    const queryKey = poemQueryKeys.comments(id as string);
+
+    // Cancel pending fetches before changing the cached list.
+    await queryClient.cancelQueries({ queryKey });
+
+    const previousComments =
+      queryClient.getQueryData<PoemComment[]>(queryKey);
+
+    // Remove the comment from the UI immediately.
+    queryClient.setQueryData<PoemComment[]>(
+      queryKey,
+      (currentComments) =>
+        (currentComments ?? []).filter(
+          (comment) => comment.id !== commentId,
+        ),
+    );
+
+    setActionError(null);
+
+    return { previousComments };
+  },
+
+  onSuccess: () => {
+    setActionError(null);
+  },
+
+  onError: (error, _commentId, context) => {
+    const queryKey = poemQueryKeys.comments(id as string);
+
+    // Restore the original list if the server rejects the deletion.
+    if (context?.previousComments !== undefined) {
+      queryClient.setQueryData(
+        queryKey,
+        context.previousComments,
+      );
+    }
+
+    setActionError(getApiErrorMessage(error));
+  },
+
+  onSettled: async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({
+        queryKey: poemQueryKeys.comments(id as string),
+      }),
+      queryClient.invalidateQueries({
+        queryKey: poemQueryKeys.analytics(id as string),
+      }),
+    ]);
+  },
+});
   if (!id) {
     return (
       <DetailMessage
