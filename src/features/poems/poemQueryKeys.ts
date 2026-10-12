@@ -18,4 +18,7 @@ export const poemQueryKeys = {
 
   analytics: (id: string) =>
     [...poemQueryKeys.detail(id), "analytics"] as const,
+
+  authorAnalytics: (authorId: string) =>
+    [...poemQueryKeys.all, "author-analytics", authorId] as const,
 };
