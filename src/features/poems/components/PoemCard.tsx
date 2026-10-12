@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 import {
   CalendarDays,
   ExternalLink,
@@ -14,6 +16,7 @@ import {
 } from "@/components/ui/card";
 import type { Poem } from "@/contracts/poem";
 import { PoemCoverImage } from "@/features/poems/components/PoemCoverImage";
+import { recordPoemView } from "@/features/poems/poemApi";
 
 interface PoemCardProps {
   poem: Poem;
@@ -61,15 +64,18 @@ export function PoemCard({ poem }: PoemCardProps) {
         </button>
       </div>
 
-      {/* Square post image: cover by default, poem image on hover */}
+      {/* Cover by default; poem image appears on hover */}
       <PoemCoverImage
         src={poem.coverImageUrl}
         poemImageSrc={poem.poemImageUrl}
         title={poem.title}
+        onPoemImageViewed={() =>
+          recordPoemView(poem.id).then(() => undefined)
+        }
       />
 
       <CardContent className="flex flex-col gap-3 p-4">
-        {/* Instagram-inspired action row */}
+        {/* Engagement actions */}
         <div className="flex items-center gap-4">
           <button
             type="button"
@@ -113,10 +119,15 @@ export function PoemCard({ poem }: PoemCardProps) {
           )}
         </div>
 
-        {/* Post title and caption */}
+        {/* Title and caption */}
         <div className="space-y-1">
           <h3 className="text-base font-semibold leading-snug">
-            {poem.title}
+            <Link
+              to={`/app/poems/${encodeURIComponent(poem.id)}`}
+              className="rounded-sm underline-offset-4 hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+            >
+              {poem.title}
+            </Link>
           </h3>
 
           <p className="text-sm leading-6 text-muted-foreground">
@@ -128,6 +139,13 @@ export function PoemCard({ poem }: PoemCardProps) {
             </span>
           </p>
         </div>
+
+        <Link
+          to={`/app/poems/${encodeURIComponent(poem.id)}`}
+          className="inline-flex w-fit items-center text-sm font-medium text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+        >
+          Read full poem <span aria-hidden="true" className="ml-1">→</span>
+        </Link>
 
         <div className="flex items-center gap-2 border-t border-border/60 pt-3 text-xs text-muted-foreground">
           <CalendarDays aria-hidden="true" className="size-3.5" />

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Feather,
   Images,
@@ -10,16 +10,21 @@ interface PoemCoverImageProps {
   src: string | null | undefined;
   poemImageSrc?: string | null;
   title: string;
+  onPoemImageViewed?: () => Promise<void>;
 }
 
 export function PoemCoverImage({
   src,
   poemImageSrc,
   title,
+  onPoemImageViewed,
 }: PoemCoverImageProps) {
   const [showPoemImage, setShowPoemImage] = useState(false);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [failedImages, setFailedImages] = useState<string[]>([]);
+
+  const viewRecordedRef = useRef(false);
+  const viewRequestPendingRef = useRef(false);
 
   const coverSrc = src?.trim() || undefined;
   const realSrc = poemImageSrc?.trim() || undefined;
@@ -35,6 +40,36 @@ export function PoemCoverImage({
         : realSrc && !isFailed(realSrc)
           ? realSrc
           : undefined;
+
+  const gallerySrc =
+    realSrc && !isFailed(realSrc)
+      ? realSrc
+      : coverSrc && !isFailed(coverSrc)
+        ? coverSrc
+        : undefined;
+
+  const handleRecordView = async () => {
+    if (
+      !realSrc ||
+      isFailed(realSrc) ||
+      !onPoemImageViewed ||
+      viewRecordedRef.current ||
+      viewRequestPendingRef.current
+    ) {
+      return;
+    }
+
+    viewRequestPendingRef.current = true;
+
+    try {
+      await onPoemImageViewed();
+      viewRecordedRef.current = true;
+    } catch {
+      // A later interaction can retry failed view tracking.
+    } finally {
+      viewRequestPendingRef.current = false;
+    }
+  };
 
   useEffect(() => {
     if (!isGalleryOpen) return;
@@ -52,18 +87,11 @@ export function PoemCoverImage({
     };
   }, [isGalleryOpen]);
 
-  const gallerySrc =
-    realSrc && !isFailed(realSrc)
-      ? realSrc
-      : coverSrc && !isFailed(coverSrc)
-        ? coverSrc
-        : undefined;
-
   const handleImageError = (imageSrc: string) => {
     setFailedImages((previous) =>
       previous.includes(imageSrc)
         ? previous
-        : [...previous, imageSrc]
+        : [...previous, imageSrc],
     );
   };
 
@@ -86,7 +114,10 @@ export function PoemCoverImage({
     <>
       <div
         className="group relative aspect-[3/4] w-full overflow-hidden bg-muted"
-        onMouseEnter={() => setShowPoemImage(true)}
+        onMouseEnter={() => {
+          setShowPoemImage(true);
+          void handleRecordView();
+        }}
         onMouseLeave={() => setShowPoemImage(false)}
       >
         <img
@@ -105,7 +136,10 @@ export function PoemCoverImage({
             type="button"
             aria-label={`View ${title} in gallery`}
             title="View full-size image"
-            onClick={() => setIsGalleryOpen(true)}
+            onClick={() => {
+              void handleRecordView();
+              setIsGalleryOpen(true);
+            }}
             className="absolute right-3 top-3 grid size-10 place-items-center rounded-xl border border-white/30 bg-black/45 text-white opacity-100 shadow-lg backdrop-blur-sm transition hover:scale-105 hover:bg-black/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:opacity-0 sm:group-hover:opacity-100"
           >
             <Images aria-hidden="true" className="size-5" />

@@ -1,4 +1,3 @@
-
 import type {
   ApiMessageResponse,
   ApiSuccessResponse,
@@ -95,6 +94,26 @@ export const getPoemById = async (
   const response = await axiosClient.get<
     ApiSuccessResponse<Poem>
   >(`/poems/${encodeURIComponent(id)}`);
+
+  return response.data.data;
+};
+
+export interface RecordPoemViewResult {
+  counted: boolean;
+  viewCount: number;
+}
+
+/**
+ * POST /api/poems/:id/view
+ *
+ * The backend permanently deduplicates views by visitor and poem.
+ */
+export const recordPoemView = async (
+  id: string,
+): Promise<RecordPoemViewResult> => {
+  const response = await axiosClient.post<
+    ApiSuccessResponse<RecordPoemViewResult>
+  >(`/poems/${encodeURIComponent(id)}/view`);
 
   return response.data.data;
 };
