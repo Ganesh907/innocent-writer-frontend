@@ -1,6 +1,8 @@
+
 /* =========================================
    Innocent Writer — Design Tokens
    Day 17: Theme System
+   Updated Day 26: Product Color Alignment
    ========================================= */
 
 /* Light theme — default */
@@ -19,15 +21,15 @@
   --color-text-muted: #64748b;
   --color-text-inverse: #ffffff;
 
-  /* Brand and interactive colors */
-  --color-primary: #4f46e5;
-  --color-primary-hover: #4338ca;
-  --color-primary-subtle: #eef2ff;
+  /* Brand and interactive colors — cyan + slate */
+  --color-primary: #0891b2;
+  --color-primary-hover: #0e7490;
+  --color-primary-subtle: #ecfeff;
 
   /* Borders and focus */
   --color-border: #e2e8f0;
   --color-border-strong: #cbd5e1;
-  --color-focus: #818cf8;
+  --color-focus: #06b6d4;
 
   /* Semantic colors */
   --color-success: #15803d;
@@ -56,8 +58,8 @@
   color-scheme: dark;
 
   /* Backgrounds and surfaces */
-  --color-bg: #0b1120;
-  --color-surface: #111827;
+  --color-bg: #020617;
+  --color-surface: #0f172a;
   --color-surface-elevated: #1e293b;
   --color-surface-muted: #1e293b;
 
@@ -66,15 +68,15 @@
   --color-text-muted: #94a3b8;
   --color-text-inverse: #0f172a;
 
-  /* Brand and interactive colors */
-  --color-primary: #818cf8;
-  --color-primary-hover: #a5b4fc;
-  --color-primary-subtle: #252b52;
+  /* Brand and interactive colors — cyan + slate */
+  --color-primary: #22d3ee;
+  --color-primary-hover: #67e8f9;
+  --color-primary-subtle: #164e63;
 
   /* Borders and focus */
   --color-border: #334155;
   --color-border-strong: #475569;
-  --color-focus: #a5b4fc;
+  --color-focus: #22d3ee;
 
   /* Semantic colors */
   --color-success: #4ade80;

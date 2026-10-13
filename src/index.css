@@ -165,3 +165,287 @@ select {
     @apply font-sans;
   }
 }
+
+
+
+/* ==========================================
+   PORTFOLIO THEME
+   Day 26 — Step 3
+   ========================================== */
+
+#portfolio-root.portfolio-page {
+  --portfolio-accent: var(--color-primary);
+  --portfolio-accent-hover: var(--color-primary-hover);
+  --portfolio-accent-soft: color-mix(
+    in srgb,
+    var(--color-primary) 8%,
+    transparent
+  );
+  --portfolio-accent-border: color-mix(
+    in srgb,
+    var(--color-primary) 22%,
+    transparent
+  );
+
+  width: 100%;
+  min-width: 0;
+  overflow-x: clip;
+  overflow-wrap: break-word;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+[data-theme="dark"] #portfolio-root.portfolio-page,
+.dark #portfolio-root.portfolio-page {
+  --portfolio-accent: var(--color-primary);
+  --portfolio-accent-hover: var(--color-primary-hover);
+  --portfolio-accent-soft: color-mix(
+    in srgb,
+    var(--color-primary) 8%,
+    transparent
+  );
+  --portfolio-accent-border: color-mix(
+    in srgb,
+    var(--color-primary) 20%,
+    transparent
+  );
+}
+
+#portfolio-root *,
+#portfolio-root *::before,
+#portfolio-root *::after {
+  box-sizing: border-box;
+}
+
+#portfolio-root section {
+  min-width: 0;
+  scroll-margin-top: 5rem;
+}
+
+#portfolio-root img {
+  display: block;
+  max-width: 100%;
+}
+
+#portfolio-root :is(article, aside, nav, section, main) {
+  min-width: 0;
+}
+
+#portfolio-root .portfolio-card {
+  box-shadow: var(--shadow-sm);
+}
+
+#portfolio-root .portfolio-card:hover {
+  box-shadow:
+    var(--shadow-md),
+    0 8px 24px var(--portfolio-accent-soft);
+}
+
+#portfolio-root .portfolio-section-heading {
+  margin-bottom: 1.75rem;
+}
+
+#portfolio-root .portfolio-section-heading > p:last-child {
+  text-wrap: pretty;
+}
+
+#portfolio-root .portfolio-intro-card {
+  animation: portfolio-card-enter 800ms
+    cubic-bezier(.2, .75, .25, 1) both;
+}
+
+#portfolio-root .portfolio-fade-up {
+  opacity: 0;
+  animation: portfolio-fade-up 700ms
+    cubic-bezier(.2, .75, .25, 1) both;
+  animation-delay: var(--intro-delay, 0ms);
+}
+
+#portfolio-root .portfolio-name-wrap {
+  perspective: 800px;
+}
+
+#portfolio-root .portfolio-name-text {
+  transition:
+    transform 300ms cubic-bezier(.2, .8, .2, 1),
+    color 250ms ease;
+}
+
+#portfolio-root .portfolio-name-bg {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  border-radius: 10px;
+  background: var(--color-primary);
+  box-shadow: 0 4px 20px var(--portfolio-accent-border);
+  transition:
+    transform 300ms ease,
+    height 300ms ease,
+    border-radius 300ms ease;
+}
+
+#portfolio-root .portfolio-name-wrap:hover .portfolio-name-text {
+  transform: translateY(-5px);
+  color: var(--color-text-white);
+}
+
+#portfolio-root .portfolio-name-wrap:hover .portfolio-name-bg {
+  inset: auto 0 0;
+  height: 5px;
+  border-radius: 10px 10px 40px 40px;
+  transform: translateY(5px);
+}
+
+#portfolio-root .portfolio-profile-enter {
+  animation: portfolio-profile-enter 900ms 200ms
+    cubic-bezier(.2, .75, .25, 1) both;
+}
+
+#portfolio-root .portfolio-reveal {
+  opacity: 1;
+  transform: none;
+}
+
+#portfolio-root .portfolio-reveal.is-visible {
+  animation: portfolio-reveal-enter 650ms
+    var(--reveal-delay, 0ms)
+    cubic-bezier(.2, .75, .25, 1) both;
+}
+
+#portfolio-root a:focus-visible,
+#portfolio-root button:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 4px;
+}
+
+@keyframes portfolio-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(.985);
+    border-color: transparent;
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    border-color: var(--color-primary);
+  }
+}
+
+@keyframes portfolio-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes portfolio-profile-enter {
+  from {
+    opacity: 0;
+    transform: translateX(22px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes portfolio-reveal-enter {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1023px) {
+  #portfolio-root #home {
+    min-height: 100svh;
+  }
+
+  #portfolio-root .portfolio-intro-card,
+  #portfolio-root .portfolio-profile-enter {
+    width: 100%;
+    max-width: 620px;
+  }
+
+  #portfolio-root .portfolio-profile-enter {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 639px) {
+  #portfolio-root section:not(#home) > div {
+    padding-right: 1rem;
+    padding-left: 1rem;
+  }
+
+  #portfolio-root #home > div {
+    gap: 1.25rem;
+    padding-right: 1rem;
+    padding-left: 1rem;
+  }
+
+  #portfolio-root .portfolio-intro-card {
+    padding: 1.125rem;
+    border-radius: 1rem;
+  }
+
+  #portfolio-root .portfolio-profile-enter > div {
+    padding: 1.125rem;
+    border-radius: 1.25rem;
+  }
+
+  #portfolio-root .portfolio-section-heading {
+    margin-bottom: 1.5rem;
+  }
+
+  #portfolio-root #contact > div > div > div {
+    gap: 1.5rem;
+  }
+
+  #portfolio-root a,
+  #portfolio-root button {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  #portfolio-root #home {
+    min-height: auto;
+  }
+
+  #portfolio-root #home > div {
+    padding-top: 6rem;
+    padding-bottom: 2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #portfolio-root *,
+  #portfolio-root *::before,
+  #portfolio-root *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  #portfolio-root .portfolio-fade-up,
+  #portfolio-root .portfolio-intro-card,
+  #portfolio-root .portfolio-profile-enter,
+  #portfolio-root .portfolio-reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
