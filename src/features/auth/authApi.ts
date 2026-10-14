@@ -17,6 +17,15 @@ export const authApi = {
     return response.data.data;
   },
 
+  async googleLogin(idToken: string): Promise<AuthPayload> {
+    const response = await axiosClient.post<AuthApiResponse>(
+      "/auth/google",
+      { idToken },
+    );
+
+    return response.data.data;
+  },
+
   async register(
     payload: RegisterRequest,
   ): Promise<AuthPayload> {

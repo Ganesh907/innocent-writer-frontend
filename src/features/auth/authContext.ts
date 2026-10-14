@@ -12,6 +12,7 @@ export interface AuthContextValue {
   isInitializing: boolean;
   isAuthenticated: boolean;
   login: (payload: LoginRequest) => Promise<AuthUser>;
+  googleLogin: (idToken: string) => Promise<AuthUser>;
   register: (payload: RegisterRequest) => Promise<AuthUser>;
   logout: () => void;
   hasRole: (role: UserRole) => boolean;

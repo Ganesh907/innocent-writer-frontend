@@ -1,22 +1,28 @@
+
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ArrowRight, Feather, LoaderCircle } from "lucide-react";
+import { GoogleLogin } from "@react-oauth/google";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { useAuth } from "@/features/auth/authContext";
-import { getApiErrorMessage, getApiValidationErrors } from "@/lib/api/apiError";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/features/auth/authContext";
+import {
+  getApiErrorMessage,
+  getApiValidationErrors,
+} from "@/lib/api/apiError";
 
 export function LoginPage() {
-  const { login, user, isInitializing } = useAuth();
+  const { login, googleLogin, user, isInitializing } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [googleSubmitting, setGoogleSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
@@ -32,7 +38,7 @@ export function LoginPage() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (submitting) return;
+    if (submitting || googleSubmitting) return;
 
     setSubmitting(true);
     setErrorMessage("");
@@ -55,12 +61,37 @@ export function LoginPage() {
     }
   };
 
+  const handleGoogleSuccess = async (credential: string | undefined) => {
+    if (!credential || submitting || googleSubmitting) {
+      setErrorMessage("Google sign-in did not return a valid credential. Please try again.");
+      return;
+    }
+
+    setGoogleSubmitting(true);
+    setErrorMessage("");
+    setFieldErrors({});
+
+    try {
+      const signedInUser = await googleLogin(credential);
+
+      navigate(continueTo(signedInUser.role), {
+        replace: true,
+      });
+    } catch (error: unknown) {
+      setErrorMessage(getApiErrorMessage(error));
+    } finally {
+      setGoogleSubmitting(false);
+    }
+  };
+
   if (!isInitializing && user) {
     return (
       <main className="mx-auto max-w-xl px-4 py-16">
         <Card>
           <CardHeader>
-            <h1 className="text-2xl font-semibold">You’re already signed in</h1>
+            <h1 className="text-2xl font-semibold">
+              You’re already signed in
+            </h1>
             <p className="text-sm text-muted-foreground">
               Continue to your workspace.
             </p>
@@ -109,7 +140,9 @@ export function LoginPage() {
             </p>
           </div>
 
-          <p className="text-xs opacity-70">A home for thoughtful writing.</p>
+          <p className="text-xs opacity-70">
+            A home for thoughtful writing.
+          </p>
 
           <div
             aria-hidden="true"
@@ -130,7 +163,9 @@ export function LoginPage() {
           </div>
 
           <div className="mb-8 space-y-2">
-            <p className="text-sm font-medium text-primary">Welcome back</p>
+            <p className="text-sm font-medium text-primary">
+              Welcome back
+            </p>
             <h1 className="text-3xl font-semibold tracking-tight">
               Sign in to your account
             </h1>
@@ -155,7 +190,7 @@ export function LoginPage() {
                 onChange={(event: ChangeEvent<HTMLInputElement>) =>
                   setEmail(event.target.value)
                 }
-                disabled={submitting}
+                disabled={submitting || googleSubmitting}
                 aria-invalid={Boolean(fieldErrors.email)}
                 aria-describedby={
                   fieldErrors.email ? "login-email-error" : undefined
@@ -180,11 +215,10 @@ export function LoginPage() {
                 required
                 placeholder="Enter your password"
                 value={password}
-                // onChange={(event) => setPassword(event.target.value)}
                 onChange={(event: ChangeEvent<HTMLInputElement>) =>
                   setPassword(event.target.value)
                 }
-                disabled={submitting}
+                disabled={submitting || googleSubmitting}
                 aria-invalid={Boolean(fieldErrors.password)}
                 aria-describedby={
                   fieldErrors.password ? "login-password-error" : undefined
@@ -214,7 +248,7 @@ export function LoginPage() {
               type="submit"
               size="lg"
               className="w-full"
-              disabled={submitting || isInitializing}
+              disabled={submitting || googleSubmitting || isInitializing}
             >
               {submitting ? (
                 <>
@@ -229,6 +263,44 @@ export function LoginPage() {
               )}
             </Button>
           </form>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-3 text-muted-foreground">
+                Or continue with
+              </span>
+            </div>
+          </div>
+
+          <div className="flex justify-center">
+            <GoogleLogin
+              onSuccess={({ credential }) =>
+                void handleGoogleSuccess(credential)
+              }
+              onError={() => {
+                setErrorMessage(
+                  "Google sign-in failed. Please try again.",
+                );
+              }}
+              useOneTap={false}
+              text="continue_with"
+              shape="rectangular"
+              theme="outline"
+              size="large"
+              width="320"
+              // disabled={submitting || googleSubmitting || isInitializing}
+            />
+          </div>
+
+          {googleSubmitting && (
+            <p className="mt-3 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+              <LoaderCircle className="size-4 animate-spin" />
+              Signing in with Google…
+            </p>
+          )}
 
           <p className="mt-6 text-center text-sm text-muted-foreground">
             New to Innocent Writer?{" "}

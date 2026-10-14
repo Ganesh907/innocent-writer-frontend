@@ -1,22 +1,15 @@
-import { Link } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
 import {
   CalendarDays,
   ExternalLink,
   Feather,
   Heart,
   MessageCircle,
-  MoreHorizontal,
-  Send,
 } from "lucide-react";
 
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import type { Poem } from "@/contracts/poem";
 import { PoemCoverImage } from "@/features/poems/components/PoemCoverImage";
-import { recordPoemView } from "@/features/poems/poemApi";
 
 interface PoemCardProps {
   poem: Poem;
@@ -30,23 +23,23 @@ const formatDate = (value: string): string => {
   }
 
   return new Intl.DateTimeFormat(undefined, {
-    year: "numeric",
     month: "short",
     day: "numeric",
+    year: "numeric",
   }).format(date);
 };
 
 export function PoemCard({ poem }: PoemCardProps) {
-  const preview = poem.content.trim();
+  const navigate = useNavigate();
   const author = poem.authorName?.trim() || "Unknown author";
+  const detailPath = `/app/poems/${encodeURIComponent(poem.id)}`;
 
   return (
-    <Card className="h-full overflow-hidden gap-0 rounded-xl border-border/70 bg-card py-0 shadow-sm transition-shadow duration-200 hover:shadow-lg">
-      {/* Post header */}
-      <div className="flex items-center gap-3 px-4 py-3">
-        <div className="grid size-10 shrink-0 place-items-center rounded-full bg-primary/10 text-primary ring-1 ring-border/70">
-          <Feather aria-hidden="true" className="size-5" />
-        </div>
+    <Card className="group h-full overflow-hidden gap-0 rounded-2xl border-border/70 bg-card py-0 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg">
+      <div className="flex min-w-0 items-center gap-3 px-3 py-3 sm:px-4">
+        <span className="grid size-9 shrink-0 place-items-center rounded-full bg-primary/10 text-primary">
+          <Feather aria-hidden="true" className="size-4" />
+        </span>
 
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold">{author}</p>
@@ -54,54 +47,40 @@ export function PoemCard({ poem }: PoemCardProps) {
             {formatDate(poem.createdAt)}
           </p>
         </div>
-
-        <button
-          type="button"
-          aria-label={`More options for ${poem.title}`}
-          className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-        >
-          <MoreHorizontal aria-hidden="true" className="size-5" />
-        </button>
       </div>
 
-      {/* Cover by default; poem image appears on hover */}
-      <PoemCoverImage
-        src={poem.coverImageUrl}
-        poemImageSrc={poem.poemImageUrl}
-        title={poem.title}
-        onPoemImageViewed={() =>
-          recordPoemView(poem.id).then(() => undefined)
-        }
-      />
+      <Link
+        to={detailPath}
+        aria-label={`Read ${poem.title} by ${author}`}
+        className="block overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+      >
+        <PoemCoverImage
+          src={poem.coverImageUrl}
+          poemImageSrc={poem.poemImageUrl}
+          title={poem.title}
+        />
+      </Link>
 
-      <CardContent className="flex flex-col gap-3 p-4">
-        {/* Engagement actions */}
-        <div className="flex items-center gap-4">
+      <CardContent className="flex flex-col gap-3 p-3 sm:p-4">
+        <div className="flex items-center gap-4 border-b border-border/60 pb-3">
           <button
             type="button"
-            aria-label="Like poem"
-            className="transition-transform hover:scale-110"
+            aria-label={`View likes and like ${poem.title}`}
+            onClick={() => navigate(detailPath)}
+            className="inline-flex min-h-9 items-center gap-1.5 rounded-lg px-1 text-muted-foreground transition-colors hover:text-rose-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <Heart
-              aria-hidden="true"
-              className="size-6 transition-colors hover:text-rose-500"
-            />
+            <Heart aria-hidden="true" className="size-5" />
+            <span className="text-sm">Like</span>
           </button>
 
           <button
             type="button"
-            aria-label="Comment on poem"
-            className="transition-transform hover:scale-110"
+            aria-label={`View comments for ${poem.title}`}
+            onClick={() => navigate(`${detailPath}#comments-heading`)}
+            className="inline-flex min-h-9 items-center gap-1.5 rounded-lg px-1 text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <MessageCircle aria-hidden="true" className="size-6" />
-          </button>
-
-          <button
-            type="button"
-            aria-label="Share poem"
-            className="transition-transform hover:scale-110"
-          >
-            <Send aria-hidden="true" className="size-6" />
+            <MessageCircle aria-hidden="true" className="size-5" />
+            <span className="text-sm">Comment</span>
           </button>
 
           <div className="flex-1" />
@@ -111,46 +90,40 @@ export function PoemCard({ poem }: PoemCardProps) {
               href={poem.instagramPostUrl}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Open Instagram post"
-              className="text-muted-foreground transition-colors hover:text-foreground"
+              aria-label="Open original Instagram post"
+              className="grid size-9 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
-              <ExternalLink aria-hidden="true" className="size-5" />
+              <ExternalLink aria-hidden="true" className="size-4" />
             </a>
           )}
         </div>
 
-        {/* Title and caption */}
-        <div className="space-y-1">
-          <h3 className="text-base font-semibold leading-snug">
+        <div className="min-w-0 space-y-1">
+          <h3 className="line-clamp-2 text-sm font-semibold leading-5 sm:text-base">
             <Link
-              to={`/app/poems/${encodeURIComponent(poem.id)}`}
-              className="rounded-sm underline-offset-4 hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+              to={detailPath}
+              className="hover:text-primary focus-visible:outline-none focus-visible:underline"
             >
               {poem.title}
             </Link>
           </h3>
 
-          <p className="text-sm leading-6 text-muted-foreground">
-            <span className="mr-2 font-semibold text-foreground">
-              {author}
-            </span>
-            <span className="whitespace-pre-line">
-              {preview || "No preview available for this poem."}
-            </span>
+          <p className="truncate text-xs text-muted-foreground">
+            By {author}
           </p>
         </div>
 
         <Link
-          to={`/app/poems/${encodeURIComponent(poem.id)}`}
-          className="inline-flex w-fit items-center text-sm font-medium text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+          to={detailPath}
+          className="inline-flex min-h-9 items-center text-sm font-medium text-primary hover:underline"
         >
-          Read full poem <span aria-hidden="true" className="ml-1">→</span>
+          Read poem <span aria-hidden="true" className="ml-1">→</span>
         </Link>
 
         <div className="flex items-center gap-2 border-t border-border/60 pt-3 text-xs text-muted-foreground">
-          <CalendarDays aria-hidden="true" className="size-3.5" />
+          <CalendarDays aria-hidden="true" className="size-3.5 shrink-0" />
           <time dateTime={poem.createdAt}>
-            Posted {formatDate(poem.createdAt)}
+            {formatDate(poem.createdAt)}
           </time>
         </div>
       </CardContent>

@@ -52,7 +52,10 @@ export function AuthProvider({
     retry: (failureCount, error) => {
       // Don't retry client-side errors such as 401 or 403.
       const status = (
-        error as { status?: number; response?: { status?: number } }
+        error as {
+          status?: number;
+          response?: { status?: number };
+        }
       )?.status ??
         (
           error as {
@@ -71,6 +74,24 @@ export function AuthProvider({
   const loginMutation = useMutation({
     mutationFn: (payload: LoginRequest) =>
       authApi.login(payload),
+
+    onSuccess: async ({ token, user }) => {
+      setAuthToken(token);
+
+      await queryClient.cancelQueries({
+        queryKey: authQueryKeys.me,
+      });
+
+      queryClient.setQueryData<AuthUser | null>(
+        authQueryKeys.me,
+        user,
+      );
+    },
+  });
+
+  const googleLoginMutation = useMutation({
+    mutationFn: (idToken: string) =>
+      authApi.googleLogin(idToken),
 
     onSuccess: async ({ token, user }) => {
       setAuthToken(token);
@@ -116,11 +137,6 @@ export function AuthProvider({
       queryKey: authQueryKeys.all,
       exact: false,
     });
-
-    queryClient.setQueryData<AuthUser | null>(
-      authQueryKeys.me,
-      null,
-    );
   }, [queryClient]);
 
   useEffect(() => {
@@ -136,11 +152,6 @@ export function AuthProvider({
         queryKey: authQueryKeys.all,
         exact: false,
       });
-
-      queryClient.setQueryData<AuthUser | null>(
-        authQueryKeys.me,
-        null,
-      );
     };
 
     window.addEventListener(
@@ -172,6 +183,16 @@ export function AuthProvider({
     [loginMutation],
   );
 
+  const googleLogin = useCallback(
+    async (idToken: string): Promise<AuthUser> => {
+      const result =
+        await googleLoginMutation.mutateAsync(idToken);
+
+      return result.user;
+    },
+    [googleLoginMutation],
+  );
+
   const register = useCallback(
     async (
       payload: RegisterRequest,
@@ -195,6 +216,7 @@ export function AuthProvider({
       isInitializing,
       isAuthenticated: user !== null,
       login,
+      googleLogin,
       register,
       logout,
       hasRole,
@@ -203,6 +225,7 @@ export function AuthProvider({
       user,
       isInitializing,
       login,
+      googleLogin,
       register,
       logout,
       hasRole,

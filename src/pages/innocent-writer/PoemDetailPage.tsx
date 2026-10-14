@@ -491,39 +491,37 @@ const deleteCommentMutation = useMutation({
     ? poem.instagramPostUrl
     : null;
 
-  const handleCommentSubmit = (
-    event: FormEvent<HTMLFormElement>,
-  ) => {
-    event.preventDefault();
+ const handleCommentSubmit = (
+  event: FormEvent<HTMLFormElement>,
+) => {
+  event.preventDefault();
 
-    const content = commentDraft.trim();
+  if (!isAuthenticated) {
+    setActionError("Please log in first to comment on this poem.");
+    return;
+  }
 
-    if (!content || addCommentMutation.isPending) {
-      return;
-    }
+  const content = commentDraft.trim();
 
-    if (!isAuthenticated) {
-      navigate("/login", {
-        state: { from: `/app/poems/${id}` },
-      });
-      return;
-    }
+  if (!content || addCommentMutation.isPending) {
+    return;
+  }
 
-    addCommentMutation.mutate(content);
-  };
+  setActionError(null);
+  addCommentMutation.mutate(content);
+};
 
-  const handleLike = () => {
-    if (!isAuthenticated) {
-      navigate("/login", {
-        state: { from: `/app/poems/${id}` },
-      });
-      return;
-    }
+const handleLike = () => {
+  if (!isAuthenticated) {
+    setActionError("Please log in first to like this poem.");
+    return;
+  }
 
-    if (!likeMutation.isPending) {
-      likeMutation.mutate();
-    }
-  };
+  if (!likeMutation.isPending) {
+    setActionError(null);
+    likeMutation.mutate();
+  }
+};
 
   return (
     <main className="space-y-6 py-6 sm:space-y-8 sm:py-10">
