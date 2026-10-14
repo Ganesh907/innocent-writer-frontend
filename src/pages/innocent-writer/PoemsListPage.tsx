@@ -1,4 +1,3 @@
-
 import { useState, type FormEvent } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -18,7 +17,7 @@ import { getPoems } from "@/features/poems/poemApi";
 import { poemQueryKeys } from "@/features/poems/poemQueryKeys";
 import { getApiErrorMessage } from "@/lib/api/apiError";
 
-const PAGE_SIZE = 9;
+const PAGE_SIZE = 2;
 
 export function PoemsListPage() {
   const [searchInput, setSearchInput] = useState("");
@@ -33,7 +32,7 @@ export function PoemsListPage() {
 
   const poemsQuery = useQuery({
     queryKey: poemQueryKeys.list(queryParams),
-    queryFn: () => getPoems(queryParams),
+    queryFn: ({ signal }) => getPoems(queryParams, signal),
   });
 
   const poems = poemsQuery.data?.data ?? [];

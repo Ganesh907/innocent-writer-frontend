@@ -78,10 +78,14 @@ export const imageFileToDataUri = (
 /** GET /api/poems?page=&limit=&title=&authorId= */
 export const getPoems = async (
   params: GetPoemsParams = {},
+  signal?: AbortSignal,
 ): Promise<PoemListResponse> => {
   const response = await axiosClient.get<PoemListResponse>(
     "/poems",
-    { params },
+    {
+      params,
+      signal,
+    },
   );
 
   return response.data;

@@ -1,4 +1,7 @@
-import type { AdminPoemsParams } from "./adminApi";
+import type {
+  AdminPoemsParams,
+  AdminUsersParams,
+} from "./adminApi";
 
 export const adminQueryKeys = {
   all: ["admin"] as const,
@@ -8,6 +11,9 @@ export const adminQueryKeys = {
 
   users: () =>
     [...adminQueryKeys.all, "users"] as const,
+
+  userList: (params: AdminUsersParams) =>
+    [...adminQueryKeys.users(), params] as const,
 
   poems: () =>
     [...adminQueryKeys.all, "poems"] as const,

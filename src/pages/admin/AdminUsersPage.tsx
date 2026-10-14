@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { RefreshCw, Shield, UserRound } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -12,13 +17,21 @@ import type { UserRole } from "@/contracts/auth";
 import { useAuth } from "@/features/auth/authContext";
 import { getApiErrorMessage } from "@/lib/api/apiError";
 
+const PAGE_SIZE = 10;
+
 export function AdminUsersPage() {
   const queryClient = useQueryClient();
   const { user: currentUser } = useAuth();
+  const [page, setPage] = useState(1);
+
+  const params = {
+    page,
+    limit: PAGE_SIZE,
+  };
 
   const usersQuery = useQuery({
-    queryKey: adminQueryKeys.users(),
-    queryFn: ({ signal }) => getAdminUsers(signal),
+    queryKey: adminQueryKeys.userList(params),
+    queryFn: ({ signal }) => getAdminUsers(params, signal),
   });
 
   const roleMutation = useMutation({
@@ -42,6 +55,9 @@ export function AdminUsersPage() {
     },
   });
 
+  const users = usersQuery.data?.data ?? [];
+  const pagination = usersQuery.data?.pagination;
+
   function changeRole(
     id: string,
     name: string,
@@ -50,11 +66,13 @@ export function AdminUsersPage() {
     const nextRole: UserRole =
       currentRole === "ADMIN" ? "USER" : "ADMIN";
 
-    const confirmed = window.confirm(
-      `Change ${name}'s role from ${currentRole} to ${nextRole}?`,
-    );
-
-    if (!confirmed) return;
+    if (
+      !window.confirm(
+        `Change ${name}'s role from ${currentRole} to ${nextRole}?`,
+      )
+    ) {
+      return;
+    }
 
     roleMutation.mutate({ id, role: nextRole });
   }
@@ -66,9 +84,11 @@ export function AdminUsersPage() {
           <p className="text-sm text-muted-foreground">
             Innocent Writer · Administration
           </p>
+
           <h1 className="mt-1 text-3xl font-semibold tracking-tight">
             Users
           </h1>
+
           <p className="mt-2 text-sm text-muted-foreground">
             Review registered users and manage their roles.
           </p>
@@ -80,7 +100,9 @@ export function AdminUsersPage() {
           disabled={usersQuery.isFetching}
         >
           <RefreshCw
-            className={usersQuery.isFetching ? "animate-spin" : ""}
+            className={
+              usersQuery.isFetching ? "animate-spin" : ""
+            }
           />
           Refresh
         </Button>
@@ -97,6 +119,7 @@ export function AdminUsersPage() {
               Could not load users:{" "}
               {getApiErrorMessage(usersQuery.error)}
             </p>
+
             <Button
               variant="outline"
               onClick={() => void usersQuery.refetch()}
@@ -105,7 +128,7 @@ export function AdminUsersPage() {
             </Button>
           </CardContent>
         </Card>
-      ) : usersQuery.data.length === 0 ? (
+      ) : users.length === 0 ? (
         <Card>
           <CardContent className="p-5 text-sm text-muted-foreground">
             No users found.
@@ -113,7 +136,7 @@ export function AdminUsersPage() {
         </Card>
       ) : (
         <section className="space-y-3">
-          {usersQuery.data.map((adminUser) => {
+          {users.map((adminUser) => {
             const isCurrentUser =
               adminUser.id === currentUser?.id;
 
@@ -127,15 +150,18 @@ export function AdminUsersPage() {
                   <div className="min-w-0">
                     <p className="break-words font-semibold">
                       {adminUser.name}
+
                       {isCurrentUser && (
                         <span className="ml-2 text-xs font-normal text-muted-foreground">
                           (you)
                         </span>
                       )}
                     </p>
+
                     <p className="mt-1 break-all text-sm text-muted-foreground">
                       {adminUser.email}
                     </p>
+
                     <p className="mt-2 text-xs text-muted-foreground">
                       Joined{" "}
                       {new Date(
@@ -151,6 +177,7 @@ export function AdminUsersPage() {
                       ) : (
                         <UserRound className="size-3.5" />
                       )}
+
                       {adminUser.role}
                     </span>
 
@@ -198,10 +225,43 @@ export function AdminUsersPage() {
         </p>
       )}
 
-      <p className="text-xs text-muted-foreground">
-        User deletion and account-status changes are not available on this
-        page. Role changes are also validated by the backend.
-      </p>
+      {pagination && (
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground">
+            Page {pagination.page} of {pagination.totalPages} ·{" "}
+            {pagination.total} users
+          </p>
+
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={
+                page <= 1 || usersQuery.isFetching
+              }
+              onClick={() =>
+                setPage((current) => current - 1)
+              }
+            >
+              Previous
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={
+                page >= pagination.totalPages ||
+                usersQuery.isFetching
+              }
+              onClick={() =>
+                setPage((current) => current + 1)
+              }
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

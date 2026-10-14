@@ -26,6 +26,19 @@ export interface AdminUser {
   updatedAt: string;
 }
 
+export interface AdminUsersParams {
+  page?: number;
+  limit?: number;
+}
+
+export interface AdminUsersResponse
+  extends ApiSuccessResponse<AdminUser[]> {
+  pagination: PaginationMeta & {
+    total: number;
+    totalPages: number;
+  };
+}
+
 export interface AdminPoemsParams {
   page?: number;
   limit?: number;
@@ -59,13 +72,18 @@ export const getAdminAnalytics = async (
 };
 
 export const getAdminUsers = async (
+  params: AdminUsersParams = {},
   signal?: AbortSignal,
-): Promise<AdminUser[]> => {
-  const response = await axiosClient.get<
-    ApiSuccessResponse<AdminUser[]>
-  >("/admin/users", { signal });
+): Promise<AdminUsersResponse> => {
+  const response = await axiosClient.get<AdminUsersResponse>(
+    "/admin/users",
+    {
+      params,
+      signal,
+    },
+  );
 
-  return response.data.data;
+  return response.data;
 };
 
 export const updateAdminUserRole = async (

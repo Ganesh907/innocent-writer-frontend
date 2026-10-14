@@ -1,13 +1,11 @@
-
 import { QueryClient } from "@tanstack/react-query";
-
 import { ApiError } from "./apiError";
 
 const shouldRetryQuery = (
   failureCount: number,
   error: Error,
 ): boolean => {
-  // Retrying the same client-side request will not fix a 4xx response.
+  // Retrying a client-side 4xx request will not fix the problem.
   if (
     error instanceof ApiError &&
     error.status !== undefined &&
@@ -24,7 +22,8 @@ const shouldRetryQuery = (
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 30_000,
+      staleTime: 60_000,
+      gcTime: 5 * 60_000,
       retry: shouldRetryQuery,
       refetchOnWindowFocus: false,
     },

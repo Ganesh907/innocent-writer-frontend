@@ -1,12 +1,15 @@
 
 import axios from "axios";
 
-import type { ApiErrorResponse } from "@/contracts/api";
+import type {
+  ApiErrorResponse,
+} from "@/contracts/api";
 
 export interface ApiErrorOptions {
   status?: number;
   validationErrors?: Record<string, string>;
   code?: string;
+  requestId?: string;
 }
 
 /** Normalized error for API requests and UI error states. */
@@ -14,6 +17,7 @@ export class ApiError extends Error {
   readonly status: number | undefined;
   readonly validationErrors: Record<string, string> | undefined;
   readonly code: string | undefined;
+  readonly requestId: string | undefined;
 
   constructor(
     message: string,
@@ -25,6 +29,7 @@ export class ApiError extends Error {
     this.status = options.status;
     this.validationErrors = options.validationErrors;
     this.code = options.code;
+    this.requestId = options.requestId;
 
     Object.setPrototypeOf(this, new.target.prototype);
   }
@@ -38,15 +43,26 @@ const isApiErrorResponse = (
   }
 
   const candidate = value as Partial<ApiErrorResponse>;
+  const nestedError = candidate.error;
+
+  const hasNestedError =
+    typeof nestedError === "object" &&
+    nestedError !== null &&
+    typeof nestedError.detail === "string";
+
+  const hasLegacyError =
+    typeof candidate.message === "string";
 
   return (
     candidate.success === false &&
-    typeof candidate.message === "string"
+    (hasNestedError || hasLegacyError)
   );
 };
 
 /** Converts an unknown failure into the shared ApiError type. */
-export const normalizeApiError = (error: unknown): ApiError => {
+export const normalizeApiError = (
+  error: unknown,
+): ApiError => {
   if (error instanceof ApiError) {
     return error;
   }
@@ -58,7 +74,10 @@ export const normalizeApiError = (error: unknown): ApiError => {
       ? body
       : undefined;
 
-    let message = apiError?.message;
+    const problem = apiError?.error;
+
+    let message =
+      problem?.detail ?? apiError?.message;
 
     if (!message && error.code === "ECONNABORTED") {
       message = "The request timed out. Please try again.";
@@ -66,13 +85,16 @@ export const normalizeApiError = (error: unknown): ApiError => {
       message =
         "Unable to reach the server. Check your connection and try again.";
     } else if (!message) {
-      message = error.message || "The request failed. Please try again.";
+      message =
+        error.message || "The request failed. Please try again.";
     }
 
     return new ApiError(message, {
-      status: error.response?.status,
-      validationErrors: apiError?.errors,
-      code: error.code,
+      status: problem?.status ?? error.response?.status,
+      validationErrors:
+        problem?.errors ?? apiError?.errors,
+      code: problem?.type ?? error.code,
+      requestId: problem?.requestId,
     });
   }
 
@@ -84,7 +106,9 @@ export const normalizeApiError = (error: unknown): ApiError => {
 };
 
 /** Returns a message suitable for displaying in the UI. */
-export const getApiErrorMessage = (error: unknown): string => {
+export const getApiErrorMessage = (
+  error: unknown,
+): string => {
   if (error instanceof ApiError) {
     return error.message;
   }
