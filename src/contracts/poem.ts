@@ -1,8 +1,4 @@
-
-import type {
-  ApiSuccessResponse,
-  PaginationMeta,
-} from "./api";
+import type { ApiSuccessResponse, PaginationMeta } from "./api";
 
 /**
  * Public poem representation returned by poemService.toPublicPoem().
@@ -57,8 +53,7 @@ export interface GetPoemsParams {
 }
 
 /** The backend returns pagination beside data, not inside data. */
-export interface PoemListResponse
-  extends ApiSuccessResponse<Poem[]> {
+export interface PoemListResponse extends ApiSuccessResponse<Poem[]> {
   pagination: PaginationMeta;
 }
 

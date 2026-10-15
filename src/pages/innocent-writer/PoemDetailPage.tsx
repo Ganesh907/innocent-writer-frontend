@@ -1,22 +1,8 @@
-import {
-  useEffect,
-  useState,
-  type FormEvent,
-  type ReactNode,
-} from "react";
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-import {
-  Link,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import { useEffect, useState, type FormEvent } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
-  CalendarDays,
   ExternalLink,
   Eye,
   Feather,
@@ -28,12 +14,7 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import type { Poem } from "@/contracts/poem";
 import { getPoemAnalytics } from "@/features/analytics/analyticsApi";
@@ -45,22 +26,11 @@ import {
 } from "@/features/comments/commentApi";
 import { useAuth } from "@/features/auth/authContext";
 import { togglePoemLike } from "@/features/likes/likeApi";
-import {
-  getPoemById,
-  recordPoemView,
-} from "@/features/poems/poemApi";
+import { getPoemById, recordPoemView } from "@/features/poems/poemApi";
 import { poemQueryKeys } from "@/features/poems/poemQueryKeys";
 import { getApiErrorMessage } from "@/lib/api/apiError";
 
-// const commentQueryKey = (poemId: string) =>
-//   ["poem-comments", poemId] as const;
-
-// const analyticsQueryKey = (poemId: string) =>
-//   ["poem-analytics", poemId] as const;
-
-
-const likeMutationKey = (poemId: string) =>
-  ["poem-like", poemId] as const;
+const likeMutationKey = (poemId: string) => ["poem-like", poemId] as const;
 
 function formatDate(value: string): string {
   const date = new Date(value);
@@ -86,10 +56,8 @@ function isValidInstagramPostUrl(
 
     return (
       url.protocol === "https:" &&
-      (
-        url.hostname === "instagram.com" ||
-        url.hostname === "www.instagram.com"
-      ) &&
+      (url.hostname === "instagram.com" ||
+        url.hostname === "www.instagram.com") &&
       url.pathname.length > 1
     );
   } catch {
@@ -118,7 +86,12 @@ function ContentImage({
       <div
         role="img"
         aria-label={`${fallbackLabel}. Image unavailable.`}
-        className={`flex min-h-44 items-center justify-center rounded-xl border border-dashed border-border bg-muted/60 p-6 text-center text-sm text-muted-foreground ${className ?? ""}`}
+        className={[
+          "flex min-h-40 items-center justify-center rounded-md",
+          "border border-dashed border-border bg-muted/50 p-4",
+          "text-center text-xs text-muted-foreground",
+          className ?? "",
+        ].join(" ")}
       >
         <span className="flex flex-col items-center gap-2">
           <Feather aria-hidden="true" className="size-6" />
@@ -140,22 +113,40 @@ function ContentImage({
   );
 }
 
+function BookDivider({ label = "❦" }: { label?: string }) {
+  return (
+    <div
+      aria-hidden="true"
+      className="flex items-center gap-2 py-1 text-primary/70"
+    >
+      <span className="h-px flex-1 bg-border" />
+      <span className="font-serif text-lg">{label}</span>
+      <span className="h-px flex-1 bg-border" />
+    </div>
+  );
+}
+
 function LoadingDetail() {
   return (
     <main
-      className="space-y-6 py-8 sm:py-12"
+      className="mx-auto w-full max-w-6xl px-3 py-4 text-foreground sm:px-5 sm:py-6"
       aria-busy="true"
       aria-label="Loading poem"
     >
-      <div className="h-5 w-28 animate-pulse rounded bg-muted" />
+      <div className="mb-4 h-5 w-28 animate-pulse rounded bg-muted" />
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-        <div className="aspect-[4/3] animate-pulse rounded-2xl bg-muted" />
+      <div className="grid overflow-hidden rounded-xl border border-border bg-card shadow-lg md:min-h-[680px] grid-cols-1 md:grid-cols-[minmax(0,6fr)_minmax(0,4fr)]">
+        <div className="animate-pulse border-b border-border bg-muted/50 p-6 md:border-b-0 md:border-r">
+          <div className="h-4 w-1/3 rounded bg-muted" />
+          <div className="mx-auto mt-12 aspect-[4/5] max-w-xs rounded-lg bg-muted" />
+          <div className="mx-auto mt-6 h-8 w-3/4 rounded bg-muted" />
+        </div>
 
-        <div className="space-y-4 py-2">
-          <div className="h-9 w-3/4 animate-pulse rounded bg-muted" />
-          <div className="h-5 w-1/3 animate-pulse rounded bg-muted" />
-          <div className="h-40 animate-pulse rounded-xl bg-muted" />
+        <div className="animate-pulse space-y-5 bg-card p-6 sm:p-8">
+          <div className="mt-8 h-8 w-full rounded bg-muted" />
+          <div className="h-8 w-5/6 rounded bg-muted" />
+          <div className="mt-12 h-px w-full bg-muted" />
+          <div className="mt-8 h-36 rounded-lg bg-muted" />
         </div>
       </div>
     </main>
@@ -170,7 +161,9 @@ export function PoemDetailPage() {
 
   const [commentDraft, setCommentDraft] = useState("");
   const [liked, setLiked] = useState<boolean | null>(null);
-  const [actionError, setActionError] = useState<string | null>(null);
+  const [likeError, setLikeError] = useState<string | null>(null);
+  const [commentError, setCommentError] = useState<string | null>(null);
+  const [loginPromptOpen, setLoginPromptOpen] = useState(false);
 
   const poemQuery = useQuery<Poem>({
     queryKey: poemQueryKeys.detail(id ?? ""),
@@ -178,117 +171,96 @@ export function PoemDetailPage() {
     enabled: Boolean(id),
   });
 
-const commentsQuery = useQuery<PoemComment[]>({
-  queryKey: poemQueryKeys.comments(id ?? ""),
-  queryFn: ({ signal }) =>
-    getCommentsByPoem(id as string, signal),
-  enabled: Boolean(id) && poemQuery.isSuccess,
-});
-
-const analyticsQuery = useQuery({
-  queryKey: poemQueryKeys.analytics(id ?? ""),
-  queryFn: ({ signal }) =>
-    getPoemAnalytics(id as string, signal),
-  enabled: Boolean(id) && poemQuery.isSuccess,
-});
-
-  /*
-   * A detail page visit records a view after the poem loads.
-   * Database-level deduplication handles repeated effects,
-   * including React Strict Mode's development behavior.
-   */
-  useEffect(() => {
-    if (!id || !poemQuery.isSuccess) {
-      return;
-    }
-
-  void recordPoemView(id)
-  .then(() =>
-    queryClient.invalidateQueries({
-      queryKey: poemQueryKeys.analytics(id),
-    }),
-  )
-  .catch(() => {
-    // View tracking failure must not block poem reading.
+  const commentsQuery = useQuery<PoemComment[]>({
+    queryKey: poemQueryKeys.comments(id ?? ""),
+    queryFn: ({ signal }) => getCommentsByPoem(id as string, signal),
+    enabled: Boolean(id) && poemQuery.isSuccess,
   });
+
+  const analyticsQuery = useQuery({
+    queryKey: poemQueryKeys.analytics(id ?? ""),
+    queryFn: ({ signal }) => getPoemAnalytics(id as string, signal),
+    enabled: Boolean(id) && poemQuery.isSuccess,
+  });
+
+  useEffect(() => {
+    if (!id || !poemQuery.isSuccess) return;
+
+    void recordPoemView(id)
+      .then(() =>
+        queryClient.invalidateQueries({
+          queryKey: poemQueryKeys.analytics(id),
+        }),
+      )
+      .catch(() => {
+        // View tracking must not interrupt reading.
+      });
   }, [id, poemQuery.isSuccess, queryClient]);
 
   const likeMutation = useMutation({
     mutationKey: likeMutationKey(id ?? ""),
     mutationFn: () => togglePoemLike(id as string),
+
     onSuccess: async (result) => {
       setLiked(result.liked);
-      setActionError(null);
+      setLikeError(null);
 
       await queryClient.invalidateQueries({
-  queryKey: poemQueryKeys.analytics(id as string),
-});
+        queryKey: poemQueryKeys.analytics(id as string),
+      });
     },
+
     onError: (error) => {
-      setActionError(getApiErrorMessage(error));
+      setLikeError(getApiErrorMessage(error));
     },
   });
 
   const addCommentMutation = useMutation({
-  mutationFn: (content: string) =>
-    addPoemComment(id as string, content),
+    mutationFn: (content: string) => addPoemComment(id as string, content),
 
-  onMutate: async (content) => {
-    const queryKey = poemQueryKeys.comments(id as string);
+    onMutate: async (content) => {
+      const queryKey = poemQueryKeys.comments(id as string);
 
-    // Prevent an in-flight fetch from overwriting the optimistic update.
-    await queryClient.cancelQueries({ queryKey });
+      await queryClient.cancelQueries({ queryKey });
 
-    const previousComments =
-      queryClient.getQueryData<PoemComment[]>(queryKey);
+      const previousComments =
+        queryClient.getQueryData<PoemComment[]>(queryKey);
 
-    const now = new Date().toISOString();
-    const optimisticId = `optimistic-${Date.now()}`;
-    const currentUserId = user?.id ?? "";
+      const now = new Date().toISOString();
+      const optimisticId = `optimistic-${Date.now()}`;
+      const currentUserId = user?.id ?? "";
 
-    const optimisticComment: PoemComment = {
-      id: optimisticId,
-      content,
-      createdAt: now,
-      updatedAt: now,
-      userId: currentUserId,
-      poemId: id as string,
-      user: {
-        id: currentUserId,
-        name: user?.name?.trim() || "You",
-      },
-    };
+      const optimisticComment: PoemComment = {
+        id: optimisticId,
+        content,
+        createdAt: now,
+        updatedAt: now,
+        userId: currentUserId,
+        poemId: id as string,
+        user: {
+          id: currentUserId,
+          name: user?.name?.trim() || "You",
+        },
+      };
 
-    // Show the comment immediately, before the server responds.
-    queryClient.setQueryData<PoemComment[]>(
-      queryKey,
-      (currentComments) => [
+      queryClient.setQueryData<PoemComment[]>(queryKey, (currentComments) => [
         optimisticComment,
         ...(currentComments ?? []),
-      ],
-    );
+      ]);
 
-    setActionError(null);
+      setCommentError(null);
 
-    return {
-      previousComments,
-      optimisticId,
-    };
-  },
+      return { previousComments, optimisticId };
+    },
 
-  onSuccess: (createdComment, _content, context) => {
-    const queryKey = poemQueryKeys.comments(id as string);
+    onSuccess: (createdComment, _content, context) => {
+      const queryKey = poemQueryKeys.comments(id as string);
 
-    setCommentDraft("");
-    setActionError(null);
+      setCommentDraft("");
+      setCommentError(null);
 
-    // Replace the temporary comment with the server-confirmed record.
-    queryClient.setQueryData<PoemComment[]>(
-      queryKey,
-      (currentComments) => {
-        const remainingComments = (
-          currentComments ?? []
-        ).filter(
+      queryClient.setQueryData<PoemComment[]>(queryKey, (currentComments) => {
+        const remainingComments = (currentComments ?? []).filter(
           (comment) =>
             comment.id !== context?.optimisticId &&
             comment.id !== createdComment.id,
@@ -296,140 +268,84 @@ const analyticsQuery = useQuery({
 
         return [createdComment, ...remainingComments].sort(
           (a, b) =>
-            new Date(b.createdAt).getTime() -
-            new Date(a.createdAt).getTime(),
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
         );
-      },
-    );
-  },
-
-  onError: (error, _content, context) => {
-    const queryKey = poemQueryKeys.comments(id as string);
-
-    // Roll back the optimistic comment when the request fails.
-    if (context?.previousComments !== undefined) {
-      queryClient.setQueryData(
-        queryKey,
-        context.previousComments,
-      );
-    } else {
-      queryClient.removeQueries({
-        queryKey,
-        exact: true,
       });
-    }
+    },
 
-    setActionError(getApiErrorMessage(error));
-  },
+    onError: (error, _content, context) => {
+      const queryKey = poemQueryKeys.comments(id as string);
 
-  onSettled: async () => {
-    // Reconcile both the comment list and engagement metrics with the server.
-    await Promise.all([
-      queryClient.invalidateQueries({
-        queryKey: poemQueryKeys.comments(id as string),
-      }),
-      queryClient.invalidateQueries({
-        queryKey: poemQueryKeys.analytics(id as string),
-      }),
-    ]);
-  },
-});
-  // const addCommentMutation = useMutation({
-  //   mutationFn: (content: string) =>
-  //     addPoemComment(id as string, content),
-  //   onSuccess: async () => {
-  //     setCommentDraft("");
-  //     setActionError(null);
+      if (context?.previousComments !== undefined) {
+        queryClient.setQueryData(queryKey, context.previousComments);
+      } else {
+        queryClient.removeQueries({
+          queryKey,
+          exact: true,
+        });
+      }
 
-  //     await Promise.all([
-  //       queryClient.invalidateQueries({
-  //         queryKey: commentQueryKey(id as string),
-  //       }),
-  //       queryClient.invalidateQueries({
-  //         queryKey: analyticsQueryKey(id as string),
-  //       }),
-  //     ]);
-  //   },
-  //   onError: (error) => {
-  //     setActionError(getApiErrorMessage(error));
-  //   },
-  // });
+      setCommentError(getApiErrorMessage(error));
+    },
 
-  // const deleteCommentMutation = useMutation({
-  //   mutationFn: (commentId: string) =>
-  //     deletePoemComment(commentId),
-  //   onSuccess: async () => {
-  //     setActionError(null);
+    onSettled: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: poemQueryKeys.comments(id as string),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: poemQueryKeys.analytics(id as string),
+        }),
+      ]);
+    },
+  });
 
-  //     await Promise.all([
-  //       queryClient.invalidateQueries({
-  //         queryKey: commentQueryKey(id as string),
-  //       }),
-  //       queryClient.invalidateQueries({
-  //         queryKey: analyticsQueryKey(id as string),
-  //       }),
-  //     ]);
-  //   },
-  //   onError: (error) => {
-  //     setActionError(getApiErrorMessage(error));
-  //   },
-  // });
-const deleteCommentMutation = useMutation({
-  mutationFn: (commentId: string) =>
-    deletePoemComment(commentId),
+  const deleteCommentMutation = useMutation({
+    mutationFn: (commentId: string) => deletePoemComment(commentId),
 
-  onMutate: async (commentId) => {
-    const queryKey = poemQueryKeys.comments(id as string);
+    onMutate: async (commentId) => {
+      const queryKey = poemQueryKeys.comments(id as string);
 
-    // Cancel pending fetches before changing the cached list.
-    await queryClient.cancelQueries({ queryKey });
+      await queryClient.cancelQueries({ queryKey });
 
-    const previousComments =
-      queryClient.getQueryData<PoemComment[]>(queryKey);
+      const previousComments =
+        queryClient.getQueryData<PoemComment[]>(queryKey);
 
-    // Remove the comment from the UI immediately.
-    queryClient.setQueryData<PoemComment[]>(
-      queryKey,
-      (currentComments) =>
-        (currentComments ?? []).filter(
-          (comment) => comment.id !== commentId,
-        ),
-    );
-
-    setActionError(null);
-
-    return { previousComments };
-  },
-
-  onSuccess: () => {
-    setActionError(null);
-  },
-
-  onError: (error, _commentId, context) => {
-    const queryKey = poemQueryKeys.comments(id as string);
-
-    // Restore the original list if the server rejects the deletion.
-    if (context?.previousComments !== undefined) {
-      queryClient.setQueryData(
-        queryKey,
-        context.previousComments,
+      queryClient.setQueryData<PoemComment[]>(queryKey, (currentComments) =>
+        (currentComments ?? []).filter((comment) => comment.id !== commentId),
       );
-    }
 
-    setActionError(getApiErrorMessage(error));
-  },
+      setCommentError(null);
 
-  onSettled: async () => {
-    await Promise.all([
-      queryClient.invalidateQueries({
-        queryKey: poemQueryKeys.comments(id as string),
-      }),
-      queryClient.invalidateQueries({
-        queryKey: poemQueryKeys.analytics(id as string),
-      }),
-    ]);
-  },
-});
+      return { previousComments };
+    },
+
+    onSuccess: () => {
+      setCommentError(null);
+    },
+
+    onError: (error, _commentId, context) => {
+      const queryKey = poemQueryKeys.comments(id as string);
+
+      if (context?.previousComments !== undefined) {
+        queryClient.setQueryData(queryKey, context.previousComments);
+      }
+
+      setCommentError(getApiErrorMessage(error));
+    },
+
+    onSettled: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: poemQueryKeys.comments(id as string),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: poemQueryKeys.analytics(id as string),
+        }),
+      ]);
+    },
+  });
+
   if (!id) {
     return (
       <DetailMessage
@@ -446,9 +362,7 @@ const deleteCommentMutation = useMutation({
   }
 
   if (poemQuery.isError) {
-    const status = (
-      poemQuery.error as { status?: number }
-    ).status;
+    const status = (poemQuery.error as { status?: number }).status;
 
     const isNotFound =
       status === 404 ||
@@ -458,24 +372,16 @@ const deleteCommentMutation = useMutation({
 
     return (
       <DetailMessage
-        title={
-          isNotFound
-            ? "Poem not found"
-            : "We couldn’t load this poem"
-        }
+        title={isNotFound ? "Poem not found" : "We couldn’t load this poem"}
         message={
           isNotFound
             ? "This poem may have been removed or the link may be incorrect."
             : getApiErrorMessage(poemQuery.error)
         }
         onRetry={() =>
-          isNotFound
-            ? navigate("/app/poems")
-            : void poemQuery.refetch()
+          isNotFound ? navigate("/app/poems") : void poemQuery.refetch()
         }
-        retryLabel={
-          isNotFound ? "Browse poems" : "Try again"
-        }
+        retryLabel={isNotFound ? "Browse poems" : "Try again"}
         loading={poemQuery.isFetching}
       />
     );
@@ -485,390 +391,417 @@ const deleteCommentMutation = useMutation({
   const author = poem.authorName?.trim() || "Unknown author";
   const comments = commentsQuery.data ?? [];
 
-  const instagramUrl = isValidInstagramPostUrl(
-    poem.instagramPostUrl,
-  )
+  const instagramUrl = isValidInstagramPostUrl(poem.instagramPostUrl)
     ? poem.instagramPostUrl
     : null;
 
- const handleCommentSubmit = (
-  event: FormEvent<HTMLFormElement>,
-) => {
-  event.preventDefault();
+  const handleCommentSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
-  if (!isAuthenticated) {
-    setActionError("Please log in first to comment on this poem.");
-    return;
-  }
+    if (isInitializing) return;
 
-  const content = commentDraft.trim();
+    if (!isAuthenticated) {
+      setLoginPromptOpen(true);
+      return;
+    }
 
-  if (!content || addCommentMutation.isPending) {
-    return;
-  }
+    const content = commentDraft.trim();
 
-  setActionError(null);
-  addCommentMutation.mutate(content);
-};
+    if (!content || addCommentMutation.isPending) return;
 
-const handleLike = () => {
-  if (!isAuthenticated) {
-    setActionError("Please log in first to like this poem.");
-    return;
-  }
+    setCommentError(null);
+    addCommentMutation.mutate(content);
+  };
 
-  if (!likeMutation.isPending) {
-    setActionError(null);
-    likeMutation.mutate();
-  }
-};
+  const handleLike = () => {
+    if (isInitializing) return;
+
+    if (!isAuthenticated) {
+      setLoginPromptOpen(true);
+      return;
+    }
+
+    if (!likeMutation.isPending) {
+      setLikeError(null);
+      likeMutation.mutate();
+    }
+  };
+
+  const coverSrc = poem.coverImageUrl || poem.poemImageUrl;
+  const views = analyticsQuery.data?.views ?? "—";
+  const likes = analyticsQuery.data?.likes ?? "—";
+  const commentCount = analyticsQuery.data?.comments ?? comments.length;
 
   return (
-    <main className="space-y-6 py-6 sm:space-y-8 sm:py-10">
-      <Link
-        to="/app/poems"
-        className="-ml-2 inline-flex h-9 w-fit items-center gap-2 rounded-lg px-3 text-sm font-medium transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-      >
-        <ArrowLeft aria-hidden="true" className="size-4" />
-        Back to poems
-      </Link>
+    <main className="mx-auto w-full px-3 py-3 text-foreground sm:px-5 sm:py-5">
+      {/* Back navigation and metadata */}
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-border/70 pb-2">
+        <Link
+          to="/app/poems"
+          className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-2.5 py-1.5 text-xs font-medium text-foreground shadow-sm transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <ArrowLeft aria-hidden="true" className="size-3.5" />
+          Back to poems
+        </Link>
 
-      <article className="space-y-8">
-        <header className="grid gap-6 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-start">
-          <div className="space-y-3">
-            <p className="text-sm font-medium text-muted-foreground">
-              Innocent Writer · Poem
-            </p>
+        <span className="text-right text-[11px] text-muted-foreground">
+          {views} views
+          <span className="px-1.5">·</span>
+          {formatDate(poem.createdAt)}
+        </span>
+      </div>
 
-            <ContentImage
-              src={poem.coverImageUrl}
-              alt={`Cover artwork for the poem “${poem.title}”`}
-              fallbackLabel="Poem cover"
-              className="max-h-[560px] min-h-56 w-full rounded-2xl border border-border/60 bg-muted object-cover shadow-sm"
-            />
+      {/* Book exterior */}
+      <article className="relative isolate overflow-hidden rounded-xl  border border-border bg-card shadow-xl">
+        {/* Subtle book spine */}
 
-            {instagramUrl && (
-              <a
-                href={instagramUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                referrerPolicy="no-referrer"
-                className="inline-flex items-center gap-2 text-sm font-medium text-primary underline-offset-4 hover:underline"
-              >
-                <ExternalLink
-                  aria-hidden="true"
-                  className="size-4"
-                />
-                View original Instagram post
-              </a>
-            )}
-          </div>
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 left-[60%] z-10 hidden w-5 -translate-x-1/2 bg-gradient-to-r from-transparent via-foreground/[0.06] to-transparent md:block"
+        />
 
-          <div className="min-w-0 space-y-5">
-            <div className="space-y-3">
-              <h1 className="break-words text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
+        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,6fr)_minmax(0,4fr)]">
+          {/* LEFT PAGE */}
+          <section
+            aria-label="Poem cover and author"
+            className="book-page book-page-left relative flex min-w-0 flex-col border-b border-border p-4 sm:p-6 md:border-b-0 md:border-r md:p-7"
+          >
+            <div className="flex items-center justify-between gap-3 text-[9px] font-medium uppercase tracking-[0.16em] text-muted-foreground sm:text-[10px]">
+              <span>Innocent Writer</span>
+              <span>Poetry collection</span>
+            </div>
+
+            <BookDivider label="✦" />
+
+            <div className="mx-auto flex w-full max-w-lg flex-1 flex-col items-center py-3 text-center">
+              {/* <span className="mb-4 inline-flex items-center gap-1.5 rounded-sm border border-primary/25 bg-primary/10 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.13em] text-primary">
+                <Feather aria-hidden="true" className="size-3.5" />
+                Featured poem
+              </span> */}
+
+              {/* Framed artwork */}
+              <div className="w-full border border-border p-1.5 sm:p-2">
+                <div className="border border-border/70 bg-muted/20 p-2 sm:p-3">
+                  <ContentImage
+                    src={coverSrc}
+                    alt={`Cover artwork for ${poem.title}`}
+                    fallbackLabel="Poem cover"
+                    className="mx-auto aspect-[4/5] max-h-[420px] w-full object-contain sm:aspect-[4/5]"
+                  />
+                </div>
+              </div>
+
+              {/* Large centered title */}
+              <h1 className="mt-5 max-w-md break-words font-serif text-3xl font-semibold leading-[1.12] tracking-tight sm:text-4xl lg:text-[2.7rem]">
                 {poem.title}
               </h1>
 
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
-                <span className="inline-flex items-center gap-2">
-                  <UserRound
-                    aria-hidden="true"
-                    className="size-4"
-                  />
-                  {author}
-                </span>
+              <div className="my-3 h-px w-16 bg-primary/50" />
 
-                <span className="inline-flex items-center gap-2">
-                  <CalendarDays
-                    aria-hidden="true"
-                    className="size-4"
-                  />
-                  <time dateTime={poem.createdAt}>
-                    {formatDate(poem.createdAt)}
-                  </time>
-                </span>
-              </div>
+              <p className="inline-flex items-center gap-1.5 font-serif text-sm text-muted-foreground sm:text-base">
+                <UserRound aria-hidden="true" className="size-3.5" />
+                by {author}
+              </p>
+
+              {instagramUrl && (
+                <a
+                  href={instagramUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  referrerPolicy="no-referrer"
+                  className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
+                >
+                  <ExternalLink aria-hidden="true" className="size-3.5" />
+                  Original Instagram post
+                </a>
+              )}
             </div>
 
-            <Card className="gap-3 rounded-2xl border-border/70 py-5 shadow-sm">
-              <CardHeader className="pb-0">
-                <CardTitle className="text-base">
-                  The poem
-                </CardTitle>
-              </CardHeader>
+            <BookDivider label="❦" />
 
-              <CardContent>
-                <div className="whitespace-pre-wrap break-words text-base leading-8 sm:text-lg sm:leading-9">
-                  {poem.content.trim() ||
-                    "The author has not added poem text yet."}
-                </div>
-              </CardContent>
-            </Card>
+            <p className="pt-1 text-center text-[10px] tracking-wide text-muted-foreground">
+              A page from the Innocent Writer collection
+            </p>
+          </section>
 
-            {poem.poemImageUrl && (
-              <section
-                aria-labelledby="poem-artwork-heading"
-                className="space-y-3"
+          {/* RIGHT PAGE */}
+
+          {/* RIGHT PAGE */}
+          <section
+            aria-label="Poem text and reader engagement"
+            className="book-page book-page-right flex min-w-0 flex-col p-4 sm:p-6 md:p-7 lg:p-8"
+          >
+            {/* 1. Page header */}
+            <div className="mb-4 flex items-center justify-between gap-3 border-b border-border/70 pb-3 text-[10px] text-muted-foreground">
+              <span className="font-medium uppercase tracking-[0.16em]">
+                The poem
+              </span>
+              <span className="text-right">{formatDate(poem.createdAt)}</span>
+            </div>
+
+            {/* 2. Poem content */}
+            <div className="whitespace-pre-wrap break-words font-serif text-lg leading-[1.75] sm:text-xl sm:leading-[1.8] lg:text-[1.65rem] lg:leading-[1.7] border-b border-border/70 pb-3 mb-3">
+              {poem.content}
+            </div>
+
+            {analyticsQuery.isError && (
+              <p role="status" className="mt-3 text-xs text-muted-foreground">
+                Engagement counts are temporarily unavailable.
+              </p>
+            )}
+
+            {/* 3. Existing decorative divider */}
+            {/* <div className="my-5 sm:my-6">
+    <BookDivider label="✧❦✧" />
+  </div> */}
+
+            {/* 4. Engagement row */}
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3 border-b border-border/70 pb-4 text-xs text-muted-foreground sm:gap-x-6">
+              <button
+                type="button"
+                onClick={handleLike}
+                disabled={likeMutation.isPending || isInitializing}
+                aria-label={liked ? "Unlike this poem" : "Like this poem"}
+                aria-pressed={liked === true}
+                className={`inline-flex items-center gap-1.5 transition-colors hover:text-primary ${
+                  liked ? "text-primary" : ""
+                }`}
               >
+                <Heart
+                  aria-hidden="true"
+                  className={`size-5 ${liked ? "fill-current" : ""}`}
+                />
+                <span className="tabular-nums">{likes}</span>
+                <span>likes</span>
+              </button>
+
+              <a
+                href="#comments-title"
+                className="inline-flex items-center gap-1.5 transition-colors hover:text-primary"
+              >
+                <MessageCircle aria-hidden="true" className="size-5" />
+                <span className="tabular-nums">{commentCount}</span>
+                <span>comments</span>
+              </a>
+
+              <span
+                className="inline-flex items-center gap-1.5"
+                aria-label={`${views} views`}
+              >
+                <Eye aria-hidden="true" className="size-5" />
+                <span className="tabular-nums">{views}</span>
+                <span>views</span>
+              </span>
+
+              {likeError && (
+                <p role="alert" className="basis-full text-xs text-destructive">
+                  {likeError}
+                </p>
+              )}
+            </div>
+
+            {/* 5. Same decorative divider */}
+            <div className="my-4 sm:my-5">
+              <BookDivider label="✧❦✧" />
+            </div>
+
+            {/* 6. Comments section — keep existing implementation */}
+            {/* <section
+    id="comments-title"
+    aria-labelledby="comments-heading"
+    className="rounded-lg border border-border bg-muted/30 p-3 shadow-sm sm:p-4"
+  >
+    <div className="mb-3 flex items-center justify-between gap-2">
+      <h2
+        id="comments-heading"
+        className="font-serif text-xl font-medium sm:text-2xl"
+      >
+        Comments &amp; reflection
+      </h2>
+
+      <span className="shrink-0 rounded-full border border-border bg-card px-2.5 py-1 text-xs text-muted-foreground">
+        {commentCount}
+      </span>
+    </div> */}
+
+            {/* Keep your existing comment form, error messages,
+        loading state, retry action and CommentItem list here unchanged. */}
+
+            {/* 6. Comments section */}
+            <section
+              id="comments-title"
+              aria-labelledby="comments-heading"
+              className="rounded-lg border border-border bg-muted/30 p-3 shadow-sm sm:p-4"
+            >
+              <div className="mb-3 flex items-center justify-between gap-2">
                 <h2
-                  id="poem-artwork-heading"
-                  className="text-lg font-semibold"
+                  id="comments-heading"
+                  className="font-serif text-xl font-medium sm:text-2xl"
                 >
-                  Poem artwork
+                  Comments &amp; reflection
                 </h2>
 
-                <ContentImage
-                  src={poem.poemImageUrl}
-                  alt={`Visual poem artwork accompanying “${poem.title}” by ${author}`}
-                  fallbackLabel="Poem artwork"
-                  className="max-h-[760px] min-h-48 w-full rounded-2xl border border-border/60 bg-muted object-contain"
-                />
-              </section>
-            )}
-          </div>
-        </header>
+                <span className="shrink-0 rounded-full border border-border bg-card px-2.5 py-1 text-xs text-muted-foreground">
+                  {commentCount}
+                </span>
+              </div>
 
-        <section
-          aria-label="Poem engagement"
-          className="space-y-4"
-        >
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <MetricCard
-              icon={<Eye aria-hidden="true" className="size-5" />}
-              label="Views"
-              value={
-                analyticsQuery.data?.views ?? poem.viewCount
-              }
-            />
-
-            <MetricCard
-              icon={
-                <Heart aria-hidden="true" className="size-5" />
-              }
-              label="Likes"
-              value={analyticsQuery.data?.likes}
-            />
-
-            <MetricCard
-              icon={
-                <MessageCircle
-                  aria-hidden="true"
-                  className="size-5"
-                />
-              }
-              label="Comments"
-              value={
-                analyticsQuery.data?.comments ?? comments.length
-              }
-            />
-          </div>
-
-          {analyticsQuery.isError && (
-            <p
-              role="status"
-              className="text-sm text-muted-foreground"
-            >
-              Engagement analytics are temporarily unavailable.{" "}
-              {getApiErrorMessage(analyticsQuery.error)}
-            </p>
-          )}
-
-          <div className="flex flex-wrap items-center gap-3">
-            <Button
-              type="button"
-              onClick={handleLike}
-              disabled={
-                likeMutation.isPending || isInitializing
-              }
-              variant={liked ? "secondary" : "default"}
-            >
-              <Heart
-                aria-hidden="true"
-                className={liked ? "fill-current" : ""}
-              />
-              {likeMutation.isPending
-                ? "Saving…"
-                : liked === null
-                  ? "Like / unlike"
-                  : liked
-                    ? "Liked"
-                    : "Like poem"}
-            </Button>
-
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() =>
-                document
-                  .getElementById("poem-comment-input")
-                  ?.focus()
-              }
-            >
-              <MessageCircle aria-hidden="true" />
-              Join the conversation
-            </Button>
-
-            {!isAuthenticated && !isInitializing && (
-              <span className="text-sm text-muted-foreground">
-                Sign in to like or comment.
-              </span>
-            )}
-          </div>
-        </section>
-
-        <section
-          aria-labelledby="comments-heading"
-          className="space-y-4"
-        >
-          <div className="space-y-1">
-            <h2
-              id="comments-heading"
-              className="text-2xl font-semibold tracking-tight"
-            >
-              Comments
-            </h2>
-
-            <p className="text-sm text-muted-foreground">
-              Thoughts and responses from readers.
-            </p>
-          </div>
-
-          <Card className="rounded-2xl border-border/70 py-5 shadow-sm">
-            <CardContent className="space-y-5">
+              {/* Comment form */}
               <form
                 onSubmit={handleCommentSubmit}
-                className="flex flex-col gap-2 sm:flex-row"
+                className="flex md:flex-col min-w-0 gap-2"
               >
                 <Input
                   id="poem-comment-input"
                   value={commentDraft}
-                  onChange={(event) =>
-                    setCommentDraft(event.target.value)
-                  }
-                  placeholder={
-                    isAuthenticated
-                      ? "Write a thoughtful comment…"
-                      : "Sign in to leave a comment"
-                  }
+                  onChange={(event) => setCommentDraft(event.target.value)}
+                  placeholder="Write a thoughtful comment…"
                   aria-label="Comment text"
                   maxLength={2000}
-                  disabled={
-                    addCommentMutation.isPending ||
-                    isInitializing
-                  }
+                  disabled={addCommentMutation.isPending || isInitializing}
+                  className="h-9 min-w-0 border-border bg-background text-xs sm:text-sm"
                 />
 
                 <Button
                   type="submit"
+                  size="sm"
+                  className="h-9 shrink-0 gap-1.5 px-3 text-xs"
                   disabled={
-                    !commentDraft.trim() ||
                     addCommentMutation.isPending ||
-                    isInitializing
+                    isInitializing ||
+                    (isAuthenticated && !commentDraft.trim())
                   }
-                  className="sm:w-auto"
                 >
-                  <Send aria-hidden="true" />
-                  {addCommentMutation.isPending
-                    ? "Posting…"
-                    : "Post comment"}
+                  <Send aria-hidden="true" className="size-3.5" />
+                  <span className="hidden sm:inline">
+                    {addCommentMutation.isPending ? "Posting…" : "Post comment"}
+                  </span>
+                  <span className="sm:hidden">
+                    {addCommentMutation.isPending ? "…" : "Post"}
+                  </span>
                 </Button>
               </form>
 
-              {actionError && (
-                <p role="alert" className="text-sm text-destructive">
-                  {actionError}
+              {/* Comment submission error */}
+              {commentError && (
+                <p role="alert" className="mt-2 text-xs text-destructive">
+                  {commentError}
                 </p>
               )}
 
-              {commentsQuery.isPending ? (
-                <p
-                  className="py-4 text-sm text-muted-foreground"
-                  aria-busy="true"
-                >
-                  Loading comments…
-                </p>
-              ) : commentsQuery.isError ? (
-                <div className="flex flex-col items-start gap-3 rounded-lg bg-muted/50 p-4">
-                  <p className="text-sm text-muted-foreground">
-                    Couldn’t load comments.{" "}
-                    {getApiErrorMessage(commentsQuery.error)}
+              {/* Comments list */}
+              <div className="mt-4">
+                {commentsQuery.isPending ? (
+                  <p className="text-xs text-muted-foreground" aria-busy="true">
+                    Loading comments…
                   </p>
+                ) : commentsQuery.isError ? (
+                  <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+                    <span>Comments could not be loaded.</span>
 
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() =>
-                      void commentsQuery.refetch()
-                    }
-                    disabled={commentsQuery.isFetching}
-                  >
-                    <RefreshCw aria-hidden="true" />
-                    Try again
-                  </Button>
-                </div>
-              ) : comments.length === 0 ? (
-                <p className="rounded-lg bg-muted/40 px-4 py-6 text-center text-sm text-muted-foreground">
-                  No comments yet. Be the first to share a thought.
-                </p>
-              ) : (
-                <ul className="space-y-4">
-                  {comments.map((comment) => (
-                    <CommentItem
-                      key={comment.id}
-                      comment={comment}
-                      canDelete={Boolean(
-                        user && user.id === comment.userId,
-                      )}
-                      deleting={
-                        deleteCommentMutation.isPending &&
-                        deleteCommentMutation.variables ===
-                          comment.id
-                      }
-                      onDelete={() =>
-                        deleteCommentMutation.mutate(comment.id)
-                      }
-                    />
-                  ))}
-                </ul>
-              )}
-            </CardContent>
-          </Card>
-        </section>
-      </article>
-    </main>
-  );
-}
-
-function MetricCard({
-  icon,
-  label,
-  value,
-}: {
-  icon: ReactNode;
-  label: string;
-  value: number | undefined;
-}) {
-  return (
-    <Card className="gap-2 rounded-xl border-border/70 py-4 shadow-none">
-      <CardContent className="flex items-center gap-3">
-        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
-          {icon}
-        </span>
-
-        <div>
-          <p className="text-sm text-muted-foreground">
-            {label}
-          </p>
-          <p className="text-xl font-semibold tabular-nums">
-            {value === undefined
-              ? "—"
-              : value.toLocaleString()}
-          </p>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      className="h-7 text-xs"
+                      onClick={() => void commentsQuery.refetch()}
+                      disabled={commentsQuery.isFetching}
+                    >
+                      <RefreshCw aria-hidden="true" className="size-3" />
+                      Retry
+                    </Button>
+                  </div>
+                ) : comments.length === 0 ? (
+                  <p className="rounded-md border border-dashed border-border bg-background/50 px-3 py-4 text-center text-xs text-muted-foreground">
+                    No comments yet. Be the first to share a thought.
+                  </p>
+                ) : (
+                  <ul className="max-h-48 space-y-3 overflow-y-auto pr-1">
+                    {comments.map((comment) => (
+                      <CommentItem
+                        key={comment.id}
+                        comment={comment}
+                        canDelete={Boolean(user && user.id === comment.userId)}
+                        deleting={
+                          deleteCommentMutation.isPending &&
+                          deleteCommentMutation.variables === comment.id
+                        }
+                        onDelete={() =>
+                          deleteCommentMutation.mutate(comment.id)
+                        }
+                      />
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </section>
+            {/*  */}
+            {/* </section> */}
+          </section>
         </div>
-      </CardContent>
-    </Card>
+      </article>
+
+      {/* Guest sign-in dialog */}
+      {loginPromptOpen && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-background/70 p-4 backdrop-blur-sm"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              setLoginPromptOpen(false);
+            }
+          }}
+        >
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="detail-login-title"
+            className="w-full max-w-sm rounded-xl border border-border bg-card p-5 text-card-foreground shadow-xl"
+          >
+            <div className="flex items-center gap-2.5">
+              <span className="grid size-10 place-items-center rounded-lg border border-primary/20 bg-primary/10 text-primary">
+                <Feather aria-hidden="true" className="size-5" />
+              </span>
+
+              <h2
+                id="detail-login-title"
+                className="font-serif text-xl font-semibold"
+              >
+                Join the conversation
+              </h2>
+            </div>
+
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              Sign in to like this poem or post a comment. You can keep reading
+              without an account.
+            </p>
+
+            <div className="mt-5 flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1"
+                onClick={() => setLoginPromptOpen(false)}
+              >
+                Not now
+              </Button>
+
+              <Button
+                type="button"
+                className="flex-1"
+                onClick={() => {
+                  setLoginPromptOpen(false);
+                  navigate("/login", {
+                    state: { from: `/app/poems/${id}` },
+                  });
+                }}
+              >
+                Sign in
+              </Button>
+            </div>
+          </section>
+        </div>
+      )}
+    </main>
   );
 }
 
@@ -884,26 +817,26 @@ function CommentItem({
   onDelete: () => void;
 }) {
   return (
-    <li className="flex gap-3 border-b border-border/60 pb-4 last:border-b-0 last:pb-0">
-      <span className="grid size-9 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground">
+    <li className="flex gap-2.5 border-b border-border/60 pb-3 last:border-b-0 last:pb-0">
+      <span className="grid size-8 shrink-0 place-items-center rounded-full border border-border bg-card text-muted-foreground">
         <UserRound aria-hidden="true" className="size-4" />
       </span>
 
       <div className="min-w-0 flex-1 space-y-1">
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-          <p className="text-sm font-semibold">
+          <p className="text-xs font-semibold text-foreground">
             {comment.user?.name?.trim() || "Reader"}
           </p>
 
           <time
             dateTime={comment.createdAt}
-            className="text-xs text-muted-foreground"
+            className="text-[10px] text-muted-foreground"
           >
             {formatDate(comment.createdAt)}
           </time>
         </div>
 
-        <p className="whitespace-pre-wrap break-words text-sm leading-6">
+        <p className="whitespace-pre-wrap break-words text-sm leading-5 text-foreground">
           {comment.content}
         </p>
 
@@ -938,18 +871,16 @@ function DetailMessage({
   loading?: boolean;
 }) {
   return (
-    <main className="py-12 sm:py-16">
-      <Card className="mx-auto max-w-xl rounded-2xl">
+    <main className="mx-auto max-w-xl px-4 py-10 text-foreground sm:py-14">
+      <Card className="rounded-2xl border-border bg-card">
         <CardContent className="flex flex-col items-center gap-4 px-6 py-10 text-center">
-          <span className="grid size-12 place-items-center rounded-full bg-muted text-muted-foreground">
+          <span className="grid size-12 place-items-center rounded-full border border-border bg-muted text-muted-foreground">
             <Feather aria-hidden="true" className="size-5" />
           </span>
 
           <div className="space-y-2">
-            <h1 className="text-xl font-semibold">{title}</h1>
-            <p className="text-sm leading-6 text-muted-foreground">
-              {message}
-            </p>
+            <h1 className="font-serif text-xl font-semibold">{title}</h1>
+            <p className="text-sm leading-6 text-muted-foreground">{message}</p>
           </div>
 
           <Button
@@ -959,10 +890,7 @@ function DetailMessage({
             disabled={loading}
           >
             {loading && (
-              <RefreshCw
-                aria-hidden="true"
-                className="size-4 animate-spin"
-              />
+              <RefreshCw aria-hidden="true" className="size-4 animate-spin" />
             )}
             {retryLabel}
           </Button>

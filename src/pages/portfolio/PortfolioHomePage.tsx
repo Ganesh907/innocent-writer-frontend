@@ -331,7 +331,7 @@ export function PortfolioHomePage() {
         id="home"
         className="relative flex min-h-[100svh] items-center overflow-hidden bg-cover bg-center pt-20 sm:bg-top dark:bg-slate-950"
         style={{
-          backgroundImage: "url('/images/PortfolioBg.png')",
+          backgroundImage: "url('/images/BgTwo.png')",
         }}
       >
         {/* Dark-mode-only overlays; the original image remains unchanged in light mode */}

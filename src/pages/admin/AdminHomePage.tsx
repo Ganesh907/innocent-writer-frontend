@@ -37,11 +37,7 @@ import type {
   UpdatePoemRequest,
 } from "@/contracts/poem";
 
-import {
-  getPoemAnalytics,
-} from "@/features/analytics/analyticsApi";
-
-
+import { getPoemAnalytics } from "@/features/analytics/analyticsApi";
 
 import { poemQueryKeys } from "@/features/poems/poemQueryKeys";
 import { getApiErrorMessage } from "@/lib/api/apiError";
@@ -72,17 +68,17 @@ export function AdminHomePage() {
   const [editingPoem, setEditingPoem] = useState<Poem | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
 
- const poemsQuery = useQuery({
-  queryKey: adminQueryKeys.poemList({
-    page: 1,
-    limit: PAGE_SIZE,
-  }),
-  queryFn: () =>
-    getAdminPoems({
+  const poemsQuery = useQuery({
+    queryKey: adminQueryKeys.poemList({
       page: 1,
       limit: PAGE_SIZE,
     }),
-});
+    queryFn: () =>
+      getAdminPoems({
+        page: 1,
+        limit: PAGE_SIZE,
+      }),
+  });
 
   const poems = poemsQuery.data?.data ?? [];
 
@@ -115,13 +111,8 @@ export function AdminHomePage() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({
-      id,
-      payload,
-    }: {
-      id: string;
-      payload: UpdatePoemRequest;
-    }) => updatePoem(id, payload),
+    mutationFn: ({ id, payload }: { id: string; payload: UpdatePoemRequest }) =>
+      updatePoem(id, payload),
     onSuccess: async () => {
       resetForm();
       await refreshData();
@@ -133,38 +124,34 @@ export function AdminHomePage() {
     onSuccess: refreshData,
   });
 
-  const isSaving =
-    createMutation.isPending || updateMutation.isPending;
+  const isSaving = createMutation.isPending || updateMutation.isPending;
 
-async function refreshData() {
-  await Promise.all([
-    queryClient.invalidateQueries({
-      queryKey: adminQueryKeys.poems(),
-    }),
-    queryClient.invalidateQueries({
-      queryKey: adminQueryKeys.analytics(),
-    }),
-    queryClient.invalidateQueries({
-      queryKey: poemQueryKeys.lists(),
-    }),
-    queryClient.invalidateQueries({
-      queryKey: poemQueryKeys.details(),
-    }),
-    queryClient.invalidateQueries({
-      queryKey: poemQueryKeys.all,
-    }),
-  ]);
-}
+  async function refreshData() {
+    await Promise.all([
+      queryClient.invalidateQueries({
+        queryKey: adminQueryKeys.poems(),
+      }),
+      queryClient.invalidateQueries({
+        queryKey: adminQueryKeys.analytics(),
+      }),
+      queryClient.invalidateQueries({
+        queryKey: poemQueryKeys.lists(),
+      }),
+      queryClient.invalidateQueries({
+        queryKey: poemQueryKeys.details(),
+      }),
+      queryClient.invalidateQueries({
+        queryKey: poemQueryKeys.all,
+      }),
+    ]);
+  }
   function resetForm() {
     setForm(EMPTY_FORM);
     setEditingPoem(null);
     setFormError(null);
   }
 
-  function updateField<K extends keyof PoemForm>(
-    key: K,
-    value: PoemForm[K],
-  ) {
+  function updateField<K extends keyof PoemForm>(key: K, value: PoemForm[K]) {
     setForm((current) => ({
       ...current,
       [key]: value,
@@ -194,10 +181,7 @@ async function refreshData() {
       return;
     }
 
-    if (
-      !editingPoem &&
-      (!form.coverImageFile || !form.poemImageFile)
-    ) {
+    if (!editingPoem && (!form.coverImageFile || !form.poemImageFile)) {
       setFormError(
         "Select both a cover image and a poem image to create a poem.",
       );
@@ -213,8 +197,7 @@ async function refreshData() {
         ? await imageFileToDataUri(form.poemImageFile)
         : undefined;
 
-      const instagramPostUrl =
-        form.instagramPostUrl.trim() || null;
+      const instagramPostUrl = form.instagramPostUrl.trim() || null;
 
       if (editingPoem) {
         const payload: UpdatePoemRequest = {
@@ -259,10 +242,9 @@ async function refreshData() {
     }
   }
 
-  const mutationError =
-    deleteMutation.isError
-      ? getApiErrorMessage(deleteMutation.error)
-      : null;
+  const mutationError = deleteMutation.isError
+    ? getApiErrorMessage(deleteMutation.error)
+    : null;
 
   return (
     <main className="space-y-8 py-8 sm:py-12">
@@ -279,21 +261,9 @@ async function refreshData() {
       </header>
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Metric
-          icon={<BookOpen />}
-          label="Poems loaded"
-          value={poems.length}
-        />
-        <Metric
-          icon={<Eye />}
-          label="Views"
-          value={totals.views}
-        />
-        <Metric
-          icon={<Heart />}
-          label="Likes"
-          value={totals.likes}
-        />
+        <Metric icon={<BookOpen />} label="Poems loaded" value={poems.length} />
+        <Metric icon={<Eye />} label="Views" value={totals.views} />
+        <Metric icon={<Heart />} label="Likes" value={totals.likes} />
         <Metric
           icon={<MessageCircle />}
           label="Comments"
@@ -319,9 +289,7 @@ async function refreshData() {
                 <Input
                   id="admin-poem-title"
                   value={form.title}
-                  onChange={(event) =>
-                    updateField("title", event.target.value)
-                  }
+                  onChange={(event) => updateField("title", event.target.value)}
                   maxLength={200}
                   placeholder="Enter poem title"
                   required
@@ -349,9 +317,7 @@ async function refreshData() {
                   label="Cover image"
                   file={form.coverImageFile}
                   existingUrl={editingPoem?.coverImageUrl ?? null}
-                  onChange={(file) =>
-                    updateField("coverImageFile", file)
-                  }
+                  onChange={(file) => updateField("coverImageFile", file)}
                 />
 
                 <ImageInput
@@ -359,9 +325,7 @@ async function refreshData() {
                   label="Poem image"
                   file={form.poemImageFile}
                   existingUrl={editingPoem?.poemImageUrl ?? null}
-                  onChange={(file) =>
-                    updateField("poemImageFile", file)
-                  }
+                  onChange={(file) => updateField("poemImageFile", file)}
                 />
               </div>
 
@@ -441,15 +405,12 @@ async function refreshData() {
         </div>
 
         {poemsQuery.isPending ? (
-          <p className="text-sm text-muted-foreground">
-            Loading poems...
-          </p>
+          <p className="text-sm text-muted-foreground">Loading poems...</p>
         ) : poemsQuery.isError ? (
           <Card>
             <CardContent className="space-y-3 p-5">
               <p className="text-sm text-destructive">
-                Could not load poems:{" "}
-                {getApiErrorMessage(poemsQuery.error)}
+                Could not load poems: {getApiErrorMessage(poemsQuery.error)}
               </p>
               <Button
                 variant="outline"
@@ -487,14 +448,14 @@ async function refreshData() {
                         By {poem.authorName ?? "Unknown author"}
                       </p>
                       <p className="mt-1 text-xs font-medium">
-  {poem.published ? (
-    <span className="text-primary">Published</span>
-  ) : (
-    <span className="text-muted-foreground">
-      Unpublished
-    </span>
-  )}
-</p>
+                        {poem.published ? (
+                          <span className="text-primary">Published</span>
+                        ) : (
+                          <span className="text-muted-foreground">
+                            Unpublished
+                          </span>
+                        )}
+                      </p>
                       <p className="mt-2 line-clamp-3 whitespace-pre-wrap text-sm text-muted-foreground">
                         {poem.content}
                       </p>
@@ -551,8 +512,8 @@ async function refreshData() {
         )}
 
         <p className="text-xs text-muted-foreground">
-          Analytics totals above are calculated from the poems currently
-          loaded by this dashboard. The list request is limited to 100 poems.
+          Analytics totals above are calculated from the poems currently loaded
+          by this dashboard. The list request is limited to 100 poems.
         </p>
       </section>
     </main>
@@ -614,9 +575,7 @@ function ImageInput({
         id={id}
         type="file"
         accept={IMAGE_ACCEPT}
-        onChange={(event) =>
-          onChange(event.target.files?.[0] ?? null)
-        }
+        onChange={(event) => onChange(event.target.files?.[0] ?? null)}
       />
 
       <p className="text-xs text-muted-foreground">

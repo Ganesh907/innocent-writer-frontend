@@ -1,7 +1,4 @@
-import type {
-  ApiSuccessResponse,
-  PaginationMeta,
-} from "@/contracts/api";
+import type { ApiSuccessResponse, PaginationMeta } from "@/contracts/api";
 import type { UserRole } from "@/contracts/auth";
 import type { Poem } from "@/contracts/poem";
 import { axiosClient } from "@/lib/api/axiosClient";
@@ -31,8 +28,7 @@ export interface AdminUsersParams {
   limit?: number;
 }
 
-export interface AdminUsersResponse
-  extends ApiSuccessResponse<AdminUser[]> {
+export interface AdminUsersResponse extends ApiSuccessResponse<AdminUser[]> {
   pagination: PaginationMeta & {
     total: number;
     totalPages: number;
@@ -46,8 +42,7 @@ export interface AdminPoemsParams {
   published?: boolean;
 }
 
-export interface AdminPoemsResponse
-  extends ApiSuccessResponse<Poem[]> {
+export interface AdminPoemsResponse extends ApiSuccessResponse<Poem[]> {
   pagination: PaginationMeta & {
     total: number;
     totalPages: number;
@@ -75,13 +70,10 @@ export const getAdminUsers = async (
   params: AdminUsersParams = {},
   signal?: AbortSignal,
 ): Promise<AdminUsersResponse> => {
-  const response = await axiosClient.get<AdminUsersResponse>(
-    "/admin/users",
-    {
-      params,
-      signal,
-    },
-  );
+  const response = await axiosClient.get<AdminUsersResponse>("/admin/users", {
+    params,
+    signal,
+  });
 
   return response.data;
 };
@@ -90,9 +82,7 @@ export const updateAdminUserRole = async (
   id: string,
   role: UserRole,
 ): Promise<AdminUser> => {
-  const response = await axiosClient.patch<
-    ApiSuccessResponse<AdminUser>
-  >(
+  const response = await axiosClient.patch<ApiSuccessResponse<AdminUser>>(
     `/admin/users/${encodeURIComponent(id)}/role`,
     { role },
   );
@@ -104,13 +94,10 @@ export const getAdminPoems = async (
   params: AdminPoemsParams = {},
   signal?: AbortSignal,
 ): Promise<AdminPoemsResponse> => {
-  const response = await axiosClient.get<AdminPoemsResponse>(
-    "/admin/poems",
-    {
-      params,
-      signal,
-    },
-  );
+  const response = await axiosClient.get<AdminPoemsResponse>("/admin/poems", {
+    params,
+    signal,
+  });
 
   return response.data;
 };
@@ -121,10 +108,7 @@ export const setAdminPoemPublication = async (
 ): Promise<AdminPoemPublication> => {
   const response = await axiosClient.patch<
     ApiSuccessResponse<AdminPoemPublication>
-  >(
-    `/admin/poems/${encodeURIComponent(id)}/publication`,
-    { published },
-  );
+  >(`/admin/poems/${encodeURIComponent(id)}/publication`, { published });
 
   return response.data.data;
 };

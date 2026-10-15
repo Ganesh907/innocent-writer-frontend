@@ -6,9 +6,7 @@ export function ThemeIntegrationTest() {
 
   return (
     <section className="space-y-4 rounded-xl border border-border bg-background p-6 text-foreground">
-      <h2 className="text-lg font-semibold">
-        Theme Integration Test
-      </h2>
+      <h2 className="text-lg font-semibold">Theme Integration Test</h2>
 
       {/* Tailwind CSS test */}
       <div className="rounded-lg border border-border bg-card p-4 text-card-foreground">
@@ -26,9 +24,7 @@ export function ThemeIntegrationTest() {
         </Button>
       </div>
 
-      <p className="text-sm text-muted-foreground">
-        Current theme: {theme}
-      </p>
+      <p className="text-sm text-muted-foreground">Current theme: {theme}</p>
     </section>
   );
 }

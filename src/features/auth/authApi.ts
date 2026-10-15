@@ -18,17 +18,14 @@ export const authApi = {
   },
 
   async googleLogin(idToken: string): Promise<AuthPayload> {
-    const response = await axiosClient.post<AuthApiResponse>(
-      "/auth/google",
-      { idToken },
-    );
+    const response = await axiosClient.post<AuthApiResponse>("/auth/google", {
+      idToken,
+    });
 
     return response.data.data;
   },
 
-  async register(
-    payload: RegisterRequest,
-  ): Promise<AuthPayload> {
+  async register(payload: RegisterRequest): Promise<AuthPayload> {
     const response = await axiosClient.post<AuthApiResponse>(
       "/auth/register",
       payload,
@@ -40,11 +37,9 @@ export const authApi = {
   async getCurrentUser(
     signal?: AbortSignal,
   ): Promise<CurrentUserApiResponse["data"]> {
-    const response =
-      await axiosClient.get<CurrentUserApiResponse>(
-        "/auth/me",
-        { signal },
-      );
+    const response = await axiosClient.get<CurrentUserApiResponse>("/auth/me", {
+      signal,
+    });
 
     return response.data.data;
   },

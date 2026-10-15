@@ -1,3 +1,9 @@
+/* ==========================================
+   Innocent Writer — Global Styles
+   Book-style UI redesign
+   Existing Tailwind, shadcn and Portfolio
+   setup preserved
+   ========================================== */
 
 @import "./styles/tokens.css";
 @import "tailwindcss";
@@ -7,9 +13,18 @@
 
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
+/* ------------------------------------------
+   Global foundation
+   ------------------------------------------ */
+
 :root {
-  font-family: "Geist Variable", system-ui, -apple-system,
-    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:
+    "Geist Variable",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -18,7 +33,6 @@
   color: var(--color-text);
   background: var(--color-bg);
 
-  /* shadcn semantic tokens mapped to our shared theme tokens */
   --background: var(--color-bg);
   --foreground: var(--color-text);
 
@@ -63,7 +77,9 @@
   --sidebar-ring: var(--color-focus);
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -73,6 +89,10 @@ body,
   min-width: 320px;
   min-height: 100%;
   margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -91,6 +111,21 @@ select {
   font: inherit;
 }
 
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
 ::selection {
   color: var(--color-text-inverse);
   background: var(--color-primary);
@@ -98,7 +133,7 @@ select {
 
 :focus-visible {
   outline: 2px solid var(--color-focus);
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
 
 @theme inline {
@@ -166,11 +201,9 @@ select {
   }
 }
 
-
-
 /* ==========================================
    PORTFOLIO THEME
-   Day 26 — Step 3
+   Existing portfolio styling preserved
    ========================================== */
 
 #portfolio-root.portfolio-page {
@@ -250,14 +283,12 @@ select {
 }
 
 #portfolio-root .portfolio-intro-card {
-  animation: portfolio-card-enter 800ms
-    cubic-bezier(.2, .75, .25, 1) both;
+  animation: portfolio-card-enter 800ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
 }
 
 #portfolio-root .portfolio-fade-up {
   opacity: 0;
-  animation: portfolio-fade-up 700ms
-    cubic-bezier(.2, .75, .25, 1) both;
+  animation: portfolio-fade-up 700ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
   animation-delay: var(--intro-delay, 0ms);
 }
 
@@ -267,7 +298,7 @@ select {
 
 #portfolio-root .portfolio-name-text {
   transition:
-    transform 300ms cubic-bezier(.2, .8, .2, 1),
+    transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1),
     color 250ms ease;
 }
 
@@ -298,7 +329,7 @@ select {
 
 #portfolio-root .portfolio-profile-enter {
   animation: portfolio-profile-enter 900ms 200ms
-    cubic-bezier(.2, .75, .25, 1) both;
+    cubic-bezier(0.2, 0.75, 0.25, 1) both;
 }
 
 #portfolio-root .portfolio-reveal {
@@ -307,9 +338,8 @@ select {
 }
 
 #portfolio-root .portfolio-reveal.is-visible {
-  animation: portfolio-reveal-enter 650ms
-    var(--reveal-delay, 0ms)
-    cubic-bezier(.2, .75, .25, 1) both;
+  animation: portfolio-reveal-enter 650ms var(--reveal-delay, 0ms)
+    cubic-bezier(0.2, 0.75, 0.25, 1) both;
 }
 
 #portfolio-root a:focus-visible,
@@ -321,7 +351,7 @@ select {
 @keyframes portfolio-card-enter {
   from {
     opacity: 0;
-    transform: translateY(24px) scale(.985);
+    transform: translateY(24px) scale(0.985);
     border-color: transparent;
   }
 
@@ -447,5 +477,1139 @@ select {
   #portfolio-root .portfolio-reveal {
     opacity: 1;
     transform: none;
+  }
+}
+
+/* ==========================================
+   POETRY PLATFORM — shared layout foundation
+
+   All selectors are scoped to data-product="poetry".
+   Portfolio, Gateway and Admin do not inherit these
+   layout rules unless explicitly placed inside Poetry.
+   ========================================== */
+
+[data-product="poetry"] {
+  min-width: 0;
+  color: var(--color-text);
+  background: var(--color-bg);
+  font-family: var(--poetry-font-serif, Georgia, serif);
+  overflow-wrap: break-word;
+  isolation: isolate;
+
+  --poetry-space-1: 0.25rem;
+  --poetry-space-2: 0.5rem;
+  --poetry-space-3: 0.75rem;
+  --poetry-space-4: 1rem;
+  --poetry-space-5: 1.25rem;
+  --poetry-space-6: 1.5rem;
+  --poetry-content-width: 1180px;
+  --poetry-book-radius: 7px;
+}
+
+[data-product="poetry"] *,
+[data-product="poetry"] *::before,
+[data-product="poetry"] *::after {
+  box-sizing: border-box;
+}
+
+[data-product="poetry"]
+  :is(main, section, article, aside, nav, header, footer) {
+  min-width: 0;
+}
+
+[data-product="poetry"] img {
+  display: block;
+  max-width: 100%;
+}
+
+[data-product="poetry"] button,
+[data-product="poetry"] input,
+[data-product="poetry"] textarea,
+[data-product="poetry"] select {
+  font-family: var(--poetry-font-sans, system-ui, sans-serif);
+}
+
+[data-product="poetry"] a {
+  color: inherit;
+}
+
+[data-product="poetry"] :is(button, a, input, textarea, select):focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+/* ==========================================
+   Paper and desk surfaces
+   ========================================== */
+
+/*
+  Subtle paper grain made entirely with CSS gradients.
+  No new image asset or external library is required.
+*/
+
+[data-product="poetry"] .poetry-paper-texture {
+  background-color: var(--color-surface);
+  background-image:
+    radial-gradient(
+      ellipse at 12% 18%,
+      rgb(171 130 76 / 0.055) 0,
+      transparent 38%
+    ),
+    radial-gradient(
+      ellipse at 84% 76%,
+      rgb(171 130 76 / 0.045) 0,
+      transparent 42%
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 4px,
+      var(--poetry-paper-line, rgb(118 91 54 / 0.018)) 5px,
+      transparent 6px
+    );
+}
+
+[data-product="poetry"] .poetry-desk {
+  position: relative;
+  min-height: 100%;
+  padding: clamp(1rem, 3vw, 2.75rem);
+  background:
+    radial-gradient(
+      ellipse at 50% 0%,
+      rgb(255 255 255 / 0.32),
+      transparent 60%
+    ),
+    linear-gradient(
+      135deg,
+      var(--gateway-desk-from, #eee5d3),
+      var(--gateway-desk-to, #d5c4a1)
+    );
+  color: var(--gateway-text, #2b2118);
+  overflow: hidden;
+}
+
+[data-product="poetry"] .poetry-desk::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  content: "";
+  opacity: 0.38;
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 31px,
+      rgb(95 71 42 / 0.035) 32px,
+      transparent 33px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 31px,
+      rgb(95 71 42 / 0.025) 32px,
+      transparent 33px
+    );
+}
+
+[data-product="poetry"] .poetry-desk > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ==========================================
+   Reusable open-book shell
+   Used by Gateway and poem details
+   ========================================== */
+
+[data-product="poetry"] .book-shell {
+  position: relative;
+  isolation: isolate;
+  width: min(100%, var(--poetry-content-width));
+  min-width: 0;
+  margin-inline: auto;
+  padding: clamp(7px, 1vw, 13px);
+  border: 1px solid var(--poetry-binding-edge);
+  border-radius: var(--poetry-book-radius);
+  background: linear-gradient(
+    90deg,
+    var(--poetry-binding-edge) 0,
+    var(--poetry-binding) 5px,
+    var(--poetry-binding-highlight, #b9a17a) 9px,
+    var(--poetry-binding) 13px,
+    var(--poetry-binding-edge) 17px,
+    var(--poetry-binding) 22px,
+    var(--poetry-binding-edge) 27px
+  );
+  box-shadow:
+    0 2px 3px rgb(0 0 0 / 0.15),
+    0 14px 28px rgb(0 0 0 / 0.15),
+    0 28px 55px rgb(0 0 0 / 0.12);
+}
+
+/* Layered page edges along the bottom and right side */
+
+[data-product="poetry"] .book-shell::before {
+  position: absolute;
+  z-index: -1;
+  inset: 5px -5px -5px 5px;
+  border: 1px solid var(--poetry-binding-edge);
+  border-radius: inherit;
+  background: repeating-linear-gradient(
+    0deg,
+    var(--color-surface) 0,
+    var(--color-surface) 2px,
+    var(--poetry-torn-edge) 3px,
+    var(--color-surface) 4px
+  );
+  box-shadow: 3px 5px 9px rgb(0 0 0 / 0.12);
+  content: "";
+  pointer-events: none;
+}
+
+/* Warm inner rim */
+
+[data-product="poetry"] .book-shell::after {
+  position: absolute;
+  z-index: -1;
+  inset: 3px;
+  border: 1px solid var(--poetry-binding-highlight, #b9a17a);
+  border-radius: 3px;
+  content: "";
+  pointer-events: none;
+}
+
+/* Two-page spread */
+
+[data-product="poetry"] .book-spread {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 6fr) minmax(0, 4fr);
+  align-items: stretch;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--color-surface);
+}
+
+/* Left and right pages */
+
+[data-product="poetry"] .book-page {
+  position: relative;
+  z-index: 0;
+  min-width: 0;
+  padding: clamp(1.1rem, 2.5vw, 2.5rem);
+  background-color: var(--color-surface);
+  background-image:
+    radial-gradient(
+      ellipse at 20% 15%,
+      rgb(255 255 255 / 0.45),
+      transparent 48%
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 5px,
+      var(--poetry-paper-line, rgb(118 91 54 / 0.018)) 6px,
+      transparent 7px
+    );
+}
+
+[data-product="poetry"] .book-page--left {
+  border-right: 1px solid var(--poetry-torn-edge);
+  box-shadow:
+    inset -10px 0 18px -17px rgb(49 32 14 / 0.65),
+    inset 5px 0 8px -8px rgb(49 32 14 / 0.2);
+}
+
+[data-product="poetry"] .book-page--right {
+  box-shadow:
+    inset 10px 0 18px -17px rgb(49 32 14 / 0.65),
+    inset -5px 0 8px -8px rgb(49 32 14 / 0.2);
+}
+
+/* Central book spine / gutter */
+
+[data-product="poetry"] .book-spine {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: clamp(12px, 2vw, 27px);
+  transform: translateX(-50%);
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--poetry-gutter) 24%,
+    var(--poetry-gutter) 46%,
+    var(--poetry-gutter-highlight, rgb(255 250 235 / 0.58)) 52%,
+    var(--poetry-gutter) 66%,
+    transparent
+  );
+}
+
+/* Compact metadata */
+
+[data-product="poetry"] .book-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem 0.8rem;
+  color: var(--color-text-muted);
+  font-family: var(--poetry-font-sans, system-ui, sans-serif);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+[data-product="poetry"] .book-meta-separator {
+  display: inline-block;
+  margin-inline: 0.35rem;
+  color: var(--poetry-ornament);
+}
+
+/* Page titles */
+
+[data-product="poetry"] .book-title {
+  margin: 0;
+  color: var(--color-text);
+  font-family: var(--poetry-font-serif, Georgia, serif);
+  font-size: clamp(1.8rem, 3.2vw, 3rem);
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+[data-product="poetry"] .book-subtitle {
+  margin: 0.55rem 0 0;
+  color: var(--color-text-muted);
+  font-family: var(--poetry-font-serif, Georgia, serif);
+  font-size: clamp(0.9rem, 1.2vw, 1.05rem);
+  line-height: 1.5;
+}
+
+[data-product="poetry"] .book-section-heading {
+  margin: 0 0 0.8rem;
+  color: var(--color-text);
+  font-family: var(--poetry-font-serif, Georgia, serif);
+  font-size: clamp(1.15rem, 1.7vw, 1.6rem);
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+/* Fine decorative divider */
+
+[data-product="poetry"] .book-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  width: 100%;
+  margin: 1.1rem 0;
+  color: var(--poetry-ornament);
+}
+
+[data-product="poetry"] .book-divider::before,
+[data-product="poetry"] .book-divider::after {
+  flex: 1;
+  height: 1px;
+  content: "";
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--poetry-ornament),
+    var(--poetry-torn-edge)
+  );
+}
+
+[data-product="poetry"] .book-divider::after {
+  transform: scaleX(-1);
+}
+
+[data-product="poetry"] .book-divider-mark {
+  flex: 0 0 auto;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* ------------------------------------------
+   Book-style controls
+   ------------------------------------------ */
+
+[data-product="poetry"] .book-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 40px;
+  padding: 0.55rem 0.95rem;
+  border: 1px solid var(--poetry-binding);
+  border-radius: 4px;
+  color: var(--color-text);
+  background: linear-gradient(
+    180deg,
+    var(--color-surface-elevated),
+    var(--poetry-torn)
+  );
+  box-shadow:
+    inset 0 1px rgb(255 255 255 / 0.3),
+    0 2px 3px rgb(49 32 14 / 0.1);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+[data-product="poetry"] .book-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px rgb(255 255 255 / 0.3),
+    0 4px 8px rgb(49 32 14 / 0.16);
+}
+
+[data-product="poetry"] .book-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+[data-product="poetry"] .book-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+[data-product="poetry"] .book-button--primary {
+  border-color: var(--color-primary-hover);
+  color: var(--color-text-inverse);
+  background: var(--color-primary);
+}
+
+[data-product="poetry"] .book-button--primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+[data-product="poetry"] .book-button--quiet {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+[data-product="poetry"] .book-button--quiet:hover:not(:disabled) {
+  background: var(--color-surface-muted);
+  box-shadow: none;
+}
+
+/* Compact form controls */
+
+[data-product="poetry"] .book-input,
+[data-product="poetry"] .book-textarea {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 5px;
+  color: var(--color-text);
+  background: var(--color-surface-elevated);
+  font-family: var(--poetry-font-sans, system-ui, sans-serif);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+[data-product="poetry"] .book-textarea {
+  min-height: 76px;
+  resize: vertical;
+}
+
+[data-product="poetry"] .book-input::placeholder,
+[data-product="poetry"] .book-textarea::placeholder {
+  color: var(--color-text-muted);
+  opacity: 0.9;
+}
+
+/* ------------------------------------------
+   Poem text
+   ------------------------------------------ */
+
+[data-product="poetry"] .poem-reading {
+  color: var(--color-text);
+  font-family: var(--poetry-font-serif, Georgia, serif);
+  font-size: clamp(0.98rem, 1.2vw, 1.12rem);
+  line-height: 1.85;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+[data-product="poetry"] .poem-reading p {
+  margin: 0 0 1rem;
+}
+
+[data-product="poetry"] .poem-reading p:last-child {
+  margin-bottom: 0;
+}
+
+/* Optional artwork only; no cover-image requirement */
+
+[data-product="poetry"] .poem-artwork {
+  display: block;
+  width: 100%;
+  max-height: 340px;
+  object-fit: contain;
+  object-position: center;
+  border: 1px solid var(--color-border);
+  border-radius: 5px;
+  background: var(--color-surface-muted);
+}
+
+/* ------------------------------------------
+   Compact statistics row
+   ------------------------------------------ */
+
+[data-product="poetry"] .book-statistics {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1.15rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  font-family: var(--poetry-font-sans, system-ui, sans-serif);
+  font-size: 0.8rem;
+}
+
+[data-product="poetry"] .book-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+  color: var(--color-text-muted);
+}
+
+[data-product="poetry"] .book-stat strong {
+  color: var(--color-text);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------
+   Comments and reflection
+   ------------------------------------------ */
+
+[data-product="poetry"] .book-comments {
+  min-width: 0;
+}
+
+[data-product="poetry"] .book-comment-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-product="poetry"] .book-comment {
+  min-width: 0;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+[data-product="poetry"] .book-comment:last-child {
+  border-bottom: 0;
+}
+
+[data-product="poetry"] .book-comment-author {
+  margin: 0;
+  color: var(--color-text);
+  font-family: var(--poetry-font-sans, system-ui, sans-serif);
+  font-size: 0.82rem;
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+[data-product="poetry"] .book-comment-date {
+  margin-left: 0.4rem;
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  font-weight: 400;
+}
+
+[data-product="poetry"] .book-comment-body {
+  margin: 0.3rem 0 0;
+  color: var(--color-text);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+[data-product="poetry"] .book-comment-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.5rem;
+}
+
+/* ------------------------------------------
+   Back navigation
+   ------------------------------------------ */
+
+[data-product="poetry"] .book-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  width: fit-content;
+  max-width: 100%;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--gateway-border, var(--color-border));
+  border-radius: 3px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  font-family: var(--poetry-font-sans, system-ui, sans-serif);
+  font-size: 0.8rem;
+  font-weight: 550;
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+}
+
+[data-product="poetry"] .book-back-link:hover {
+  background: var(--color-surface-muted);
+}
+
+/* ==========================================
+   Gateway — symmetrical two-page book
+   ========================================== */
+
+[data-product="gateway"] .gateway-book {
+  position: relative;
+  isolation: isolate;
+  width: min(100%, 1220px);
+  margin-inline: auto;
+  padding: clamp(7px, 1.1vw, 14px);
+  border: 1px solid var(--gateway-cover-edge);
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    var(--gateway-cover-edge),
+    var(--gateway-cover) 3%,
+    var(--gateway-cover-highlight, #a28a63) 5%,
+    var(--gateway-cover) 7%,
+    var(--gateway-cover-edge) 9%,
+    var(--gateway-cover) 12%,
+    var(--gateway-cover-edge) 14%
+  );
+  box-shadow: var(--gateway-shadow);
+}
+
+[data-product="gateway"] .gateway-book::before {
+  position: absolute;
+  z-index: -1;
+  inset: 5px -5px -5px 5px;
+  border: 1px solid var(--gateway-cover-edge);
+  border-radius: inherit;
+  background: repeating-linear-gradient(
+    0deg,
+    var(--gateway-page),
+    var(--gateway-page) 2px,
+    var(--gateway-border) 3px,
+    var(--gateway-page) 4px
+  );
+  content: "";
+  pointer-events: none;
+}
+
+[data-product="gateway"] .gateway-spread {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 3px;
+  color: var(--gateway-text);
+  background: var(--gateway-page);
+}
+
+[data-product="gateway"] .gateway-page {
+  position: relative;
+  min-width: 0;
+  padding: clamp(1.1rem, 3vw, 2.5rem);
+  background-color: var(--gateway-page);
+  background-image:
+    radial-gradient(
+      ellipse at 15% 12%,
+      rgb(255 255 255 / 0.48),
+      transparent 45%
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 5px,
+      var(--gateway-page-line) 6px,
+      transparent 7px
+    );
+}
+
+[data-product="gateway"] .gateway-page--left {
+  border-right: 1px solid var(--gateway-border);
+  box-shadow: inset -12px 0 20px -18px var(--gateway-page-shade);
+}
+
+[data-product="gateway"] .gateway-page--right {
+  box-shadow: inset 12px 0 20px -18px var(--gateway-page-shade);
+}
+
+[data-product="gateway"] .gateway-spine {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: clamp(12px, 2vw, 25px);
+  transform: translateX(-50%);
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--gateway-page-shade) 30%,
+    var(--gateway-page-line) 50%,
+    var(--gateway-page-shade) 70%,
+    transparent
+  );
+}
+
+[data-product="gateway"] .gateway-heading {
+  margin: 0;
+  color: var(--gateway-text);
+  font-family: var(--poetry-font-serif, Georgia, serif);
+  font-size: clamp(1.65rem, 3vw, 2.7rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+[data-product="gateway"] .gateway-description {
+  max-width: 34ch;
+  margin: 0.7rem auto 0;
+  color: var(--gateway-text-muted);
+  font-family: var(--poetry-font-serif, Georgia, serif);
+  font-size: clamp(0.9rem, 1.25vw, 1.05rem);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+[data-product="gateway"] .gateway-artwork {
+  display: block;
+  width: 100%;
+  aspect-ratio: 5 / 3;
+  object-fit: cover;
+  object-position: center;
+  border: 1px solid var(--gateway-border);
+  box-shadow: 0 5px 12px rgb(49 32 14 / 0.15);
+}
+
+[data-product="gateway"] .gateway-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  max-width: 100%;
+  margin-top: 1.15rem;
+  padding: 0.65rem 1.15rem;
+  border: 1px solid var(--gateway-cover-edge);
+  border-radius: 4px;
+  color: var(--gateway-page);
+  background: linear-gradient(
+    180deg,
+    var(--gateway-cover),
+    var(--gateway-cover-edge)
+  );
+  box-shadow:
+    inset 0 1px rgb(255 255 255 / 0.22),
+    0 3px 5px rgb(49 32 14 / 0.18);
+  font-family: var(--poetry-font-serif, Georgia, serif);
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+  transition: transform 160ms ease;
+}
+
+[data-product="gateway"] .gateway-cta:hover {
+  transform: translateY(-2px);
+}
+
+[data-product="gateway"] .gateway-cta--portfolio {
+  color: var(--gateway-page);
+  border-color: var(--gateway-portfolio-accent);
+  background: var(--gateway-portfolio-accent);
+}
+
+/* ==========================================
+   Poetry homepage hero
+   The component supplies the existing image URL.
+   No image is hard-coded in this stylesheet.
+   ========================================== */
+
+[data-product="poetry"] .poetry-hero {
+  position: relative;
+  display: grid;
+  align-items: center;
+  min-height: clamp(320px, 56vh, 570px);
+  padding: clamp(1.5rem, 4vw, 3.5rem);
+  overflow: hidden;
+  color: #fff7e8;
+  background-color: #172c35;
+  background-position: center;
+  background-size: cover;
+  isolation: isolate;
+}
+
+[data-product="poetry"] .poetry-hero::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background:
+    linear-gradient(
+      90deg,
+      rgb(10 21 27 / 0.82) 0%,
+      rgb(10 21 27 / 0.58) 48%,
+      rgb(10 21 27 / 0.2) 100%
+    ),
+    linear-gradient(0deg, rgb(10 21 27 / 0.3), transparent 55%);
+  content: "";
+}
+
+[data-product="poetry"] .poetry-hero-content {
+  width: min(100%, 680px);
+  margin-inline: auto;
+  text-align: center;
+}
+
+[data-product="poetry"] .poetry-hero-title {
+  margin: 0;
+  color: #fff5d7;
+  font-family: var(--poetry-font-serif, Georgia, serif);
+  font-size: clamp(2.25rem, 5.8vw, 5rem);
+  font-weight: 500;
+  line-height: 1.03;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+  text-shadow: 0 3px 22px rgb(0 0 0 / 0.3);
+}
+
+[data-product="poetry"] .poetry-hero-description {
+  max-width: 48ch;
+  margin: 1rem auto 0;
+  color: #fff7e8;
+  font-size: clamp(0.95rem, 1.35vw, 1.1rem);
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+/* ==========================================
+   Dark Poetry overrides
+   Keep book surfaces readable and consistent
+   ========================================== */
+
+[data-theme="dark"] [data-product="poetry"] .poetry-desk {
+  background:
+    radial-gradient(
+      ellipse at 50% 0%,
+      rgb(255 255 255 / 0.035),
+      transparent 60%
+    ),
+    linear-gradient(135deg, var(--gateway-desk-from), var(--gateway-desk-to));
+}
+
+[data-theme="dark"] [data-product="poetry"] .book-shell {
+  border-color: var(--poetry-binding-edge);
+  background: linear-gradient(
+    90deg,
+    var(--poetry-binding-edge),
+    var(--poetry-binding) 8px,
+    var(--poetry-binding-highlight) 12px,
+    var(--poetry-binding) 17px,
+    var(--poetry-binding-edge) 24px
+  );
+}
+
+[data-theme="dark"] [data-product="poetry"] .book-shell::before {
+  border-color: var(--poetry-binding-edge);
+  background: repeating-linear-gradient(
+    0deg,
+    var(--color-surface),
+    var(--color-surface) 2px,
+    var(--poetry-torn-edge) 3px,
+    var(--color-surface) 4px
+  );
+}
+
+[data-theme="dark"] [data-product="poetry"] .book-page {
+  background-color: var(--color-surface);
+  background-image:
+    radial-gradient(
+      ellipse at 20% 15%,
+      rgb(255 255 255 / 0.025),
+      transparent 48%
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 5px,
+      rgb(255 255 255 / 0.012) 6px,
+      transparent 7px
+    );
+}
+
+[data-theme="dark"] [data-product="poetry"] .book-page--left {
+  border-right-color: var(--poetry-torn-edge);
+  box-shadow: inset -10px 0 18px -17px rgb(0 0 0 / 0.8);
+}
+
+[data-theme="dark"] [data-product="poetry"] .book-page--right {
+  box-shadow: inset 10px 0 18px -17px rgb(0 0 0 / 0.8);
+}
+
+[data-theme="dark"] [data-product="poetry"] .book-button {
+  color: var(--color-text);
+  background: linear-gradient(
+    180deg,
+    var(--color-surface-elevated),
+    var(--color-surface-muted)
+  );
+  border-color: var(--color-border-strong);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 0.22);
+}
+
+[data-theme="dark"] [data-product="poetry"] .book-button--primary {
+  color: #20151a;
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+}
+
+[data-theme="dark"]
+  [data-product="poetry"]
+  .book-button--primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+[data-theme="dark"] [data-product="poetry"] .book-input,
+[data-theme="dark"] [data-product="poetry"] .book-textarea {
+  border-color: var(--color-border-strong);
+  background: var(--color-surface-elevated);
+  color: var(--color-text);
+}
+
+[data-theme="dark"] [data-product="poetry"] .poem-artwork {
+  border-color: var(--color-border);
+  background: var(--color-surface-muted);
+}
+
+[data-theme="dark"] [data-product="gateway"] .gateway-book {
+  border-color: var(--gateway-cover-edge);
+  background: linear-gradient(
+    90deg,
+    var(--gateway-cover-edge),
+    var(--gateway-cover) 5%,
+    var(--gateway-cover-highlight) 8%,
+    var(--gateway-cover) 12%,
+    var(--gateway-cover-edge) 15%
+  );
+}
+
+[data-theme="dark"] [data-product="gateway"] .gateway-page {
+  background-color: var(--gateway-page);
+  background-image:
+    radial-gradient(
+      ellipse at 15% 12%,
+      rgb(255 255 255 / 0.035),
+      transparent 45%
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 5px,
+      var(--gateway-page-line) 6px,
+      transparent 7px
+    );
+}
+
+[data-theme="dark"] [data-product="gateway"] .gateway-cta {
+  color: var(--gateway-text);
+}
+
+/* ==========================================
+   Responsive layouts
+   ========================================== */
+
+/* Medium screens and tablets */
+
+@media (max-width: 900px) {
+  [data-product="poetry"] .poetry-desk {
+    padding: 1.1rem;
+  }
+
+  [data-product="poetry"] .book-shell {
+    padding: 7px;
+  }
+
+  [data-product="poetry"] .book-page {
+    padding: 1.25rem;
+  }
+
+  [data-product="gateway"] .gateway-page {
+    padding: 1.25rem;
+  }
+
+  [data-product="poetry"] .poetry-hero {
+    min-height: 390px;
+  }
+}
+
+/* Mobile: preserve book styling, remove two-column overflow */
+
+@media (max-width: 640px) {
+  [data-product="poetry"] {
+    --container-padding: 1rem;
+  }
+
+  [data-product="poetry"] .poetry-desk {
+    padding: 0.8rem;
+  }
+
+  [data-product="poetry"] .book-shell {
+    padding: 5px;
+    border-radius: 5px;
+  }
+
+  [data-product="poetry"] .book-spread {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  [data-product="poetry"] .book-spine {
+    display: none;
+  }
+
+  [data-product="poetry"] .book-page {
+    padding: 1.1rem;
+  }
+
+  [data-product="poetry"] .book-page--left {
+    border-right: 0;
+    border-bottom: 1px solid var(--poetry-torn-edge);
+    box-shadow: inset 0 -8px 16px -16px rgb(49 32 14 / 0.65);
+  }
+
+  [data-product="poetry"] .book-page--right {
+    box-shadow: inset 0 8px 16px -16px rgb(49 32 14 / 0.65);
+  }
+
+  [data-product="poetry"] .book-title {
+    font-size: clamp(1.75rem, 8vw, 2.5rem);
+  }
+
+  [data-product="poetry"] .book-comment-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  [data-product="poetry"] .book-comment-form .book-button {
+    width: 100%;
+  }
+
+  [data-product="poetry"] .book-statistics {
+    gap: 0.65rem 0.9rem;
+  }
+
+  [data-product="poetry"] .poetry-hero {
+    min-height: 350px;
+    padding: 1.5rem 1rem;
+    background-position: center;
+  }
+
+  [data-product="poetry"] .poetry-hero::before {
+    background: linear-gradient(
+      180deg,
+      rgb(10 21 27 / 0.6),
+      rgb(10 21 27 / 0.82)
+    );
+  }
+
+  [data-product="gateway"] .gateway-book {
+    padding: 5px;
+  }
+
+  [data-product="gateway"] .gateway-spread {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  [data-product="gateway"] .gateway-spine {
+    display: none;
+  }
+
+  [data-product="gateway"] .gateway-page {
+    padding: 1.25rem 1rem;
+  }
+
+  [data-product="gateway"] .gateway-page--left {
+    border-right: 0;
+    border-bottom: 1px solid var(--gateway-border);
+  }
+
+  [data-product="gateway"] .gateway-heading {
+    font-size: clamp(1.7rem, 8vw, 2.4rem);
+  }
+
+  [data-product="gateway"] .gateway-description {
+    font-size: 0.95rem;
+  }
+
+  [data-product="gateway"] .gateway-cta {
+    width: 100%;
+  }
+}
+
+/* Small phones */
+
+@media (max-width: 380px) {
+  [data-product="poetry"] .poetry-desk {
+    padding: 0.55rem;
+  }
+
+  [data-product="poetry"] .book-page {
+    padding: 0.9rem;
+  }
+
+  [data-product="poetry"] .book-statistics {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  [data-product="gateway"] .gateway-page {
+    padding: 1rem 0.8rem;
+  }
+}
+
+/* Reduced motion and accessibility */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  [data-product="poetry"] *,
+  [data-product="poetry"] *::before,
+  [data-product="poetry"] *::after,
+  [data-product="gateway"] *,
+  [data-product="gateway"] *::before,
+  [data-product="gateway"] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }

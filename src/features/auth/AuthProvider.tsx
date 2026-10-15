@@ -1,14 +1,5 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  type ReactNode,
-} from "react";
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useCallback, useEffect, useMemo, type ReactNode } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import type {
   AuthUser,
@@ -18,10 +9,7 @@ import type {
 } from "@/contracts/auth";
 
 import { authApi } from "./authApi";
-import {
-  AuthContext,
-  type AuthContextValue,
-} from "./authContext";
+import { AuthContext, type AuthContextValue } from "./authContext";
 import {
   AUTH_SESSION_EXPIRED_EVENT,
   clearAuthToken,
@@ -34,9 +22,7 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-export function AuthProvider({
-  children,
-}: AuthProviderProps) {
+export function AuthProvider({ children }: AuthProviderProps) {
   const queryClient = useQueryClient();
 
   const currentUserQuery = useQuery<AuthUser | null>({
@@ -51,12 +37,13 @@ export function AuthProvider({
     staleTime: 30_000,
     retry: (failureCount, error) => {
       // Don't retry client-side errors such as 401 or 403.
-      const status = (
-        error as {
-          status?: number;
-          response?: { status?: number };
-        }
-      )?.status ??
+      const status =
+        (
+          error as {
+            status?: number;
+            response?: { status?: number };
+          }
+        )?.status ??
         (
           error as {
             response?: { status?: number };
@@ -72,8 +59,7 @@ export function AuthProvider({
   });
 
   const loginMutation = useMutation({
-    mutationFn: (payload: LoginRequest) =>
-      authApi.login(payload),
+    mutationFn: (payload: LoginRequest) => authApi.login(payload),
 
     onSuccess: async ({ token, user }) => {
       setAuthToken(token);
@@ -82,16 +68,12 @@ export function AuthProvider({
         queryKey: authQueryKeys.me,
       });
 
-      queryClient.setQueryData<AuthUser | null>(
-        authQueryKeys.me,
-        user,
-      );
+      queryClient.setQueryData<AuthUser | null>(authQueryKeys.me, user);
     },
   });
 
   const googleLoginMutation = useMutation({
-    mutationFn: (idToken: string) =>
-      authApi.googleLogin(idToken),
+    mutationFn: (idToken: string) => authApi.googleLogin(idToken),
 
     onSuccess: async ({ token, user }) => {
       setAuthToken(token);
@@ -100,16 +82,12 @@ export function AuthProvider({
         queryKey: authQueryKeys.me,
       });
 
-      queryClient.setQueryData<AuthUser | null>(
-        authQueryKeys.me,
-        user,
-      );
+      queryClient.setQueryData<AuthUser | null>(authQueryKeys.me, user);
     },
   });
 
   const registerMutation = useMutation({
-    mutationFn: (payload: RegisterRequest) =>
-      authApi.register(payload),
+    mutationFn: (payload: RegisterRequest) => authApi.register(payload),
 
     onSuccess: async ({ token, user }) => {
       setAuthToken(token);
@@ -118,20 +96,14 @@ export function AuthProvider({
         queryKey: authQueryKeys.me,
       });
 
-      queryClient.setQueryData<AuthUser | null>(
-        authQueryKeys.me,
-        user,
-      );
+      queryClient.setQueryData<AuthUser | null>(authQueryKeys.me, user);
     },
   });
 
   const logout = useCallback(() => {
     clearAuthToken();
 
-    queryClient.setQueryData<AuthUser | null>(
-      authQueryKeys.me,
-      null,
-    );
+    queryClient.setQueryData<AuthUser | null>(authQueryKeys.me, null);
 
     queryClient.removeQueries({
       queryKey: authQueryKeys.all,
@@ -143,10 +115,7 @@ export function AuthProvider({
     const handleSessionExpired = () => {
       clearAuthToken();
 
-      queryClient.setQueryData<AuthUser | null>(
-        authQueryKeys.me,
-        null,
-      );
+      queryClient.setQueryData<AuthUser | null>(authQueryKeys.me, null);
 
       queryClient.removeQueries({
         queryKey: authQueryKeys.all,
@@ -154,10 +123,7 @@ export function AuthProvider({
       });
     };
 
-    window.addEventListener(
-      AUTH_SESSION_EXPIRED_EVENT,
-      handleSessionExpired,
-    );
+    window.addEventListener(AUTH_SESSION_EXPIRED_EVENT, handleSessionExpired);
 
     return () => {
       window.removeEventListener(
@@ -169,14 +135,11 @@ export function AuthProvider({
 
   const user = currentUserQuery.data ?? null;
 
-  const isInitializing =
-    currentUserQuery.isPending &&
-    Boolean(getAuthToken());
+  const isInitializing = currentUserQuery.isPending && Boolean(getAuthToken());
 
   const login = useCallback(
     async (payload: LoginRequest): Promise<AuthUser> => {
-      const result =
-        await loginMutation.mutateAsync(payload);
+      const result = await loginMutation.mutateAsync(payload);
 
       return result.user;
     },
@@ -185,8 +148,7 @@ export function AuthProvider({
 
   const googleLogin = useCallback(
     async (idToken: string): Promise<AuthUser> => {
-      const result =
-        await googleLoginMutation.mutateAsync(idToken);
+      const result = await googleLoginMutation.mutateAsync(idToken);
 
       return result.user;
     },
@@ -194,21 +156,15 @@ export function AuthProvider({
   );
 
   const register = useCallback(
-    async (
-      payload: RegisterRequest,
-    ): Promise<AuthUser> => {
-      const result =
-        await registerMutation.mutateAsync(payload);
+    async (payload: RegisterRequest): Promise<AuthUser> => {
+      const result = await registerMutation.mutateAsync(payload);
 
       return result.user;
     },
     [registerMutation],
   );
 
-  const hasRole = useCallback(
-    (role: UserRole) => user?.role === role,
-    [user],
-  );
+  const hasRole = useCallback((role: UserRole) => user?.role === role, [user]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
@@ -221,20 +177,8 @@ export function AuthProvider({
       logout,
       hasRole,
     }),
-    [
-      user,
-      isInitializing,
-      login,
-      googleLogin,
-      register,
-      logout,
-      hasRole,
-    ],
+    [user, isInitializing, login, googleLogin, register, logout, hasRole],
   );
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -1,8 +1,5 @@
 import type { ReactNode } from "react";
-import {
-  Navigate,
-  useLocation,
-} from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 
 import type { UserRole } from "@/contracts/auth";
 import { useAuth } from "@/features/auth/authContext";
@@ -16,11 +13,7 @@ export function ProtectedRoute({
   children,
   requiredRole,
 }: ProtectedRouteProps) {
-  const {
-    user,
-    isInitializing,
-    isAuthenticated,
-  } = useAuth();
+  const { user, isInitializing, isAuthenticated } = useAuth();
 
   const location = useLocation();
 
@@ -31,21 +24,13 @@ export function ProtectedRoute({
         aria-live="polite"
         aria-busy="true"
       >
-        <p className="text-sm text-muted-foreground">
-          Checking your session…
-        </p>
+        <p className="text-sm text-muted-foreground">Checking your session…</p>
       </main>
     );
   }
 
   if (!isAuthenticated) {
-    return (
-      <Navigate
-        to="/login"
-        replace
-        state={{ from: location }}
-      />
-    );
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
   if (requiredRole && user?.role !== requiredRole) {

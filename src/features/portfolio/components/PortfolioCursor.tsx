@@ -8,7 +8,8 @@ const TRAIL_1 = { stiffness: 200, damping: 30 };
 const TRAIL_2 = { stiffness: 140, damping: 28 };
 
 const SUBSTEP = 1 / 120; // fixed physics step in seconds, keeps springs stable
-const INTERACTIVE = 'a, button, input, textarea, select, label, [role="button"]';
+const INTERACTIVE =
+  'a, button, input, textarea, select, label, [role="button"]';
 
 const createSpring = (): Spring => ({ x: 0, y: 0, vx: 0, vy: 0 });
 
@@ -18,7 +19,7 @@ const stepSpring = (
   targetX: number,
   targetY: number,
   { stiffness, damping }: { stiffness: number; damping: number },
-  dt: number
+  dt: number,
 ) => {
   s.vx += (-stiffness * (s.x - targetX) - damping * s.vx) * dt;
   s.vy += (-stiffness * (s.y - targetY) - damping * s.vy) * dt;
@@ -103,7 +104,9 @@ export default function PortfolioCursor() {
 
     const setHidden = (value: boolean) => {
       hidden = value;
-      [dot, trail1, trail2].forEach((el) => el.classList.toggle("is-hidden", value));
+      [dot, trail1, trail2].forEach((el) =>
+        el.classList.toggle("is-hidden", value),
+      );
     };
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -126,7 +129,10 @@ export default function PortfolioCursor() {
 
     const handlePointerOver = (e: PointerEvent) => {
       if (!(e.target instanceof Element)) return;
-      dot.classList.toggle("is-hovering", Boolean(e.target.closest(INTERACTIVE)));
+      dot.classList.toggle(
+        "is-hovering",
+        Boolean(e.target.closest(INTERACTIVE)),
+      );
     };
 
     const handleMouseLeave = () => setHidden(true);
@@ -139,7 +145,10 @@ export default function PortfolioCursor() {
       window.cancelAnimationFrame(frame);
       window.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("pointerover", handlePointerOver);
-      document.documentElement.removeEventListener("mouseleave", handleMouseLeave);
+      document.documentElement.removeEventListener(
+        "mouseleave",
+        handleMouseLeave,
+      );
     };
   }, []);
 
@@ -157,9 +166,21 @@ export default function PortfolioCursor() {
         .pc-dot.is-hovering{width:50px;height:50px;background:#000}
         @media (hover:none),(pointer:coarse),(prefers-reduced-motion:reduce){.pc-cursor{display:none}}
       `}</style>
-      <div ref={trail2Ref} aria-hidden="true" className="pc-cursor pc-trail-2 is-hidden" />
-      <div ref={trail1Ref} aria-hidden="true" className="pc-cursor pc-trail-1 is-hidden" />
-      <div ref={dotRef} aria-hidden="true" className="pc-cursor pc-dot is-hidden" />
+      <div
+        ref={trail2Ref}
+        aria-hidden="true"
+        className="pc-cursor pc-trail-2 is-hidden"
+      />
+      <div
+        ref={trail1Ref}
+        aria-hidden="true"
+        className="pc-cursor pc-trail-1 is-hidden"
+      />
+      <div
+        ref={dotRef}
+        aria-hidden="true"
+        className="pc-cursor pc-dot is-hidden"
+      />
     </>
   );
 }

@@ -83,9 +83,7 @@ export function AdminDashboardPage() {
           disabled={analyticsQuery.isFetching}
         >
           <RefreshCw
-            className={
-              analyticsQuery.isFetching ? "animate-spin" : ""
-            }
+            className={analyticsQuery.isFetching ? "animate-spin" : ""}
           />
           Refresh
         </Button>
@@ -134,8 +132,8 @@ export function AdminDashboardPage() {
 
       <p className="text-xs text-muted-foreground">
         Views represent the lifetime view counts recorded by the platform.
-        Analytics reflect the backend response and are not calculated from
-        the currently displayed poem list.
+        Analytics reflect the backend response and are not calculated from the
+        currently displayed poem list.
       </p>
     </div>
   );

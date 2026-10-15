@@ -7,8 +7,7 @@ import {
   getAuthToken,
 } from "@/features/auth/tokenStorage";
 
-const configuredBaseUrl =
-  import.meta.env.VITE_API_BASE_URL?.trim();
+const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
 
 /** Shared HTTP client used by all feature API modules. */
 export const axiosClient = axios.create({
@@ -23,10 +22,7 @@ axiosClient.interceptors.request.use((config) => {
   const token = getAuthToken();
 
   if (token) {
-    config.headers.set(
-      "Authorization",
-      `Bearer ${token}`,
-    );
+    config.headers.set("Authorization", `Bearer ${token}`);
   } else {
     config.headers.delete("Authorization");
   }
@@ -49,9 +45,7 @@ axiosClient.interceptors.response.use(
       clearAuthToken();
 
       if (typeof window !== "undefined") {
-        window.dispatchEvent(
-          new Event(AUTH_SESSION_EXPIRED_EVENT),
-        );
+        window.dispatchEvent(new Event(AUTH_SESSION_EXPIRED_EVENT));
       }
     }
 

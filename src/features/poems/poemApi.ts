@@ -1,7 +1,4 @@
-import type {
-  ApiMessageResponse,
-  ApiSuccessResponse,
-} from "@/contracts/api";
+import type { ApiMessageResponse, ApiSuccessResponse } from "@/contracts/api";
 import type {
   CreatePoemRequest,
   GetPoemsParams,
@@ -13,23 +10,15 @@ import { axiosClient } from "@/lib/api/axiosClient";
 
 const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
 
-const ALLOWED_IMAGE_TYPES = new Set([
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-]);
+const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 /**
  * Converts a browser File to a Base64 data URI.
  * The backend remains responsible for authoritative validation.
  */
-export const imageFileToDataUri = (
-  file: File,
-): Promise<string> => {
+export const imageFileToDataUri = (file: File): Promise<string> => {
   if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
-    return Promise.reject(
-      new Error("Choose a JPEG, PNG, or WebP image."),
-    );
+    return Promise.reject(new Error("Choose a JPEG, PNG, or WebP image."));
   }
 
   if (file.size === 0 || file.size > MAX_IMAGE_SIZE_BYTES) {
@@ -50,9 +39,7 @@ export const imageFileToDataUri = (
           typeof reader.result !== "string" ||
           !reader.result.startsWith("data:")
         ) {
-          reject(
-            new Error("The selected image could not be read."),
-          );
+          reject(new Error("The selected image could not be read."));
           return;
         }
 
@@ -64,9 +51,7 @@ export const imageFileToDataUri = (
     reader.addEventListener(
       "error",
       () => {
-        reject(
-          new Error("The selected image could not be read."),
-        );
+        reject(new Error("The selected image could not be read."));
       },
       { once: true },
     );
@@ -80,24 +65,19 @@ export const getPoems = async (
   params: GetPoemsParams = {},
   signal?: AbortSignal,
 ): Promise<PoemListResponse> => {
-  const response = await axiosClient.get<PoemListResponse>(
-    "/poems",
-    {
-      params,
-      signal,
-    },
-  );
+  const response = await axiosClient.get<PoemListResponse>("/poems", {
+    params,
+    signal,
+  });
 
   return response.data;
 };
 
 /** GET /api/poems/:id — public endpoint. */
-export const getPoemById = async (
-  id: string,
-): Promise<Poem> => {
-  const response = await axiosClient.get<
-    ApiSuccessResponse<Poem>
-  >(`/poems/${encodeURIComponent(id)}`);
+export const getPoemById = async (id: string): Promise<Poem> => {
+  const response = await axiosClient.get<ApiSuccessResponse<Poem>>(
+    `/poems/${encodeURIComponent(id)}`,
+  );
 
   return response.data.data;
 };
@@ -126,12 +106,11 @@ export const recordPoemView = async (
  * POST /api/poems — requires authentication and ADMIN role.
  * Both images must be valid Base64 data URIs.
  */
-export const createPoem = async (
-  payload: CreatePoemRequest,
-): Promise<Poem> => {
-  const response = await axiosClient.post<
-    ApiSuccessResponse<Poem>
-  >("/poems", payload);
+export const createPoem = async (payload: CreatePoemRequest): Promise<Poem> => {
+  const response = await axiosClient.post<ApiSuccessResponse<Poem>>(
+    "/poems",
+    payload,
+  );
 
   return response.data.data;
 };
@@ -144,9 +123,7 @@ export const updatePoem = async (
   id: string,
   payload: UpdatePoemRequest,
 ): Promise<Poem> => {
-  const response = await axiosClient.put<
-    ApiSuccessResponse<Poem>
-  >(
+  const response = await axiosClient.put<ApiSuccessResponse<Poem>>(
     `/poems/${encodeURIComponent(id)}`,
     payload,
   );
@@ -157,12 +134,10 @@ export const updatePoem = async (
 /**
  * DELETE /api/poems/:id — requires authentication and ADMIN role.
  */
-export const deletePoem = async (
-  id: string,
-): Promise<ApiMessageResponse> => {
-  const response = await axiosClient.delete<
-    ApiMessageResponse
-  >(`/poems/${encodeURIComponent(id)}`);
+export const deletePoem = async (id: string): Promise<ApiMessageResponse> => {
+  const response = await axiosClient.delete<ApiMessageResponse>(
+    `/poems/${encodeURIComponent(id)}`,
+  );
 
   return response.data;
 };

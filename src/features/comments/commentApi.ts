@@ -18,9 +18,7 @@ export const getCommentsByPoem = async (
   poemId: string,
   signal?: AbortSignal,
 ): Promise<PoemComment[]> => {
-  const response = await axiosClient.get<
-    ApiSuccessResponse<PoemComment[]>
-  >(
+  const response = await axiosClient.get<ApiSuccessResponse<PoemComment[]>>(
     `/poems/${encodeURIComponent(poemId)}/comments`,
     { signal },
   );
@@ -32,9 +30,7 @@ export const addPoemComment = async (
   poemId: string,
   content: string,
 ): Promise<PoemComment> => {
-  const response = await axiosClient.post<
-    ApiSuccessResponse<PoemComment>
-  >(
+  const response = await axiosClient.post<ApiSuccessResponse<PoemComment>>(
     `/poems/${encodeURIComponent(poemId)}/comments`,
     { content },
   );
@@ -42,12 +38,8 @@ export const addPoemComment = async (
   return response.data.data;
 };
 
-export const deletePoemComment = async (
-  commentId: string,
-): Promise<void> => {
-  await axiosClient.delete<
-    ApiSuccessResponse<{ message: string }>
-  >(
+export const deletePoemComment = async (commentId: string): Promise<void> => {
+  await axiosClient.delete<ApiSuccessResponse<{ message: string }>>(
     `/poems/comments/${encodeURIComponent(commentId)}`,
   );
 };

@@ -10,9 +10,7 @@ export const togglePoemLike = async (
 ): Promise<TogglePoemLikeResult> => {
   const response = await axiosClient.post<
     ApiSuccessResponse<TogglePoemLikeResult>
-  >(
-    `/poems/${encodeURIComponent(poemId)}/like`,
-  );
+  >(`/poems/${encodeURIComponent(poemId)}/like`);
 
   return response.data.data;
 };

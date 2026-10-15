@@ -1,10 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  Feather,
-  Images,
-  X,
-  ZoomIn,
-} from "lucide-react";
+import { Feather, Images, X, ZoomIn } from "lucide-react";
 
 interface PoemCoverImageProps {
   src: string | null | undefined;
@@ -72,7 +67,9 @@ export function PoemCoverImage({
   };
 
   useEffect(() => {
-    if (!isGalleryOpen) return;
+    if (!isGalleryOpen) {
+      return;
+    }
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -87,11 +84,22 @@ export function PoemCoverImage({
     };
   }, [isGalleryOpen]);
 
+  useEffect(() => {
+    if (!isGalleryOpen) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isGalleryOpen]);
+
   const handleImageError = (imageSrc: string) => {
     setFailedImages((previous) =>
-      previous.includes(imageSrc)
-        ? previous
-        : [...previous, imageSrc],
+      previous.includes(imageSrc) ? previous : [...previous, imageSrc],
     );
   };
 
@@ -100,11 +108,20 @@ export function PoemCoverImage({
       <div
         aria-label={`No image available for ${title}`}
         role="img"
-        className="flex aspect-[3/4] w-full items-center justify-center bg-muted text-muted-foreground"
+        className="relative flex aspect-square w-full items-center justify-center overflow-hidden bg-muted/50 text-muted-foreground"
       >
-        <div className="flex flex-col items-center gap-2">
-          <Feather aria-hidden="true" className="size-7" />
-          <span className="text-xs">Image unavailable</span>
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-3 rounded-md border border-dashed border-border/80"
+        />
+
+        <div className="relative flex flex-col items-center gap-3 px-4 text-center">
+          <span className="grid size-12 place-items-center rounded-full border border-primary/20 bg-primary/10 text-primary">
+            <Feather className="size-5" />
+          </span>
+
+          <span className="font-serif text-sm">A page yet unwritten</span>
+          <span className="text-[10px]">No artwork available</span>
         </div>
       </div>
     );
@@ -113,7 +130,7 @@ export function PoemCoverImage({
   return (
     <>
       <div
-        className="group relative aspect-[3/4] w-full overflow-hidden bg-muted"
+        className="group relative aspect-square w-full overflow-hidden bg-muted"
         onMouseEnter={() => {
           setShowPoemImage(true);
           void handleRecordView();
@@ -125,36 +142,57 @@ export function PoemCoverImage({
           alt={`Artwork for ${title}`}
           loading="lazy"
           decoding="async"
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          className="size-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.035]"
           onError={() => handleImageError(activeSrc)}
         />
 
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-black/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/65 via-black/5 to-black/10 opacity-70 transition-opacity duration-300 group-hover:opacity-100"
+        />
+
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-2 rounded-md border border-white/20"
+        />
+
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-3 text-white sm:p-4">
+          <div className="min-w-0">
+            {/* <p className="text-[9px] font-medium uppercase tracking-[0.18em] text-white/75">
+              Innocent Writer
+            </p>
+
+            <p className="mt-1 line-clamp-2 font-serif text-sm font-medium leading-snug sm:text-base">
+              {title}
+            </p> */}
+          </div>
+
+          <span className="grid size-8 shrink-0 place-items-center rounded-full border border-white/30 bg-black/25 backdrop-blur-sm">
+            <ZoomIn aria-hidden="true" className="size-4" />
+          </span>
+        </div>
 
         {gallerySrc && (
           <button
             type="button"
             aria-label={`View ${title} in gallery`}
-            title="View full-size image"
-            onClick={() => {
+            title="View full-size artwork"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
               void handleRecordView();
               setIsGalleryOpen(true);
             }}
-            className="absolute right-3 top-3 grid size-10 place-items-center rounded-xl border border-white/30 bg-black/45 text-white opacity-100 shadow-lg backdrop-blur-sm transition hover:scale-105 hover:bg-black/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:opacity-0 sm:group-hover:opacity-100"
+            className="absolute right-3 top-3 grid size-9 place-items-center rounded-lg border border-white/30 bg-black/45 text-white shadow-lg backdrop-blur-sm transition hover:bg-black/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
           >
-            <Images aria-hidden="true" className="size-5" />
+            <Images aria-hidden="true" className="size-4" />
           </button>
         )}
-
-        <div className="pointer-events-none absolute bottom-3 left-3 flex items-center gap-2 rounded-full border border-white/20 bg-black/40 px-3 py-1.5 text-xs text-white opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100">
-          <ZoomIn aria-hidden="true" className="size-3.5" />
-          View artwork
-        </div>
       </div>
 
       {isGalleryOpen && gallerySrc && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm sm:p-8"
+          className="fixed inset-0 z-[120] flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm sm:p-8"
           role="dialog"
           aria-modal="true"
           aria-label={`Full-size artwork: ${title}`}
@@ -169,19 +207,19 @@ export function PoemCoverImage({
               type="button"
               aria-label="Close gallery"
               onClick={() => setIsGalleryOpen(false)}
-              className="absolute -right-2 -top-12 grid size-10 place-items-center rounded-full bg-white/10 text-white transition hover:bg-white/20 sm:right-0"
+              className="absolute -right-1 -top-12 grid size-10 place-items-center rounded-full border border-white/20 bg-white/10 text-white transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:right-0"
             >
-              <X aria-hidden="true" className="size-6" />
+              <X aria-hidden="true" className="size-5" />
             </button>
 
             <img
               src={gallerySrc}
               alt={`Full-size artwork for ${title}`}
-              className="max-h-[80vh] max-w-[92vw] rounded-lg object-contain shadow-2xl"
+              className="max-h-[78vh] max-w-[92vw] rounded-lg object-contain shadow-2xl sm:max-h-[82vh]"
               onError={() => handleImageError(gallerySrc)}
             />
 
-            <p className="mt-4 max-w-[92vw] text-center text-sm font-medium text-white">
+            <p className="mt-4 max-w-[92vw] text-center font-serif text-base font-medium text-white sm:text-lg">
               {title}
             </p>
           </div>

@@ -1,4 +1,3 @@
-
 export const portfolioProfile = {
   name: "Ganesh Shinde",
   role: "Full Stack Engineer",
@@ -13,17 +12,11 @@ export const portfolioProfile = {
   linkedin: "https://linkedin.com/in/ganesh-shinde0907",
   github: "https://github.com/Ganesh907",
   resumePath: "/resume/Ganesh-Shinde-Resume.pdf",
-  availabilityNote:
-    "For professional enquiries, please get in touch by email.",
+  availabilityNote: "For professional enquiries, please get in touch by email.",
 } as const;
 
 export type SkillCategory =
-  | "All"
-  | "Frontend"
-  | "Backend"
-  | "Database"
-  | "Tools"
-  | "Architecture";
+  "All" | "Frontend" | "Backend" | "Database" | "Tools" | "Architecture";
 
 export const skillCategories: SkillCategory[] = [
   "All",
@@ -170,11 +163,7 @@ export const portfolioProjects: PortfolioProject[] = [
     category: "Professional project",
     description:
       "Worked on modules for a PAN-India government-scale project, including partner-profile and enquiry-management workflows.",
-    technologies: [
-      "React.js",
-      "ASP.NET Web API",
-      "SQL Server",
-    ],
+    technologies: ["React.js", "ASP.NET Web API", "SQL Server"],
     highlights: [
       "Built React UI modules and integrated existing APIs",
       "Worked with SQL Server stored-procedure workflows",

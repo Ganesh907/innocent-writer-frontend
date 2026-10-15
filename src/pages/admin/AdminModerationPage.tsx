@@ -1,9 +1,5 @@
 import { useState } from "react";
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Eye, EyeOff, RefreshCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -24,13 +20,9 @@ export function AdminModerationPage() {
   const queryClient = useQueryClient();
 
   const [page, setPage] = useState(1);
-  const [filter, setFilter] =
-    useState<PublicationFilter>("all");
+  const [filter, setFilter] = useState<PublicationFilter>("all");
 
-  const published =
-    filter === "all"
-      ? undefined
-      : filter === "published";
+  const published = filter === "all" ? undefined : filter === "published";
 
   const params = {
     page,
@@ -121,9 +113,7 @@ export function AdminModerationPage() {
           onClick={() => void poemsQuery.refetch()}
           disabled={poemsQuery.isFetching}
         >
-          <RefreshCw
-            className={poemsQuery.isFetching ? "animate-spin" : ""}
-          />
+          <RefreshCw className={poemsQuery.isFetching ? "animate-spin" : ""} />
           Refresh
         </Button>
       </header>
@@ -153,20 +143,14 @@ export function AdminModerationPage() {
       </div>
 
       {poemsQuery.isPending ? (
-        <p className="text-sm text-muted-foreground">
-          Loading poems...
-        </p>
+        <p className="text-sm text-muted-foreground">Loading poems...</p>
       ) : poemsQuery.isError ? (
         <Card>
           <CardContent className="space-y-3 p-5">
             <p role="alert" className="text-sm text-destructive">
-              Could not load poems:{" "}
-              {getApiErrorMessage(poemsQuery.error)}
+              Could not load poems: {getApiErrorMessage(poemsQuery.error)}
             </p>
-            <Button
-              variant="outline"
-              onClick={() => void poemsQuery.refetch()}
-            >
+            <Button variant="outline" onClick={() => void poemsQuery.refetch()}>
               Retry
             </Button>
           </CardContent>
@@ -223,11 +207,7 @@ export function AdminModerationPage() {
                     variant={poem.published ? "outline" : "default"}
                     disabled={publicationMutation.isPending}
                     onClick={() =>
-                      togglePublication(
-                        poem.id,
-                        poem.title,
-                        poem.published,
-                      )
+                      togglePublication(poem.id, poem.title, poem.published)
                     }
                   >
                     {isUpdating ? (
@@ -280,10 +260,7 @@ export function AdminModerationPage() {
             <Button
               variant="outline"
               size="sm"
-              disabled={
-                page >= pagination.totalPages ||
-                poemsQuery.isFetching
-              }
+              disabled={page >= pagination.totalPages || poemsQuery.isFetching}
               onClick={() => setPage((current) => current + 1)}
             >
               Next

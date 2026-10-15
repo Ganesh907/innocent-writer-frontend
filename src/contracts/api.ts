@@ -1,5 +1,3 @@
-
-
 /** Standard success envelope returned by the backend. */
 export interface ApiSuccessResponse<TData> {
   success: true;

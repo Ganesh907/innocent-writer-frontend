@@ -1,4 +1,3 @@
-
 import { Route, Routes } from "react-router-dom";
 
 import { ProductLayout } from "../layouts/ProductLayout";

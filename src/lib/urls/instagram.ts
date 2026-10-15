@@ -13,8 +13,7 @@ export function getSafeInstagramUrl(
     const url = new URL(value.trim());
 
     const isInstagramHost =
-      url.hostname === "instagram.com" ||
-      url.hostname === "www.instagram.com";
+      url.hostname === "instagram.com" || url.hostname === "www.instagram.com";
 
     if (
       url.protocol !== "https:" ||

@@ -15,10 +15,7 @@ export function AdminRoutes() {
         <Route path="moderation" element={<AdminModerationPage />} />
         <Route path="users" element={<AdminUsersPage />} />
 
-        <Route
-          path="*"
-          element={<Navigate to="/admin" replace />}
-        />
+        <Route path="*" element={<Navigate to="/admin" replace />} />
       </Route>
     </Routes>
   );

@@ -18,9 +18,7 @@ export const getPoemAnalytics = async (
   poemId: string,
   signal?: AbortSignal,
 ): Promise<PoemAnalytics> => {
-  const response = await axiosClient.get<
-    ApiSuccessResponse<PoemAnalytics>
-  >(
+  const response = await axiosClient.get<ApiSuccessResponse<PoemAnalytics>>(
     `/analytics/poems/${encodeURIComponent(poemId)}`,
     { signal },
   );
@@ -32,9 +30,7 @@ export const getAuthorAnalytics = async (
   authorId: string,
   signal?: AbortSignal,
 ): Promise<AuthorAnalytics> => {
-  const response = await axiosClient.get<
-    ApiSuccessResponse<AuthorAnalytics>
-  >(
+  const response = await axiosClient.get<ApiSuccessResponse<AuthorAnalytics>>(
     `/analytics/authors/${encodeURIComponent(authorId)}`,
     { signal },
   );

@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/theme/useTheme";
 
@@ -17,9 +16,7 @@ export function ThemeToggle() {
       aria-pressed={theme === "dark"}
       title={`Switch to ${nextTheme} mode`}
     >
-      <span aria-hidden="true">
-        {theme === "light" ? "🌙" : "☀️"}
-      </span>
+      <span aria-hidden="true">{theme === "light" ? "🌙" : "☀️"}</span>
     </Button>
   );
 }

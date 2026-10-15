@@ -19,20 +19,11 @@ function App() {
 
           <Route path="/login" element={<LoginPage />} />
 
-          <Route
-            path="/register"
-            element={<RegisterPage />}
-          />
+          <Route path="/register" element={<RegisterPage />} />
 
-          <Route
-            path="/portfolio/*"
-            element={<PortfolioRoutes />}
-          />
+          <Route path="/portfolio/*" element={<PortfolioRoutes />} />
 
-          <Route
-            path="/app/*"
-            element={<ProductRoutes />}
-          />
+          <Route path="/app/*" element={<ProductRoutes />} />
 
           <Route
             path="/admin/*"

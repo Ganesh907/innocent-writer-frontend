@@ -1,18 +1,11 @@
 import { useState } from "react";
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { RefreshCw, Shield, UserRound } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { adminQueryKeys } from "@/features/admin/adminQueryKeys";
-import {
-  getAdminUsers,
-  updateAdminUserRole,
-} from "@/features/admin/adminApi";
+import { getAdminUsers, updateAdminUserRole } from "@/features/admin/adminApi";
 import type { UserRole } from "@/contracts/auth";
 import { useAuth } from "@/features/auth/authContext";
 import { getApiErrorMessage } from "@/lib/api/apiError";
@@ -35,13 +28,8 @@ export function AdminUsersPage() {
   });
 
   const roleMutation = useMutation({
-    mutationFn: ({
-      id,
-      role,
-    }: {
-      id: string;
-      role: UserRole;
-    }) => updateAdminUserRole(id, role),
+    mutationFn: ({ id, role }: { id: string; role: UserRole }) =>
+      updateAdminUserRole(id, role),
 
     onSuccess: async () => {
       await Promise.all([
@@ -58,13 +46,8 @@ export function AdminUsersPage() {
   const users = usersQuery.data?.data ?? [];
   const pagination = usersQuery.data?.pagination;
 
-  function changeRole(
-    id: string,
-    name: string,
-    currentRole: UserRole,
-  ) {
-    const nextRole: UserRole =
-      currentRole === "ADMIN" ? "USER" : "ADMIN";
+  function changeRole(id: string, name: string, currentRole: UserRole) {
+    const nextRole: UserRole = currentRole === "ADMIN" ? "USER" : "ADMIN";
 
     if (
       !window.confirm(
@@ -85,9 +68,7 @@ export function AdminUsersPage() {
             Innocent Writer · Administration
           </p>
 
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight">
-            Users
-          </h1>
+          <h1 className="mt-1 text-3xl font-semibold tracking-tight">Users</h1>
 
           <p className="mt-2 text-sm text-muted-foreground">
             Review registered users and manage their roles.
@@ -99,31 +80,21 @@ export function AdminUsersPage() {
           onClick={() => void usersQuery.refetch()}
           disabled={usersQuery.isFetching}
         >
-          <RefreshCw
-            className={
-              usersQuery.isFetching ? "animate-spin" : ""
-            }
-          />
+          <RefreshCw className={usersQuery.isFetching ? "animate-spin" : ""} />
           Refresh
         </Button>
       </header>
 
       {usersQuery.isPending ? (
-        <p className="text-sm text-muted-foreground">
-          Loading users...
-        </p>
+        <p className="text-sm text-muted-foreground">Loading users...</p>
       ) : usersQuery.isError ? (
         <Card>
           <CardContent className="space-y-3 p-5">
             <p role="alert" className="text-sm text-destructive">
-              Could not load users:{" "}
-              {getApiErrorMessage(usersQuery.error)}
+              Could not load users: {getApiErrorMessage(usersQuery.error)}
             </p>
 
-            <Button
-              variant="outline"
-              onClick={() => void usersQuery.refetch()}
-            >
+            <Button variant="outline" onClick={() => void usersQuery.refetch()}>
               Retry
             </Button>
           </CardContent>
@@ -137,8 +108,7 @@ export function AdminUsersPage() {
       ) : (
         <section className="space-y-3">
           {users.map((adminUser) => {
-            const isCurrentUser =
-              adminUser.id === currentUser?.id;
+            const isCurrentUser = adminUser.id === currentUser?.id;
 
             const isUpdating =
               roleMutation.isPending &&
@@ -164,9 +134,7 @@ export function AdminUsersPage() {
 
                     <p className="mt-2 text-xs text-muted-foreground">
                       Joined{" "}
-                      {new Date(
-                        adminUser.createdAt,
-                      ).toLocaleDateString()}
+                      {new Date(adminUser.createdAt).toLocaleDateString()}
                     </p>
                   </div>
 
@@ -220,8 +188,7 @@ export function AdminUsersPage() {
 
       {roleMutation.isError && (
         <p role="alert" className="text-sm text-destructive">
-          Role update failed:{" "}
-          {getApiErrorMessage(roleMutation.error)}
+          Role update failed: {getApiErrorMessage(roleMutation.error)}
         </p>
       )}
 
@@ -236,12 +203,8 @@ export function AdminUsersPage() {
             <Button
               variant="outline"
               size="sm"
-              disabled={
-                page <= 1 || usersQuery.isFetching
-              }
-              onClick={() =>
-                setPage((current) => current - 1)
-              }
+              disabled={page <= 1 || usersQuery.isFetching}
+              onClick={() => setPage((current) => current - 1)}
             >
               Previous
             </Button>
@@ -249,13 +212,8 @@ export function AdminUsersPage() {
             <Button
               variant="outline"
               size="sm"
-              disabled={
-                page >= pagination.totalPages ||
-                usersQuery.isFetching
-              }
-              onClick={() =>
-                setPage((current) => current + 1)
-              }
+              disabled={page >= pagination.totalPages || usersQuery.isFetching}
+              onClick={() => setPage((current) => current + 1)}
             >
               Next
             </Button>

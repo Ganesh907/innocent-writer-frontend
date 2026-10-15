@@ -1,8 +1,4 @@
-import {
-  NavLink,
-  Outlet,
-  useNavigate,
-} from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/features/auth/authContext";
@@ -30,16 +26,12 @@ export function AdminLayout() {
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             Innocent Writer
           </p>
-          <h2 className="mt-2 text-xl font-semibold">
-            Admin console
-          </h2>
+          <h2 className="mt-2 text-xl font-semibold">Admin console</h2>
         </div>
 
         {user && (
           <div className="mt-6 rounded-xl bg-muted p-3">
-            <p className="break-words text-sm font-medium">
-              {user.name}
-            </p>
+            <p className="break-words text-sm font-medium">{user.name}</p>
             <p className="break-all text-xs text-muted-foreground">
               {user.email}
             </p>
@@ -50,10 +42,7 @@ export function AdminLayout() {
         )}
 
         {hasRole("ADMIN") && (
-          <nav
-            aria-label="Admin navigation"
-            className="mt-5 space-y-1"
-          >
+          <nav aria-label="Admin navigation" className="mt-5 space-y-1">
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
@@ -82,11 +71,7 @@ export function AdminLayout() {
             Open product
           </Button>
 
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={handleLogout}
-          >
+          <Button variant="outline" className="w-full" onClick={handleLogout}>
             Sign out
           </Button>
         </div>
