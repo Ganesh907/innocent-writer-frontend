@@ -1,3 +1,4 @@
+
 import { useEffect, useState, type FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -25,10 +26,18 @@ import {
   type PoemComment,
 } from "@/features/comments/commentApi";
 import { useAuth } from "@/features/auth/authContext";
-import { togglePoemLike } from "@/features/likes/likeApi";
+import {
+  getPoemLikeStatus,
+  togglePoemLike,
+} from "@/features/likes/likeApi";
 import { getPoemById, recordPoemView } from "@/features/poems/poemApi";
 import { poemQueryKeys } from "@/features/poems/poemQueryKeys";
 import { getApiErrorMessage } from "@/lib/api/apiError";
+
+const likeStatusQueryKey = (
+  poemId: string,
+  userId: string,
+) => ["poem-like-status", poemId, userId] as const;
 
 const likeMutationKey = (poemId: string) => ["poem-like", poemId] as const;
 
@@ -65,38 +74,14 @@ function isValidInstagramPostUrl(
   }
 }
 
-interface ContentImageProps {
-  src: string | null | undefined;
-  alt: string;
-  className?: string;
-  fallbackLabel: string;
-}
 
-function ContentImage({
-  src,
-  alt,
-  className,
-  fallbackLabel,
-}: ContentImageProps) {
+function ContentImage({ imageUrl }: { imageUrl?: string | null }) {
   const [failed, setFailed] = useState(false);
-  const imageUrl = src?.trim();
 
   if (!imageUrl || failed) {
     return (
-      <div
-        role="img"
-        aria-label={`${fallbackLabel}. Image unavailable.`}
-        className={[
-          "flex min-h-40 items-center justify-center rounded-md",
-          "border border-dashed border-border bg-muted/50 p-4",
-          "text-center text-xs text-muted-foreground",
-          className ?? "",
-        ].join(" ")}
-      >
-        <span className="flex flex-col items-center gap-2">
-          <Feather aria-hidden="true" className="size-6" />
-          {fallbackLabel}: image unavailable
-        </span>
+      <div className="flex min-h-48 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+        <span>Image unavailable</span>
       </div>
     );
   }
@@ -104,11 +89,9 @@ function ContentImage({
   return (
     <img
       src={imageUrl}
-      alt={alt}
-      loading="lazy"
-      decoding="async"
+      alt="Poem"
+      className="h-auto w-full rounded-xl object-contain"
       onError={() => setFailed(true)}
-      className={className}
     />
   );
 }
@@ -135,7 +118,7 @@ function LoadingDetail() {
     >
       <div className="mb-4 h-5 w-28 animate-pulse rounded bg-muted" />
 
-      <div className="grid overflow-hidden rounded-xl border border-border bg-card shadow-lg md:min-h-[680px] grid-cols-1 md:grid-cols-[minmax(0,6fr)_minmax(0,4fr)]">
+      <div className="grid grid-cols-1 overflow-hidden rounded-xl border border-border bg-card shadow-lg md:min-h-[680px] md:grid-cols-[minmax(0,6fr)_minmax(0,4fr)]">
         <div className="animate-pulse border-b border-border bg-muted/50 p-6 md:border-b-0 md:border-r">
           <div className="h-4 w-1/3 rounded bg-muted" />
           <div className="mx-auto mt-12 aspect-[4/5] max-w-xs rounded-lg bg-muted" />
@@ -159,8 +142,9 @@ export function PoemDetailPage() {
   const queryClient = useQueryClient();
   const { user, isAuthenticated, isInitializing } = useAuth();
 
+  const userId = user?.id ?? "guest";
+
   const [commentDraft, setCommentDraft] = useState("");
-  const [liked, setLiked] = useState<boolean | null>(null);
   const [likeError, setLikeError] = useState<string | null>(null);
   const [commentError, setCommentError] = useState<string | null>(null);
   const [loginPromptOpen, setLoginPromptOpen] = useState(false);
@@ -183,6 +167,23 @@ export function PoemDetailPage() {
     enabled: Boolean(id) && poemQuery.isSuccess,
   });
 
+  // Load the current user's like status from the backend.
+  // This query is not executed for guests.
+  const likeStatusQuery = useQuery({
+    queryKey: likeStatusQueryKey(id ?? "", userId),
+    queryFn: ({ signal }) => getPoemLikeStatus(id as string, signal),
+    enabled:
+      Boolean(id) &&
+      poemQuery.isSuccess &&
+      isAuthenticated &&
+      !isInitializing,
+    retry: 1,
+  });
+
+  const liked = isAuthenticated
+    ? likeStatusQuery.data?.liked === true
+    : false;
+
   useEffect(() => {
     if (!id || !poemQuery.isSuccess) return;
 
@@ -202,7 +203,11 @@ export function PoemDetailPage() {
     mutationFn: () => togglePoemLike(id as string),
 
     onSuccess: async (result) => {
-      setLiked(result.liked);
+      queryClient.setQueryData(
+        likeStatusQueryKey(id ?? "", userId),
+        result,
+      );
+
       setLikeError(null);
 
       await queryClient.invalidateQueries({
@@ -268,7 +273,8 @@ export function PoemDetailPage() {
 
         return [createdComment, ...remainingComments].sort(
           (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+            new Date(b.createdAt).getTime() -
+            new Date(a.createdAt).getTime(),
         );
       });
     },
@@ -421,20 +427,24 @@ export function PoemDetailPage() {
       return;
     }
 
+    // Don't toggle until the initial server status is known.
+    if (likeStatusQuery.isPending || likeStatusQuery.isError) return;
+
     if (!likeMutation.isPending) {
       setLikeError(null);
       likeMutation.mutate();
     }
   };
 
-  const coverSrc = poem.coverImageUrl || poem.poemImageUrl;
+  // Details must show the poem's image, not the collection cover image.
+  const poemImageSrc = poem.poemImageUrl;
+
   const views = analyticsQuery.data?.views ?? "—";
   const likes = analyticsQuery.data?.likes ?? "—";
   const commentCount = analyticsQuery.data?.comments ?? comments.length;
 
   return (
     <main className="mx-auto w-full px-3 py-3 text-foreground sm:px-5 sm:py-5">
-      {/* Back navigation and metadata */}
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-border/70 pb-2">
         <Link
           to="/app/poems"
@@ -451,19 +461,17 @@ export function PoemDetailPage() {
         </span>
       </div>
 
-      {/* Book exterior */}
-      <article className="relative isolate overflow-hidden rounded-xl  border border-border bg-card shadow-xl">
-        {/* Subtle book spine */}
-
+      <article className="relative isolate overflow-hidden rounded-xl border border-border bg-card shadow-xl">
+        {/* Decorative book spine */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-y-0 left-[60%] z-10 hidden w-5 -translate-x-1/2 bg-gradient-to-r from-transparent via-foreground/[0.06] to-transparent md:block"
         />
 
         <div className="grid grid-cols-1 md:grid-cols-[minmax(0,6fr)_minmax(0,4fr)]">
-          {/* LEFT PAGE */}
+          {/* Left page: poem image and author */}
           <section
-            aria-label="Poem cover and author"
+            aria-label="Poem image and author"
             className="book-page book-page-left relative flex min-w-0 flex-col border-b border-border p-4 sm:p-6 md:border-b-0 md:border-r md:p-7"
           >
             <div className="flex items-center justify-between gap-3 text-[9px] font-medium uppercase tracking-[0.16em] text-muted-foreground sm:text-[10px]">
@@ -474,24 +482,15 @@ export function PoemDetailPage() {
             <BookDivider label="✦" />
 
             <div className="mx-auto flex w-full max-w-lg flex-1 flex-col items-center py-3 text-center">
-              {/* <span className="mb-4 inline-flex items-center gap-1.5 rounded-sm border border-primary/25 bg-primary/10 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.13em] text-primary">
-                <Feather aria-hidden="true" className="size-3.5" />
-                Featured poem
-              </span> */}
-
-              {/* Framed artwork */}
               <div className="w-full border border-border p-1.5 sm:p-2">
                 <div className="border border-border/70 bg-muted/20 p-2 sm:p-3">
-                  <ContentImage
-                    src={coverSrc}
-                    alt={`Cover artwork for ${poem.title}`}
-                    fallbackLabel="Poem cover"
-                    className="mx-auto aspect-[4/5] max-h-[420px] w-full object-contain sm:aspect-[4/5]"
-                  />
+               <ContentImage
+  key={poemImageSrc ?? "no-poem-image"}
+  imageUrl={poemImageSrc}
+/>
                 </div>
               </div>
 
-              {/* Large centered title */}
               <h1 className="mt-5 max-w-md break-words font-serif text-3xl font-semibold leading-[1.12] tracking-tight sm:text-4xl lg:text-[2.7rem]">
                 {poem.title}
               </h1>
@@ -524,14 +523,11 @@ export function PoemDetailPage() {
             </p>
           </section>
 
-          {/* RIGHT PAGE */}
-
-          {/* RIGHT PAGE */}
+          {/* Right page: poem text and reader engagement */}
           <section
             aria-label="Poem text and reader engagement"
             className="book-page book-page-right flex min-w-0 flex-col p-4 sm:p-6 md:p-7 lg:p-8"
           >
-            {/* 1. Page header */}
             <div className="mb-4 flex items-center justify-between gap-3 border-b border-border/70 pb-3 text-[10px] text-muted-foreground">
               <span className="font-medium uppercase tracking-[0.16em]">
                 The poem
@@ -539,8 +535,7 @@ export function PoemDetailPage() {
               <span className="text-right">{formatDate(poem.createdAt)}</span>
             </div>
 
-            {/* 2. Poem content */}
-            <div className="whitespace-pre-wrap break-words font-serif text-lg leading-[1.75] sm:text-xl sm:leading-[1.8] lg:text-[1.65rem] lg:leading-[1.7] border-b border-border/70 pb-3 mb-3">
+            <div className="mb-3 whitespace-pre-wrap break-words border-b border-border/70 pb-3 font-serif text-lg leading-[1.75] sm:text-xl sm:leading-[1.8] lg:text-[1.65rem] lg:leading-[1.7]">
               {poem.content}
             </div>
 
@@ -550,19 +545,18 @@ export function PoemDetailPage() {
               </p>
             )}
 
-            {/* 3. Existing decorative divider */}
-            {/* <div className="my-5 sm:my-6">
-    <BookDivider label="✧❦✧" />
-  </div> */}
-
-            {/* 4. Engagement row */}
             <div className="flex flex-wrap items-center gap-x-5 gap-y-3 border-b border-border/70 pb-4 text-xs text-muted-foreground sm:gap-x-6">
               <button
                 type="button"
                 onClick={handleLike}
-                disabled={likeMutation.isPending || isInitializing}
+                disabled={
+                  likeMutation.isPending ||
+                  isInitializing ||
+                  (isAuthenticated &&
+                    (likeStatusQuery.isPending || likeStatusQuery.isError))
+                }
                 aria-label={liked ? "Unlike this poem" : "Like this poem"}
-                aria-pressed={liked === true}
+                aria-pressed={liked}
                 className={`inline-flex items-center gap-1.5 transition-colors hover:text-primary ${
                   liked ? "text-primary" : ""
                 }`}
@@ -598,36 +592,30 @@ export function PoemDetailPage() {
                   {likeError}
                 </p>
               )}
+
+              {isAuthenticated && likeStatusQuery.isError && (
+                <div className="flex basis-full flex-wrap items-center gap-2 text-xs text-destructive">
+                  <span role="alert">Couldn’t load your like status.</span>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="h-7 text-xs"
+                    onClick={() => void likeStatusQuery.refetch()}
+                    disabled={likeStatusQuery.isFetching}
+                  >
+                    <RefreshCw aria-hidden="true" className="size-3" />
+                    Retry
+                  </Button>
+                </div>
+              )}
             </div>
 
-            {/* 5. Same decorative divider */}
             <div className="my-4 sm:my-5">
               <BookDivider label="✧❦✧" />
             </div>
 
-            {/* 6. Comments section — keep existing implementation */}
-            {/* <section
-    id="comments-title"
-    aria-labelledby="comments-heading"
-    className="rounded-lg border border-border bg-muted/30 p-3 shadow-sm sm:p-4"
-  >
-    <div className="mb-3 flex items-center justify-between gap-2">
-      <h2
-        id="comments-heading"
-        className="font-serif text-xl font-medium sm:text-2xl"
-      >
-        Comments &amp; reflection
-      </h2>
-
-      <span className="shrink-0 rounded-full border border-border bg-card px-2.5 py-1 text-xs text-muted-foreground">
-        {commentCount}
-      </span>
-    </div> */}
-
-            {/* Keep your existing comment form, error messages,
-        loading state, retry action and CommentItem list here unchanged. */}
-
-            {/* 6. Comments section */}
+            {/* Comments */}
             <section
               id="comments-title"
               aria-labelledby="comments-heading"
@@ -646,10 +634,9 @@ export function PoemDetailPage() {
                 </span>
               </div>
 
-              {/* Comment form */}
               <form
                 onSubmit={handleCommentSubmit}
-                className="flex md:flex-col min-w-0 gap-2"
+                className="flex min-w-0 gap-2 md:flex-col"
               >
                 <Input
                   id="poem-comment-input"
@@ -674,7 +661,9 @@ export function PoemDetailPage() {
                 >
                   <Send aria-hidden="true" className="size-3.5" />
                   <span className="hidden sm:inline">
-                    {addCommentMutation.isPending ? "Posting…" : "Post comment"}
+                    {addCommentMutation.isPending
+                      ? "Posting…"
+                      : "Post comment"}
                   </span>
                   <span className="sm:hidden">
                     {addCommentMutation.isPending ? "…" : "Post"}
@@ -682,17 +671,18 @@ export function PoemDetailPage() {
                 </Button>
               </form>
 
-              {/* Comment submission error */}
               {commentError && (
                 <p role="alert" className="mt-2 text-xs text-destructive">
                   {commentError}
                 </p>
               )}
 
-              {/* Comments list */}
               <div className="mt-4">
                 {commentsQuery.isPending ? (
-                  <p className="text-xs text-muted-foreground" aria-busy="true">
+                  <p
+                    className="text-xs text-muted-foreground"
+                    aria-busy="true"
+                  >
                     Loading comments…
                   </p>
                 ) : commentsQuery.isError ? (
@@ -735,13 +725,11 @@ export function PoemDetailPage() {
                 )}
               </div>
             </section>
-            {/*  */}
-            {/* </section> */}
           </section>
         </div>
       </article>
 
-      {/* Guest sign-in dialog */}
+      {/* Sign-in prompt for guests */}
       {loginPromptOpen && (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center bg-background/70 p-4 backdrop-blur-sm"
@@ -880,7 +868,9 @@ function DetailMessage({
 
           <div className="space-y-2">
             <h1 className="font-serif text-xl font-semibold">{title}</h1>
-            <p className="text-sm leading-6 text-muted-foreground">{message}</p>
+            <p className="text-sm leading-6 text-muted-foreground">
+              {message}
+            </p>
           </div>
 
           <Button
@@ -890,7 +880,10 @@ function DetailMessage({
             disabled={loading}
           >
             {loading && (
-              <RefreshCw aria-hidden="true" className="size-4 animate-spin" />
+              <RefreshCw
+                aria-hidden="true"
+                className="size-4 animate-spin"
+              />
             )}
             {retryLabel}
           </Button>

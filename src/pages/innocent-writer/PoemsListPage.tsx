@@ -59,37 +59,6 @@ export function PoemsListPage() {
     <main data-product="poetry" className="poetry-library">
       {/* Library heading and search */}
       <header className="space-y-5">
-        {/* <section className="poetry-library-heading relative overflow-hidden rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm">
-          <div className="relative flex items-center gap-3 px-4 py-3 sm:px-5">
-            <span className="grid size-11 shrink-0 place-items-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
-              <BookOpen aria-hidden="true" className="size-5" />
-            </span>
-
-            <div className="min-w-0 flex-1">
-              <p className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-primary">
-                <Sparkles aria-hidden="true" className="size-3" />
-                Innocent Writer · Poetry
-              </p>
-
-              <h1 className="mt-0.5 font-serif text-2xl font-semibold leading-tight tracking-tight sm:text-3xl">
-                The poetry library
-              </h1>
-
-              <p className="mt-1 text-xs leading-relaxed text-muted-foreground sm:text-sm">
-                A collection of feelings, stories, and quiet thoughts. Find a
-                poem that speaks to you.
-              </p>
-            </div>
-
-            <div
-              aria-hidden="true"
-              className="hidden shrink-0 text-primary/40 sm:block"
-            >
-              <Feather className="size-9 -rotate-12" strokeWidth={1.2} />
-            </div>
-          </div>
-        </section> */}
-
         <form
           onSubmit={handleSearch}
           className="flex items-center gap-2 sm:gap-3"
@@ -133,7 +102,7 @@ export function PoemsListPage() {
         </form>
       </header>
 
-      {/* Book-style library */}
+      {/* Book-style library — original design preserved */}
       <div className="relative mt-6">
         <div className="pointer-events-none absolute inset-x-3 bottom-[-7px] top-3 rounded-[1.5rem] border border-border bg-muted/70 shadow-md" />
         <div className="pointer-events-none absolute inset-x-1.5 bottom-[-4px] top-1.5 rounded-[1.5rem] border border-border bg-card shadow-md" />
@@ -241,7 +210,8 @@ export function PoemsListPage() {
                   </CardContent>
                 </Card>
               ) : (
-                <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-2">
+                /* ONLY CHANGE: 3 poem cards horizontally on the left page */
+                <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {poems.slice(0, 3).map((poem) => (
                     <PoemCard key={poem.id} poem={poem} />
                   ))}
@@ -332,7 +302,8 @@ export function PoemsListPage() {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-2">
+                /* ONLY CHANGE: 3 poem cards horizontally on the right page */
+                <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {poems.slice(3, 6).map((poem) => (
                     <PoemCard key={poem.id} poem={poem} />
                   ))}

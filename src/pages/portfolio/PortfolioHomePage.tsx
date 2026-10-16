@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-
 import type { CSSProperties } from "react";
-
 import {
   ArrowDown,
   ArrowDownRight,
@@ -26,7 +24,6 @@ import {
   X,
 } from "lucide-react";
 
-
 import { Button } from "@/components/ui/button";
 
 import {
@@ -44,15 +41,11 @@ import PortfolioCursor from "@/features/portfolio/components/PortfolioCursor";
 
 function SectionHeading({
   eyebrow,
-
   title,
-
   description,
 }: {
   eyebrow: string;
-
   title: string;
-
   description?: string;
 }) {
   return (
@@ -157,13 +150,9 @@ function ProjectCard({ project }: { project: PortfolioProject }) {
 
 export function PortfolioHomePage() {
   const [activeCategory, setActiveCategory] = useState<SkillCategory>("All");
-
   const [showAllSkills, setShowAllSkills] = useState(false);
-
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
   const [emailCopied, setEmailCopied] = useState(false);
-
   const filteredSkills =
     activeCategory === "All"
       ? portfolioSkills
@@ -175,30 +164,22 @@ export function PortfolioHomePage() {
 
   const navigation = [
     { label: "About", href: "#about" },
-
     { label: "Skills", href: "#skills" },
-
     { label: "Work", href: "#projects" },
-
     { label: "Experience", href: "#experience" },
-
     { label: "Contact", href: "#contact" },
   ];
 
   useEffect(() => {
     const root = document.getElementById("portfolio-root");
-
     if (!root) return;
-
     const elements = root.querySelectorAll<HTMLElement>(".portfolio-reveal");
-
     const reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
     if (reduceMotion || !("IntersectionObserver" in window)) {
       elements.forEach((element) => element.classList.add("is-visible"));
-
       return;
     }
 
@@ -207,7 +188,6 @@ export function PortfolioHomePage() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add("is-visible");
-
             observer.unobserve(entry.target);
           }
         });
@@ -215,17 +195,12 @@ export function PortfolioHomePage() {
 
       {
         threshold: 0.08,
-
         rootMargin: "0px 0px -25px 0px",
       },
     );
 
     elements.forEach((element, index) => {
-      element.style.setProperty(
-        "--reveal-delay",
-
-        `${(index % 3) * 70}ms`,
-      );
+      element.style.setProperty("--reveal-delay", `${(index % 3) * 70}ms`);
 
       observer.observe(element);
     });
@@ -236,9 +211,7 @@ export function PortfolioHomePage() {
   async function copyEmail() {
     try {
       await navigator.clipboard.writeText(portfolioProfile.email);
-
       setEmailCopied(true);
-
       window.setTimeout(() => setEmailCopied(false), 2000);
     } catch {
       window.location.href = `mailto:${portfolioProfile.email}`;
@@ -251,14 +224,12 @@ export function PortfolioHomePage() {
       className="portfolio-page min-h-screen overflow-x-clip bg-background text-foreground"
     >
       <PortfolioCursor />
-
       {/* Navigation */}
-
-      <header className="fixed inset-x-0 top-0 z-40 border-b border-white/15 bg-slate-950/55 backdrop-blur-md">
+      <header className="fixed inset-x-0 top-0 z-40 border-b border-white/15 bg-card dark:bg-slate-950/55 backdrop-blur-md">
         <div className="mx-auto flex h-16 w-full max-w-[1440px] items-center justify-between gap-2 px-4 sm:gap-4 sm:px-6 lg:px-10">
           <a
             href="#home"
-            className="shrink-0 text-base font-extrabold tracking-tight text-white sm:text-xl"
+            className="shrink-0 text-base font-extrabold tracking-tight sm:text-xl"
           >
             <span className="text-primary">GANESH</span> SHINDE
           </a>
@@ -271,7 +242,7 @@ export function PortfolioHomePage() {
               <a
                 key={item.href}
                 href={item.href}
-                className="text-sm font-medium text-slate-200 transition-colors hover:text-[var(--color-primary-hover)]"
+                className="text-sm font-medium dark:text-slate-200 transition-colors hover:text-[var(--color-primary-hover)]"
               >
                 {item.label}
               </a>
@@ -310,7 +281,7 @@ export function PortfolioHomePage() {
         {mobileMenuOpen && (
           <nav
             aria-label="Mobile navigation"
-            className="border-t border-white/10 bg-slate-950/95 px-4 py-3 backdrop-blur-xl lg:hidden"
+            className="border-t border-white/10 bg-slate px-4 py-3 backdrop-blur-xl lg:hidden"
           >
             <div className="mx-auto flex max-w-6xl flex-col gap-1">
               {navigation.map((item) => (
@@ -318,7 +289,7 @@ export function PortfolioHomePage() {
                   key={item.href}
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="rounded-lg px-3 py-3 text-sm text-slate-200 transition-colors hover:bg-[var(--color-primary-hover)]/10 hover:text-[var(--color-primary-hover)]"
+                  className="rounded-lg px-3 py-3 text-sm  transition-colors hover:bg-[var(--color-primary-hover)]/10 hover:text-[var(--color-primary-hover)]"
                 >
                   {item.label}
                 </a>
@@ -329,14 +300,23 @@ export function PortfolioHomePage() {
       </header>
 
       {/* Hero */}
-
       <section
         id="home"
-        className="relative flex min-h-[100svh] items-center overflow-hidden bg-cover bg-center pt-20 sm:bg-top dark:bg-slate-950"
-        style={{
-          backgroundImage: "url('/images/BgTwo.png')",
-        }}
+        className="relative flex min-h-[100svh]  sm:items-end md:items-center overflow-hidden bg-cover bg-center pt-20 dark:bg-slate-950"
       >
+        <div
+          className="absolute inset-0 bg-cover bg-center sm:hidden"
+          style={{ backgroundImage: "url('/images/PortfolioHero.png')" }}
+          aria-hidden="true"
+        />
+        <div
+          className="absolute inset-0 hidden bg-cover bg-top sm:block"
+          style={{ backgroundImage: "url('/images/BgTwo.png')" }}
+          aria-hidden="true"
+        />
+        {/* <div className="relative z-10 w-full"> */}
+        {/* Keep your existing hero content here */}
+
         {/* Dark-mode-only overlays; the original image remains unchanged in light mode */}
 
         <div
@@ -348,12 +328,11 @@ export function PortfolioHomePage() {
           }}
         />
 
-        <div className="relative z-10 mx-auto flex w-full max-w-[1440px] flex-col justify-end gap-6 px-4 py-10 sm:gap-8 sm:px-6 sm:py-12 md:px-8 lg:min-h-[calc(100svh-5rem)] lg:flex-row lg:items-end lg:justify-between lg:gap-10 lg:px-10 xl:gap-12">
+        <div className="relative z-10 mx-auto flex w-full max-w-[1440px] flex-col justify-end gap-3 px-4 py-4 sm:gap-8 sm:px-6 sm:py-12 md:px-8 lg:min-h-[calc(100svh-5rem)] lg:flex-row lg:items-end lg:justify-between lg:gap-10 lg:px-10 xl:gap-12">
           {/* Left introduction */}
-
-          <div className=" relative w-full max-w-[540px]  space-y-4 rounded-2xl border-2 border-white dark:border-primary p-5 text-white shadow-[0_0_30px_rgba(0,184,219,0.12)] backdrop-blur-md transition-colors duration-300 hover:border-white sm:p-7">
+          <div className="relative w-full max-w-[540px] space-y-3 rounded-2xl border-2 border-white p-3 text-white shadow-[0_0_30px_rgba(0,184,219,0.12)] backdrop-blur-md transition-colors duration-300 hover:border-white dark:border-primary sm:space-y-4 sm:p-7">
             <p
-              className="portfolio-fade-up text-xl font-extrabold leading-snug sm:text-3xl"
+              className="portfolio-fade-up text-lg font-extrabold leading-snug sm:text-3xl"
               style={{ "--intro-delay": "200ms" } as CSSProperties}
             >
               Hi, I'm{" "}
@@ -361,35 +340,37 @@ export function PortfolioHomePage() {
                 <span className="portfolio-name-text relative z-10 inline-block font-bold text-white hover:text-white dark:hover:text-white">
                   {portfolioProfile.name}
                 </span>
-
                 <span aria-hidden="true" className="portfolio-name-bg" />
               </span>
             </p>
-<p
-  className="portfolio-fade-up text-base font-semibold leading-7 sm:text-xl"
-  style={{ "--intro-delay": "400ms" } as CSSProperties}
->
-  <span className="text-teal-400">Programmer</span> by the sun{" "}
-  <span
-    className="inline-flex align-middle animate-spin [animation-duration:4s] text-yellow-400 mx-1"
-    aria-label="sun"
-    role="img"
-  >
-    <Sun fill="currentColor" className="w-5 h-5 sm:w-6 sm:h-6" />
-  </span>
-  {". "}
-  <span className="text-pink-400">Poet</span> by the stars{" "}
-  <span
-    className="inline-flex align-middle animate-pulse [animation-duration:2s] text-yellow-400 mx-1"
-    aria-label="star"
-    role="img"
-  >
-    <Star fill="currentColor" strokeWidth={1.75} className="w-5 h-5 sm:w-6 sm:h-6" />
-  </span>
-</p>
-
             <p
-              className="portfolio-fade-up text-base font-semibold leading-7 sm:text-xl"
+              className="portfolio-fade-up text-sm font-semibold leading-6 sm:text-xl sm:leading-7"
+              style={{ "--intro-delay": "400ms" } as CSSProperties}
+            >
+              <span className="text-teal-400">Programmer</span> by the sun{" "}
+              <span
+                className="mx-1 inline-flex animate-spin align-middle text-yellow-400 [animation-duration:4s]"
+                aria-label="sun"
+                role="img"
+              >
+                <Sun fill="currentColor" className="h-4 w-4 sm:h-6 sm:w-6" />
+              </span>
+              {". "}
+              <span className="text-pink-400">Poet</span> by the stars{" "}
+              <span
+                className="mx-1 inline-flex animate-pulse align-middle text-yellow-400 [animation-duration:2s]"
+                aria-label="star"
+                role="img"
+              >
+                <Star
+                  fill="currentColor"
+                  strokeWidth={1.75}
+                  className="h-4 w-4 sm:h-6 sm:w-6"
+                />
+              </span>
+            </p>
+            <p
+              className="portfolio-fade-up text-sm font-semibold leading-6 sm:text-xl sm:leading-7"
               style={{ "--intro-delay": "600ms" } as CSSProperties}
             >
               Merging the{" "}
@@ -397,7 +378,7 @@ export function PortfolioHomePage() {
                 Code{" "}
                 <Code2
                   aria-hidden="true"
-                  className="animate-pulse inline size-5 text-white/80"
+                  className="inline size-5 animate-pulse text-white/80"
                 />
               </span>
               , and writing the{" "}
@@ -405,16 +386,15 @@ export function PortfolioHomePage() {
                 Bars{" "}
                 <span
                   aria-hidden="true"
-                  className="animate-pulse inline-block text-white/80"
+                  className="inline-block animate-pulse text-white/80"
                 >
                   ♬
                 </span>
               </span>
               {" ..."}
             </p>
-
             <div
-              className="portfolio-fade-up flex flex-wrap gap-3 pt-1"
+              className="portfolio-fade-up flex flex-wrap gap-2 pt-1 sm:gap-3"
               style={{ "--intro-delay": "800ms" } as CSSProperties}
             >
               <Button
@@ -425,7 +405,6 @@ export function PortfolioHomePage() {
                 Explore Work
                 <ArrowDownRight aria-hidden="true" />
               </Button>
-
               <Button
                 size="sm"
                 variant="outline"
@@ -439,83 +418,69 @@ export function PortfolioHomePage() {
           </div>
 
           {/* Right profile summary */}
-
-          <aside className="portfolio-profile-enter w-full max-w-[420px]  justify-self-start lg:justify-self-end ">
-            <div className="rounded-3xl border border-primary/25  bg-card/95 p-5 text-card-foreground shadow-2xl dark:backdrop-blur-xl sm:p-7">
-              <div className="mb-5 flex items-center gap-4">
-             <img
-  src="images/Ganesh.jpg"
-  alt="GS Profile"
-  className="size-14 shrink-0 rounded-full object-cover"
-/>
-
+          <aside className="portfolio-profile-enter  w-full max-w-[420px] justify-self-start lg:justify-self-end">
+            <div className="rounded-3xl border border-primary/25 p-3 text-card-foreground bg-card shadow-2xl sm:p-7 md:bg-card/95">
+              <div className="mb-3 flex items-center gap-3 sm:mb-5 sm:gap-4">
+                <img
+                  src="/images/Ganesh.jpg"
+                  alt="GS Profile"
+                  className="size-12 shrink-0 rounded-full object-cover sm:size-14"
+                />
                 <div className="min-w-0">
-                  <h2 className="text-lg font-bold sm:text-xl">
+                  <h2 className="text-base font-bold sm:text-xl">
                     {portfolioProfile.name}
                   </h2>
-
                   <p className="mt-1 text-sm text-muted-foreground">
                     {portfolioProfile.role}
                   </p>
                 </div>
               </div>
-
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <div className="flex items-start gap-3">
                   <BriefcaseBusiness
                     aria-hidden="true"
-                    className="mt-0.5 size-5 shrink-0 text-primary dark:text-primary"
+                    className="mt-0.5 size-5 shrink-0 text-primary"
                   />
-
                   <div>
                     <p className="text-sm font-semibold">Experience</p>
-
                     <p className="mt-1 text-sm leading-6 text-muted-foreground">
                       {portfolioProfile.experience}
                     </p>
                   </div>
                 </div>
-
                 <div className="flex items-start gap-3">
                   <MapPin
                     aria-hidden="true"
-                    className="mt-0.5 size-5 shrink-0 text-primary dark:text-primary"
+                    className="mt-0.5 size-5 shrink-0 text-primary"
                   />
-
                   <div>
                     <p className="text-sm font-semibold">Location</p>
-
                     <p className="mt-1 text-sm leading-6 text-muted-foreground">
                       {portfolioProfile.location}
                     </p>
                   </div>
                 </div>
-
                 <div className="flex items-start gap-3">
                   <Code2
                     aria-hidden="true"
-                    className="mt-0.5 size-5 shrink-0 text-primary dark:text-primary"
+                    className="mt-0.5 size-5 shrink-0 text-primary"
                   />
-
                   <div>
                     <p className="text-sm font-semibold">Core focus</p>
-
                     <p className="mt-1 text-sm leading-6 text-muted-foreground">
                       Frontend, backend, and database-driven applications
                     </p>
                   </div>
                 </div>
               </div>
-
-              <div className="mt-5 border-t border-border pt-4">
+              <div className="mt-3 border-t border-border pt-3 sm:mt-5 sm:pt-4">
                 <p className="text-sm leading-6 text-muted-foreground">
                   Interested in discussing a project or professional
                   opportunity?
                 </p>
-
                 <a
                   href={`mailto:${portfolioProfile.email}`}
-                  className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-primary transition-colors hover:text-[var(--color-primary-hover)] dark:text-primary dark:hover:text-[var(--color-primary-hover)]"
+                  className="mt-2 inline-flex items-center gap-2 text-sm font-semibold text-primary transition-colors hover:text-[var(--color-primary-hover)] dark:text-primary dark:hover:text-[var(--color-primary-hover)] sm:mt-3"
                 >
                   Get in touch
                   <ArrowRight aria-hidden="true" className="size-4" />

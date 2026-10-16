@@ -1,3 +1,4 @@
+
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -23,7 +24,10 @@ import {
   type PoemComment,
 } from "@/features/comments/commentApi";
 import { useAuth } from "@/features/auth/authContext";
-import { togglePoemLike } from "@/features/likes/likeApi";
+import {
+  getPoemLikeStatus,
+  togglePoemLike,
+} from "@/features/likes/likeApi";
 import { PoemCoverImage } from "@/features/poems/components/PoemCoverImage";
 import { poemQueryKeys } from "@/features/poems/poemQueryKeys";
 import { getApiErrorMessage } from "@/lib/api/apiError";
@@ -31,6 +35,9 @@ import { getApiErrorMessage } from "@/lib/api/apiError";
 interface PoemCardProps {
   poem: Poem;
 }
+
+const likeStatusQueryKey = (poemId: string, userId: string) =>
+  ["poem-like-status", poemId, userId] as const;
 
 function formatDate(value: string): string {
   const date = new Date(value);
@@ -49,24 +56,24 @@ function formatDate(value: string): string {
 export function PoemCard({ poem }: PoemCardProps) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const { isAuthenticated, isInitializing } = useAuth();
+  const { user, isAuthenticated, isInitializing } = useAuth();
 
   const [commentDraft, setCommentDraft] = useState("");
-  const [liked, setLiked] = useState<boolean | null>(null);
   const [loginPrompt, setLoginPrompt] = useState(false);
   const [likeError, setLikeError] = useState<string | null>(null);
   const [commentError, setCommentError] = useState<string | null>(null);
 
   const detailPath = `/app/poems/${encodeURIComponent(poem.id)}`;
   const author = poem.authorName?.trim() || "Unknown author";
+  const userId = user?.id ?? "guest";
 
   const commentsKey = poemQueryKeys.comments(poem.id);
   const analyticsKey = poemQueryKeys.analytics(poem.id);
+  const statusKey = likeStatusQueryKey(poem.id, userId);
 
   const analyticsQuery = useQuery({
     queryKey: analyticsKey,
     queryFn: ({ signal }) => getPoemAnalytics(poem.id, signal),
-    enabled: true,
     staleTime: 30_000,
   });
 
@@ -76,13 +83,23 @@ export function PoemCard({ poem }: PoemCardProps) {
     staleTime: 30_000,
   });
 
+  // Retrieve this user's persisted like status from the backend.
+  const likeStatusQuery = useQuery({
+    queryKey: statusKey,
+    queryFn: ({ signal }) => getPoemLikeStatus(poem.id, signal),
+    enabled: isAuthenticated && !isInitializing,
+    retry: 1,
+  });
+
+  const liked = isAuthenticated && likeStatusQuery.data?.liked === true;
   const comments = commentsQuery.data ?? [];
 
   const likeMutation = useMutation({
     mutationFn: () => togglePoemLike(poem.id),
 
     onSuccess: async (result) => {
-      setLiked(result.liked);
+      // Keep the card and poem detail page synchronized.
+      queryClient.setQueryData(statusKey, result);
       setLikeError(null);
 
       await queryClient.invalidateQueries({
@@ -140,6 +157,11 @@ export function PoemCard({ poem }: PoemCardProps) {
       return;
     }
 
+    // Do not toggle until the persisted state is known.
+    if (likeStatusQuery.isPending || likeStatusQuery.isError) {
+      return;
+    }
+
     setLikeError(null);
     likeMutation.mutate();
   }
@@ -178,7 +200,7 @@ export function PoemCard({ poem }: PoemCardProps) {
 
   return (
     <>
-      <Card className="poetry-card group flex h-full min-w-0 flex-col gap-0 overflow-hidden rounded-xl border border-border/80 bg-card py-0 text-card-foreground shadow-sm transition-colors hover:border-primary/30">
+      <Card className="poetry-card group flex h-full min-w-0 flex-col gap-0 overflow-hidden rounded-xl border border-border/80 bg-white  dark:bg-card py-0 text-card-foreground shadow-sm transition-colors hover:border-primary/30">
         {/* Author */}
         <header className="flex items-center gap-2 px-3 py-2">
           <span className="grid size-8 shrink-0 place-items-center rounded-full border border-primary/15 bg-primary/10 text-primary">
@@ -206,7 +228,7 @@ export function PoemCard({ poem }: PoemCardProps) {
           )}
         </header>
 
-        {/* Square artwork */}
+        {/* Poem artwork */}
         <Link
           to={detailPath}
           aria-label={`Read ${poem.title}`}
@@ -235,10 +257,17 @@ export function PoemCard({ poem }: PoemCardProps) {
             <button
               type="button"
               onClick={handleLike}
-              disabled={isInitializing || likeMutation.isPending}
-              aria-label={`Like ${poem.title}`}
-              aria-pressed={liked === true}
-              className={`inline-flex h-8 shrink-0 items-center gap-1.5 text-xs transition-colors hover:text-rose-500 ${
+              disabled={
+                isInitializing ||
+                likeMutation.isPending ||
+                (isAuthenticated &&
+                  (likeStatusQuery.isPending || likeStatusQuery.isError))
+              }
+              aria-label={
+                liked ? `Unlike ${poem.title}` : `Like ${poem.title}`
+              }
+              aria-pressed={liked}
+              className={`inline-flex h-8 shrink-0 items-center gap-1.5 text-xs transition-colors hover:text-rose-500 disabled:cursor-not-allowed disabled:opacity-60 ${
                 liked ? "text-rose-500" : "text-muted-foreground"
               }`}
             >
@@ -283,6 +312,20 @@ export function PoemCard({ poem }: PoemCardProps) {
             </Link>
           </div>
 
+          {isAuthenticated && likeStatusQuery.isError && (
+            <div className="flex flex-wrap items-center gap-2 text-xs text-destructive">
+              <span>Could not load your like status.</span>
+              <button
+                type="button"
+                className="font-medium underline underline-offset-2"
+                onClick={() => void likeStatusQuery.refetch()}
+                disabled={likeStatusQuery.isFetching}
+              >
+                {likeStatusQuery.isFetching ? "Retrying…" : "Retry"}
+              </button>
+            </div>
+          )}
+
           {likeError && (
             <p role="alert" className="text-xs text-destructive">
               {likeError}
@@ -315,7 +358,7 @@ export function PoemCard({ poem }: PoemCardProps) {
             )}
           </section>
 
-          {/* Comment input is available only to authenticated users */}
+          {/* Comment input for authenticated users */}
           {isAuthenticated && (
             <form onSubmit={handleCommentSubmit} className="mt-0.5 space-y-1">
               <div className="flex min-w-0 gap-1.5">
@@ -360,7 +403,7 @@ export function PoemCard({ poem }: PoemCardProps) {
         </CardContent>
       </Card>
 
-      {/* Theme-aware sign-in dialog */}
+      {/* Sign-in dialog */}
       {loginPrompt && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-background/70 p-4 backdrop-blur-sm"

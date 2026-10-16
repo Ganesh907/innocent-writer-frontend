@@ -172,7 +172,7 @@ export function LoginPage() {
               </div>
 
               <div className="mb-5 space-y-1.5">
-                <p className="text-sm font-medium text-primary">Welcome back</p>
+                <p className="text-sm font-medium">Welcome back</p>
 
                 <h1 className="font-serif text-2xl font-semibold tracking-tight sm:text-3xl">
                   Sign in to your account

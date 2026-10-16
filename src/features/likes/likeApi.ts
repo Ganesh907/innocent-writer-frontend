@@ -14,3 +14,14 @@ export const togglePoemLike = async (
 
   return response.data.data;
 };
+
+export const getPoemLikeStatus = async (
+  poemId: string,
+  signal?: AbortSignal,
+): Promise<TogglePoemLikeResult> => {
+  const response = await axiosClient.get<
+    ApiSuccessResponse<TogglePoemLikeResult>
+  >(`/poems/${encodeURIComponent(poemId)}/like`, { signal });
+
+  return response.data.data;
+};
