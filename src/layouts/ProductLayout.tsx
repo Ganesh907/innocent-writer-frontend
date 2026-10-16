@@ -1,7 +1,10 @@
+
 import { useEffect } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
+  ArrowUpRight,
   BookOpen,
+  ChevronDown,
   Feather,
   House,
   LogIn,
@@ -12,13 +15,21 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/features/auth/authContext";
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   [
-    "inline-flex min-h-9 items-center justify-center gap-1.5",
-    "rounded-md px-2.5 text-xs font-medium sm:px-3",
-    "transition-colors",
+    "inline-flex min-h-10 items-center justify-center gap-2",
+    "rounded-md px-3 text-sm font-medium transition-colors",
     "focus-visible:outline-none focus-visible:ring-2",
     "focus-visible:ring-ring focus-visible:ring-offset-2",
     isActive
@@ -32,9 +43,27 @@ export function ProductLayout() {
 
   const { user, isInitializing, logout, hasRole } = useAuth();
 
-  const isPoemDetail = /^\/app\/poems\/[^/]+\/?$/.test(location.pathname);
+  const isPoetryHome =
+    location.pathname === "/app" || location.pathname === "/app/";
+
+  const isPoemDetail = /^\/app\/poems\/[^/]+\/?$/.test(
+    location.pathname,
+  );
 
   const isAuthorPage = location.pathname.startsWith("/app/author");
+  const isAdmin = Boolean(user && hasRole("ADMIN"));
+
+  const displayName = user?.name?.trim() || "My Account";
+
+  const initials =
+    displayName === "My Account"
+      ? "U"
+      : displayName
+          .split(/\s+/)
+          .slice(0, 2)
+          .map((part) => part.charAt(0))
+          .join("")
+          .toUpperCase();
 
   useEffect(() => {
     document.documentElement.dataset.product = "poetry";
@@ -54,8 +83,7 @@ export function ProductLayout() {
   return (
     <div
       data-product="poetry"
-      className="poetry-layout min-h-screen bg-background text-foreground"
-    >
+      className="poetry-layout flex min-h-screen flex-col bg-background text-foreground">
       <a
         href="#poetry-main"
         className={[
@@ -68,20 +96,22 @@ export function ProductLayout() {
         Skip to content
       </a>
 
-      <header className="poetry-navigation sticky top-0 z-40 border-b border-border/80 bg-background/95 backdrop-blur-md">
-        <div className="mx-auto flex min-h-14 w-full max-w-7xl items-center justify-between gap-2 px-3 sm:px-5 lg:px-8">
+      {/* Navigation */}
+<header className="poetry-navigation sticky top-0 z-40 border-b border-border bg-white text-black dark:bg-black dark:text-white">
+  <div className="mx-auto flex min-h-16 w-full max-w-[1440px] items-center justify-between gap-2 px-3 sm:gap-5 sm:px-6 md:px-8 lg:px-10">
+   
           {/* Brand */}
           <NavLink
             to="/app"
             end
-            aria-label="Innocent Writer Poetry home"
-            className="flex min-w-0 shrink items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            aria-label="Innocent Writer home"
+            className="flex min-w-0 shrink-0 items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:gap-3"
           >
-            <span className="grid size-8 shrink-0 place-items-center rounded-md border border-border bg-primary text-primary-foreground">
-              <Feather aria-hidden="true" className="size-4" />
+            <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-border bg-primary text-primary-foreground sm:size-10">
+              <Feather aria-hidden="true" className="size-5" />
             </span>
 
-            <span className="truncate font-serif text-sm font-semibold tracking-tight sm:text-base">
+            <span className="truncate font-serif text-base font-semibold tracking-tight sm:text-lg">
               Innocent Writer
             </span>
           </NavLink>
@@ -89,85 +119,150 @@ export function ProductLayout() {
           {/* Primary navigation */}
           <nav
             aria-label="Poetry navigation"
-            className="flex shrink-0 items-center gap-0.5 sm:gap-1"
+            className="flex shrink-0 items-center gap-0.5 sm:gap-2"
           >
             <NavLink to="/app" end className={navLinkClass}>
-              <House aria-hidden="true" className="size-3.5" />
+              <House aria-hidden="true" className="size-4" />
               <span className="hidden sm:inline">Home</span>
             </NavLink>
 
             <NavLink to="/app/poems" className={navLinkClass}>
-              <BookOpen aria-hidden="true" className="size-3.5" />
+              <BookOpen aria-hidden="true" className="size-4" />
               <span>Explore</span>
             </NavLink>
 
-            {user && (
-              <NavLink to="/app/author" className={navLinkClass}>
-                <UserRound aria-hidden="true" className="size-3.5" />
-                <span className="hidden md:inline">My Poems</span>
-              </NavLink>
-            )}
+            
+{user && (
+  <NavLink to="/app/author" className={navLinkClass}>
+    <UserRound aria-hidden="true" className="size-4" />
+    <span className="hidden md:inline">
+      {isAdmin ? "Author Workspace" : "My Poems"}
+    </span>
+  </NavLink>
+)}
+
           </nav>
 
-          {/* Authentication and role-aware actions */}
-          <div className="flex shrink-0 items-center gap-1">
-            {!isInitializing &&
-              (user ? (
-                <>
-                  {hasRole("ADMIN") && (
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="ghost"
-                      className="h-8 gap-1 px-2 text-xs"
-                      onClick={() => navigate("/admin")}
-                      aria-label="Open admin dashboard"
-                    >
-                      <ShieldCheck aria-hidden="true" className="size-4" />
-                      <span className="hidden lg:inline">Admin</span>
-                    </Button>
-                  )}
-
-                  <span className="hidden max-w-28 truncate text-xs text-muted-foreground xl:block">
-                    {user.name}
-                  </span>
-
+          {/* Account menu and portfolio link */}
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
                   <Button
                     type="button"
-                    size="sm"
-                    variant="ghost"
-                    className="h-8 gap-1 px-2 text-xs"
-                    onClick={handleLogout}
-                    aria-label="Sign out"
-                  >
-                    <LogOut aria-hidden="true" className="size-4" />
-                    <span className="hidden sm:inline">Sign out</span>
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="ghost"
-                    className="h-8 gap-1 px-2 text-xs"
-                    onClick={() => navigate("/login")}
-                  >
-                    <LogIn aria-hidden="true" className="size-4" />
-                    <span>Sign in</span>
-                  </Button>
+                    variant="outline"
+                    className="h-10 max-w-40 gap-2 rounded-full px-2 sm:max-w-56 sm:px-3"
+                    aria-label="Open account menu"
+                  />
+                }
+              >
+                <span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+                  {user ? initials : <UserRound className="size-4" />}
+                </span>
 
-                  <Button
-                    type="button"
-                    size="sm"
-                    className="h-8 gap-1 px-2 text-xs"
-                    onClick={() => navigate("/register")}
-                  >
-                    <UserPlus aria-hidden="true" className="size-4" />
-                    <span className="hidden sm:inline">Join</span>
-                  </Button>
-                </>
-              ))}
+                <span className="truncate text-sm">
+                  {isInitializing
+                    ? "Account"
+                    : user
+                      ? displayName
+                      : "Account"}
+                </span>
+
+                <ChevronDown
+                  aria-hidden="true"
+                  className="size-3.5 shrink-0 opacity-70"
+                />
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent
+                align="end"
+                side="bottom"
+                sideOffset={6}
+                className="w-56 min-w-56"
+              >
+                {user ? (
+                  <>
+                    <DropdownMenuGroup>
+                      <DropdownMenuLabel className="font-normal">
+                        <span className="block truncate text-sm font-medium text-foreground">
+                          {displayName}
+                        </span>
+                        <span className="block text-xs text-muted-foreground">
+                          {isAdmin ? "Administrator" : "Writer"}
+                        </span>
+                      </DropdownMenuLabel>
+                    </DropdownMenuGroup>
+
+                    <DropdownMenuSeparator />
+
+                    <DropdownMenuGroup>
+                      {isAdmin ? (
+                        <DropdownMenuItem
+                          onClick={() => navigate("/admin")}
+                        >
+                          <ShieldCheck className="mr-2 size-4" />
+                          Admin Dashboard
+                        </DropdownMenuItem>
+                      ) : (
+                        <DropdownMenuItem
+                          onClick={() => navigate("/app/author")}
+                        >
+                          <UserRound className="mr-2 size-4" />
+                          My Writing Desk
+                        </DropdownMenuItem>
+                      )}
+
+                      <DropdownMenuItem onClick={handleLogout}>
+                        <LogOut className="mr-2 size-4" />
+                        Sign out
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                  </>
+                ) : (
+                  <>
+                    <DropdownMenuGroup>
+                      <DropdownMenuLabel>
+                        Welcome to Innocent Writer
+                      </DropdownMenuLabel>
+                    </DropdownMenuGroup>
+
+                    <DropdownMenuSeparator />
+
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem
+                        onClick={() => navigate("/login")}
+                      >
+                        <LogIn className="mr-2 size-4" />
+                        Sign in
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem
+                        onClick={() => navigate("/register")}
+                      >
+                        <UserPlus className="mr-2 size-4" />
+                        Create account
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Portfolio */}
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="h-10 shrink-0 gap-1 px-2 sm:gap-2 sm:px-3"
+              onClick={() => navigate("/portfolio")}
+            >
+              <span className="hidden sm:inline">Portfolio</span>
+              <span className="sm:hidden">Work</span>
+              <ArrowUpRight
+                aria-hidden="true"
+                className="size-4"
+              />
+            </Button>
           </div>
         </div>
       </header>
@@ -176,15 +271,28 @@ export function ProductLayout() {
       <main
         id="poetry-main"
         className={[
-          "mx-auto w-full  px-3 sm:px-5 lg:px-8",
-          isPoemDetail ? "pb-5 pt-1 sm:pb-8" : "pb-8 pt-5 sm:pt-8",
-          isAuthorPage ? "poetry-author-page" : "",
+          "w-full flex-1",
+          isPoetryHome
+            ? "p-0"
+            : [
+                "mx-auto px-3 sm:px-5 lg:px-8",
+                isPoemDetail
+                  ? "pb-5 pt-1 sm:pb-8"
+                  : "pb-8 pt-5 sm:pt-8",
+                isAuthorPage ? "poetry-author-page" : "",
+              ].join(" "),
         ].join(" ")}
       >
         <Outlet />
       </main>
 
-      <footer className="poetry-footer mt-auto border-t border-border/70">
+      {/* Footer */}
+      <footer
+        className={[
+          "poetry-footer mt-auto border-t border-border/70",
+          isPoetryHome ? "hidden" : "",
+        ].join(" ")}
+      >
         <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-2 px-3 py-4 text-center text-[11px] text-muted-foreground sm:flex-row sm:px-5 sm:text-left lg:px-8">
           <NavLink
             to="/app"

@@ -17,14 +17,16 @@ export function ProductRoutes() {
 
         <Route path="poems/:id" element={<PoemDetailPage />} />
 
-        <Route
-          path="author"
-          element={
-            <ProtectedRoute requiredRole="USER">
-              <AuthorDashboardPage />
-            </ProtectedRoute>
-          }
-        />
+       
+<Route
+  path="author"
+  element={
+    <ProtectedRoute>
+      <AuthorDashboardPage />
+    </ProtectedRoute>
+  }
+/>
+
 
         <Route path="*" element={<ProductHomePage />} />
       </Route>

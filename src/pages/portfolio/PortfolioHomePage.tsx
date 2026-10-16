@@ -21,8 +21,11 @@ import {
   Menu,
   Phone,
   Server,
+  Star,
+  Sun,
   X,
 } from "lucide-react";
+
 
 import { Button } from "@/components/ui/button";
 
@@ -278,7 +281,7 @@ export function PortfolioHomePage() {
           <div className="flex shrink-0 items-center gap-2">
             <Button
               size="sm"
-              className="hidden bg-primary font-semibold text-slate-950 hover:bg-[var(--color-primary-hover)] sm:inline-flex"
+              className="hidden bg-primary font-semibold text-white hover:bg-[var(--color-primary-hover)] sm:inline-flex"
               render={<a href="/" />}
             >
               Innocent Writer
@@ -355,36 +358,35 @@ export function PortfolioHomePage() {
             >
               Hi, I'm{" "}
               <span className="portfolio-name-wrap relative inline-block cursor-pointer px-2 py-1">
-                <span className="portfolio-name-text relative z-10 inline-block font-bold text-black hover:text-white dark:hover:text-white">
+                <span className="portfolio-name-text relative z-10 inline-block font-bold text-white hover:text-white dark:hover:text-white">
                   {portfolioProfile.name}
                 </span>
 
                 <span aria-hidden="true" className="portfolio-name-bg" />
               </span>
             </p>
-
-            <p
-              className="portfolio-fade-up text-base font-semibold leading-7 sm:text-xl"
-              style={{ "--intro-delay": "400ms" } as CSSProperties}
-            >
-              <span className="text-teal-400">Programmer</span> by the sun{" "}
-              <span
-                className="animate-spin duration-500 inline-block text-yellow-400"
-                aria-label="sun"
-                role="img"
-              >
-                ☀
-              </span>
-              {" . "}
-              <span className="text-pink-400">Poet</span> by the stars{" "}
-              <span
-                className="animate-pulse inline-block text-yellow-400"
-                aria-label="star"
-                role="img"
-              >
-                ★
-              </span>
-            </p>
+<p
+  className="portfolio-fade-up text-base font-semibold leading-7 sm:text-xl"
+  style={{ "--intro-delay": "400ms" } as CSSProperties}
+>
+  <span className="text-teal-400">Programmer</span> by the sun{" "}
+  <span
+    className="inline-flex align-middle animate-spin [animation-duration:4s] text-yellow-400 mx-1"
+    aria-label="sun"
+    role="img"
+  >
+    <Sun fill="currentColor" className="w-5 h-5 sm:w-6 sm:h-6" />
+  </span>
+  {". "}
+  <span className="text-pink-400">Poet</span> by the stars{" "}
+  <span
+    className="inline-flex align-middle animate-pulse [animation-duration:2s] text-yellow-400 mx-1"
+    aria-label="star"
+    role="img"
+  >
+    <Star fill="currentColor" strokeWidth={1.75} className="w-5 h-5 sm:w-6 sm:h-6" />
+  </span>
+</p>
 
             <p
               className="portfolio-fade-up text-base font-semibold leading-7 sm:text-xl"
@@ -441,9 +443,11 @@ export function PortfolioHomePage() {
           <aside className="portfolio-profile-enter w-full max-w-[420px]  justify-self-start lg:justify-self-end ">
             <div className="rounded-3xl border border-primary/25  bg-card/95 p-5 text-card-foreground shadow-2xl dark:backdrop-blur-xl sm:p-7">
               <div className="mb-5 flex items-center gap-4">
-                <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-primary text-xl font-bold text-slate-950">
-                  GS
-                </div>
+             <img
+  src="images/Ganesh.jpg"
+  alt="GS Profile"
+  className="size-14 shrink-0 rounded-full object-cover"
+/>
 
                 <div className="min-w-0">
                   <h2 className="text-lg font-bold sm:text-xl">
