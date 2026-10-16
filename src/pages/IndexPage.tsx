@@ -2,10 +2,8 @@
 import { useNavigate } from "react-router-dom";
 import {
   ArrowRight,
-  BookOpen,
   Code2,
   Feather,
-  Sparkles,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";

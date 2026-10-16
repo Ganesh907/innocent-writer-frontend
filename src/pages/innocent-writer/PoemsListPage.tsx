@@ -8,7 +8,6 @@ import {
   Feather,
   RefreshCw,
   Search,
-  Sparkles,
   X,
 } from "lucide-react";
 
