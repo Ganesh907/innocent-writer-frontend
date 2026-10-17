@@ -13,7 +13,7 @@ import {
   Send,
   UserRound,
 } from "lucide-react";
-
+import { SEO } from "@/components/shared/SEO";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -397,6 +397,13 @@ export function PoemDetailPage() {
   const author = poem.authorName?.trim() || "Unknown author";
   const comments = commentsQuery.data ?? [];
 
+const seoDescription = poem.content
+  .replace(/\s+/g, " ")
+  .trim()
+  .slice(0, 155);
+
+const seoTitle = `${poem.title} by ${author} | Innocent Writer`;
+
   const instagramUrl = isValidInstagramPostUrl(poem.instagramPostUrl)
     ? poem.instagramPostUrl
     : null;
@@ -445,6 +452,14 @@ export function PoemDetailPage() {
 
   return (
     <main className="mx-auto w-full px-3 py-3 text-foreground sm:px-5 sm:py-5">
+      <SEO
+  title={seoTitle}
+  description={
+    seoDescription ||
+    `Read "${poem.title}" by ${author} on Innocent Writer.`
+  }
+  path={`/app/poems/${encodeURIComponent(id)}`}
+/>
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-border/70 pb-2">
         <Link
           to="/app/poems"

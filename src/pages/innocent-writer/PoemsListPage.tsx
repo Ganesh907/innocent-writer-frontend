@@ -10,6 +10,7 @@ import {
   Search,
   X,
 } from "lucide-react";
+import { SEO } from "@/components/shared/SEO";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -55,7 +56,13 @@ export function PoemsListPage() {
     setPage(1);
   };
 
-  return (
+  return (  
+    <>
+    <SEO
+      title="Discover Poems | Innocent Writer"
+      description="Discover poems, explore creative writing, and read poetry shared by writers on Innocent Writer."
+      path="/app/poems"
+    />
     <main data-product="poetry" className="poetry-library">
       {/* Library heading and search */}
       <header className="space-y-5">
@@ -335,5 +342,6 @@ export function PoemsListPage() {
         </div>
       </div>
     </main>
+    </>
   );
 }

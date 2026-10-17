@@ -303,13 +303,7 @@ export function PoemCard({ poem }: PoemCardProps) {
               </span>
             </span>
 
-            <Link
-              to={`${detailPath}#comments-title`}
-              className="ml-auto inline-flex shrink-0 items-center gap-1 text-[11px] font-medium text-primary hover:underline"
-            >
-              <span>Read all comments</span>
-              <ArrowUpRight aria-hidden="true" className="size-3" />
-            </Link>
+       
           </div>
 
           {isAuthenticated && likeStatusQuery.isError && (
@@ -400,6 +394,14 @@ export function PoemCard({ poem }: PoemCardProps) {
               )}
             </form>
           )}
+
+               <Link
+              to={`${detailPath}#comments-title`}
+              className="ml-auto inline-flex shrink-0 items-center gap-1 text-[11px] font-medium text-primary hover:underline"
+            >
+              <span>Read all comments</span>
+              <ArrowUpRight aria-hidden="true" className="size-3" />
+            </Link>
         </CardContent>
       </Card>
 
