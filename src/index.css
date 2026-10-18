@@ -580,17 +580,7 @@ img {
   position: relative;
   min-height: 100%;
   padding: clamp(1rem, 3vw, 2.75rem);
-  background:
-    radial-gradient(
-      ellipse at 50% 0%,
-      rgb(255 255 255 / 0.32),
-      transparent 60%
-    ),
-    linear-gradient(
-      135deg,
-      var(--gateway-desk-from, #eee5d3),
-      var(--gateway-desk-to, #d5c4a1)
-    );
+
   color: var(--gateway-text, #2b2118);
   overflow: hidden;
 }
@@ -1620,4 +1610,5 @@ img {
     transition-duration: 0.01ms !important;
   }
 }
+
 

@@ -1,7 +1,5 @@
-
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, BookOpen, PenLine, Sparkles } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/features/auth/authContext";
 
@@ -37,10 +35,7 @@ export function ProductHomePage() {
         <div className="absolute -bottom-32 -left-24 size-96 rounded-full bg-[#c7b59a]/20 blur-3xl dark:bg-primary/10" />
 
         <div className="absolute inset-0 opacity-[0.16] dark:opacity-[0.07]">
-          <svg
-            className="size-full"
-            xmlns="http://www.w3.org/2000/svg"
-          >
+          <svg className="size-full" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <pattern
                 id="paper-grain"
@@ -57,38 +52,38 @@ export function ProductHomePage() {
         </div>
       </div>
 
-      <div className="mx-auto grid w-full max-w-[1280px] items-center gap-8 px-5 py-6 sm:gap-10 sm:px-8 sm:py-8 lg:grid-cols-[1fr_0.9fr] lg:gap-14 lg:px-12 lg:py-8">
+      <div className="mx-auto flex w-full max-w-[1280px] flex-col-reverse items-center gap-8 px-5 py-6 sm:gap-10 sm:px-8 sm:py-8 lg:grid lg:grid-cols-[1fr_0.9fr] lg:gap-14 lg:px-12 lg:py-8">
         {/* Left: Open-book and paper-note composition */}
-        <div className="relative mx-auto w-full max-w-[430px] lg:ml-auto">
+        <div className="relative mx-auto w-full min-w-0 max-w-[430px] lg:ml-auto">
           {/* Book shadow */}
           <div
             aria-hidden="true"
             className="absolute inset-x-5 bottom-0 top-4 rotate-3 rounded-[5px] bg-[#b6a184]/30 dark:bg-primary/15"
           />
 
-          <article className="relative overflow-hidden rounded-[4px] border border-[#d7c9af] bg-[#fffaf0] text-[#30291f] shadow-[0_18px_45px_rgba(65,48,29,0.14)] dark:border-border dark:bg-card dark:text-card-foreground">
+          <article className="relative min-w-0 overflow-hidden rounded-[4px] border border-[#d7c9af] bg-[#fffaf0] text-[#30291f] shadow-[0_18px_45px_rgba(65,48,29,0.14)] dark:border-border dark:bg-card dark:text-card-foreground">
             {/* Book header */}
-            <div className="flex items-center justify-between border-b border-[#e6dac6] px-5 py-3 dark:border-border sm:px-6">
-              <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8b7355] dark:text-primary">
-                <Sparkles className="size-3.5" />
-                Notes from the heart
+            <div className="flex items-center justify-between gap-2 border-b border-[#e6dac6] px-4 py-3 dark:border-border sm:px-6">
+              <div className="flex min-w-0 items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-[#8b7355] dark:text-primary sm:tracking-[0.2em]">
+                <Sparkles className="size-3.5 shrink-0" />
+                <span>Words from the heart</span>
               </div>
 
-              <span className="font-serif text-xs italic text-[#a38c6c] dark:text-muted-foreground">
+              <span className="shrink-0 font-serif text-xs italic text-[#a38c6c] dark:text-muted-foreground">
                 No. 01
               </span>
             </div>
 
             {/* Paper */}
-            <div className="relative px-5 py-5 sm:px-7 sm:py-6">
+            <div className="relative px-4 py-5 sm:px-7 sm:py-6">
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute bottom-0 left-8 top-0 w-px bg-[#e6cfc2] dark:bg-primary/25"
+                className="pointer-events-none absolute bottom-0 left-7 top-0 w-px bg-[#e6cfc2] dark:bg-primary/25 sm:left-8"
               />
 
-              <div className="relative pl-4 sm:pl-5">
+              <div className="relative min-w-0 pl-4 ml-2 sm:pl-5">
                 <p className="mb-3 font-serif text-sm italic text-[#9a8062] dark:text-primary">
-                  Dear someone,
+                  Dear poetry lover,
                 </p>
 
                 <h2
@@ -114,19 +109,19 @@ export function ProductHomePage() {
                   <span className="h-px flex-1 bg-[#e6dac6] dark:bg-border" />
                 </div>
 
-                <div className="flex items-end justify-between">
-                  <div>
+                <div className="flex items-end justify-between gap-3">
+                  <div className="min-w-0">
                     <p className="font-serif text-sm italic text-[#8b7355] dark:text-primary">
-                      Keep this feeling.
+                      Every poem has a feeling.
                     </p>
-                    <p className="mt-1 text-[10px] uppercase tracking-[0.15em] text-[#a3947e] dark:text-muted-foreground">
-                      Written, not sent
+                    <p className="mt-1 text-[10px] uppercase tracking-[0.12em] text-[#a3947e] dark:text-muted-foreground sm:tracking-[0.15em]">
+                      Every feeling has a story.
                     </p>
                   </div>
 
                   <div
                     aria-hidden="true"
-                    className="grid size-10 -rotate-6 place-items-center rounded-full border border-[#cdb99a] text-[#947552] dark:border-border dark:text-primary"
+                    className="grid size-10 shrink-0 -rotate-6 place-items-center rounded-full border border-[#cdb99a] text-[#947552] dark:border-border dark:text-primary"
                   >
                     <PenLine className="size-4" />
                   </div>
@@ -135,15 +130,18 @@ export function ProductHomePage() {
 
               <img
                 src="/images/ProductBg.png"
-                alt="Poetry and notes"
-                className="mt-4 block max-h-40 w-full rounded-sm object-cover sm:max-h-48"
+                alt="Poetry and handwritten notes"
+                className="mt-4 block h-auto max-h-40 w-full max-w-full rounded-sm object-contain sm:max-h-48"
+                style={{
+                  filter: "sepia(18%) saturate(78%) contrast(96%)",
+                }}
               />
             </div>
 
             {/* Book footer */}
-            <div className="flex items-center justify-between bg-[#eee4d3] px-5 py-2.5 text-[10px] uppercase tracking-[0.15em] text-[#84715a] dark:bg-muted dark:text-muted-foreground sm:px-6">
+            <div className="flex items-center justify-between gap-2 bg-[#eee4d3] px-4 py-2.5 text-[9px] uppercase tracking-[0.1em] text-[#84715a] dark:bg-muted dark:text-muted-foreground sm:px-6 sm:text-[10px] sm:tracking-[0.15em]">
               <span>Little things matter</span>
-              <span>♥ &nbsp; Always</span>
+              <span>♥ Always</span>
             </div>
           </article>
 
@@ -154,32 +152,33 @@ export function ProductHomePage() {
         </div>
 
         {/* Right: Editorial introduction */}
-        <div className="mx-auto max-w-xl lg:mx-0">
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#c9b99d] bg-white/50 px-3.5 py-2 text-[11px] font-semibold uppercase tracking-[0.17em] text-[#786247] dark:border-border dark:bg-card/50 dark:text-primary">
-            <BookOpen className="size-3.5" />
-            Innocent Writer
+        <div className="mx-auto min-w-0 max-w-xl lg:mx-0">
+          <div className="mb-5 inline-flex max-w-full items-center gap-2 rounded-full border border-[#c9b99d] bg-white/50 px-3.5 py-2 text-[11px] font-semibold uppercase tracking-[0.17em] text-[#786247] dark:border-border dark:bg-card/50 dark:text-primary">
+            <BookOpen className="size-3.5 shrink-0" />
+            <span>Innocent Writer</span>
           </div>
 
           <p className="mb-3 text-sm text-[#806e58] dark:text-muted-foreground">
-            A little space for everything you feel.
+            A home for poems, feelings, and untold stories.
           </p>
 
           <h1
             id="poetry-home-title"
             className="max-w-lg font-serif text-4xl font-medium leading-[1.1] tracking-[-0.04em] sm:text-5xl lg:text-6xl"
           >
-            Some things
+            Every feeling
             <br />
-            are better
+            has a
             <br />
             <span className="italic text-[#98674d] dark:text-primary">
-              written.
+              poem.
             </span>
           </h1>
 
           <p className="mt-4 max-w-md text-sm leading-6 text-[#6f6558] dark:text-muted-foreground sm:text-base sm:leading-7">
-            Your late-night thoughts, unsent messages, and little pieces of life
-            — give them a page of their own.
+            Read poems that touch your heart, or share the words you have been
+            keeping inside. Your feelings deserve a place to be read, felt, and
+            remembered.
           </p>
 
           <div className="mt-6 flex flex-wrap gap-3">
@@ -189,7 +188,7 @@ export function ProductHomePage() {
               onClick={() => navigate("/app/poems")}
               className="h-11 gap-2 rounded-full bg-[#49392d] px-5 text-[#fff8eb] hover:bg-[#35291f] dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90"
             >
-              Explore poems
+              Read poems
               <ArrowRight className="size-4" />
             </Button>
 
@@ -201,9 +200,21 @@ export function ProductHomePage() {
                 onClick={() => navigate("/register")}
                 className="h-11 rounded-full border-[#c8b99f] bg-transparent px-5 hover:bg-[#e8dfcf] dark:border-border dark:hover:bg-accent"
               >
-                Find your words
+                Share your poetry
+                <ArrowRight className="size-4" />
               </Button>
             )}
+            <Button
+              type="button"
+              size="lg"
+              variant="outline"
+              onClick={() => navigate("/app/book")}
+              className="h-11 gap-2 rounded-full border-[#c8b99f] bg-transparent px-5 hover:bg-[#e8dfcf] dark:border-border dark:hover:bg-accent"
+            >
+              <BookOpen className="size-4" />
+              Open Poetry Book
+              <ArrowRight className="size-4" />
+            </Button>
 
             {!isInitializing && user && (
               <Button

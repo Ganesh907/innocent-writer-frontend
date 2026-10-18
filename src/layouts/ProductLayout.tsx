@@ -1,6 +1,11 @@
 
 import { useEffect } from "react";
-import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import {
+  NavLink,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import {
   ArrowUpRight,
   BookOpen,
@@ -127,7 +132,7 @@ export function ProductLayout() {
             </span>
           </NavLink>
 
-          {/* Desktop navigation: preserve laptop layout */}
+          {/* Desktop navigation */}
           <nav
             aria-label="Poetry navigation"
             className="hidden shrink-0 items-center gap-0.5 sm:flex sm:gap-2"
@@ -137,10 +142,15 @@ export function ProductLayout() {
               <span className="hidden sm:inline">Home</span>
             </NavLink>
 
-            <NavLink to="/app/poems" className={navLinkClass}>
-              <BookOpen aria-hidden="true" className="size-4" />
-              <span>Explore</span>
-            </NavLink>
+           <NavLink to="/app/poems" className={navLinkClass}>
+  <Feather aria-hidden="true" className="size-4" />
+  <span>Explore Poems</span>
+</NavLink>
+
+<NavLink to="/app/book" className={navLinkClass}>
+  <BookOpen aria-hidden="true" className="size-4" />
+  <span>Poetry Book</span>
+</NavLink>
 
             {user && (
               <NavLink to="/app/author" className={navLinkClass}>
@@ -154,7 +164,7 @@ export function ProductLayout() {
 
           {/* Account, mobile menu and portfolio */}
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
-            {/* Mobile book-notes dropdown */}
+            {/* Mobile navigation menu */}
             <div className="sm:hidden">
               <DropdownMenu>
                 <DropdownMenuTrigger
@@ -198,8 +208,13 @@ export function ProductLayout() {
                     </DropdownMenuItem>
 
                     <DropdownMenuItem onClick={() => navigate("/app/poems")}>
-                      <BookOpen aria-hidden="true" className="mr-2 size-4" />
+                      <Feather aria-hidden="true" className="mr-2 size-4" />
                       Explore poems
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem onClick={() => navigate("/app/book")}>
+                      <BookOpen aria-hidden="true" className="mr-2 size-4" />
+                      Poetry Book
                     </DropdownMenuItem>
 
                     {user && (
@@ -381,7 +396,7 @@ export function ProductLayout() {
               </DropdownMenu>
             </div>
 
-            {/* Portfolio: retain laptop button, use compact mobile link */}
+            {/* Portfolio button */}
             <Button
               type="button"
               size="sm"
@@ -389,8 +404,7 @@ export function ProductLayout() {
               className="h-10 shrink-0 gap-1 px-2 sm:gap-2 sm:px-3"
               onClick={() => navigate("/portfolio")}
             >
-              <span className="hidden sm:inline">Portfolio</span>
-              <span className="sm:hidden">Work</span>
+              <span>Portfolio</span>
               <ArrowUpRight aria-hidden="true" className="size-4" />
             </Button>
           </div>

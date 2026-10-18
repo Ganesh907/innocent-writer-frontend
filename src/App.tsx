@@ -1,3 +1,4 @@
+
 import { Route, Routes } from "react-router-dom";
 
 import { MainLayout } from "./layouts/MainLayout";
@@ -9,6 +10,7 @@ import { ProtectedRoute } from "./components/shared/ProtectedRoute";
 import { PortfolioRoutes } from "./routes/PortfolioRoutes";
 import { ProductRoutes } from "./routes/ProductRoutes";
 import { AdminRoutes } from "./routes/AdminRoutes";
+import { PoetryBookPage } from "./pages/innocent-writer/PoetryBookPage";
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<IndexPage />} />
+
+          <Route path="/book" element={<PoetryBookPage />} />
 
           <Route path="/login" element={<LoginPage />} />
 

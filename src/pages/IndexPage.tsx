@@ -1,11 +1,25 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, Code2, Feather } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { SEO } from "@/components/shared/SEO";
+import { axiosClient } from "@/lib/api/axiosClient";
+
 
 export function IndexPage() {
   const navigate = useNavigate();
+  useEffect(() => {
+    const apiBaseUrl = axiosClient.defaults.baseURL ?? "/api";
+    const backendBaseUrl = apiBaseUrl.replace(/\/api\/?$/, "");
+
+    void fetch(`${backendBaseUrl}/health`, {
+      method: "GET",
+      cache: "no-store",
+    }).catch(() => {
+      // dont block navigation even if health api failed.
+    });
+  }, []);
 
   return (
     <>
