@@ -1,46 +1,61 @@
-import { Skeleton } from "../Skeleton";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/skeletons";
+
+function AdminUserCardSkeleton() {
+  return (
+    <Card>
+      <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+        <div className="min-w-0 flex-1 space-y-2">
+          <Skeleton className="h-5 w-48 max-w-full" />
+          <Skeleton className="h-4 w-64 max-w-full" />
+          <Skeleton className="mt-2 h-3 w-40 max-w-full" />
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1.5">
+            <Skeleton className="size-3.5 rounded-full" />
+            <Skeleton className="h-3 w-14" />
+          </div>
+          <Skeleton className="h-9 w-28 rounded-md" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 export function AdminUsersPageSkeleton() {
   return (
-    <main
-      aria-label="Loading admin users"
+    <div
+      className="space-y-6 py-4"
       aria-busy="true"
-      className="mx-auto w-full max-w-7xl space-y-6 px-4 py-8 sm:px-6"
+      aria-label="Loading users"
     >
-      <header className="space-y-3">
-        <Skeleton className="h-9 w-56" />
-        <Skeleton className="h-4 w-72" />
+      <header className="flex flex-wrap items-start justify-between gap-4">
+        <div className="min-w-0 flex-1 space-y-2">
+          <Skeleton className="h-4 w-52 max-w-full" />
+          <Skeleton className="mt-1 h-9 w-44 max-w-full" />
+          <Skeleton className="mt-2 h-4 w-full max-w-md" />
+        </div>
+
+        <Skeleton className="h-10 w-28 shrink-0 rounded-md" />
       </header>
 
-      <div className="overflow-hidden rounded-xl border border-border/60">
-        <div className="grid grid-cols-4 gap-4 border-b p-4">
-          {Array.from({ length: 4 }, (_, i) => (
-            <Skeleton key={i} className="h-4 w-3/4" />
-          ))}
-        </div>
-        {Array.from({ length: 8 }, (_, i) => (
-          <div
-            key={i}
-            className="grid grid-cols-1 gap-3 border-b p-4 sm:grid-cols-4 sm:items-center"
-          >
-            <div className="flex items-center gap-3">
-              <Skeleton className="size-9 rounded-full" />
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-32" />
-                <Skeleton className="h-3 w-40" />
-              </div>
-            </div>
-            <Skeleton className="h-5 w-20" />
-            <Skeleton className="h-5 w-24" />
-            <Skeleton className="h-9 w-28" />
-          </div>
-        ))}
-      </div>
+      <section className="space-y-3" aria-label="Users loading">
+        <AdminUserCardSkeleton />
+        <AdminUserCardSkeleton />
+        <AdminUserCardSkeleton />
+        <AdminUserCardSkeleton />
+        <AdminUserCardSkeleton />
+        <AdminUserCardSkeleton />
+      </section>
 
-      <div className="flex justify-center gap-2">
-        <Skeleton className="size-9" />
-        <Skeleton className="size-9" />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Skeleton className="h-4 w-36 max-w-full" />
+        <div className="flex gap-2">
+          <Skeleton className="h-9 w-24 rounded-md" />
+          <Skeleton className="h-9 w-20 rounded-md" />
+        </div>
       </div>
-    </main>
+    </div>
   );
 }
