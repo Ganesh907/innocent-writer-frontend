@@ -1102,6 +1102,10 @@ img {
   box-shadow: var(--gateway-shadow);
 }
 
+#poetry-book-outer .gateway-book {
+  box-shadow: none;
+}
+
 [data-product="gateway"] .gateway-book::before {
   position: absolute;
   z-index: -1;

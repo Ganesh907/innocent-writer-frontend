@@ -114,9 +114,11 @@ export function ProductLayout() {
             aria-label="Innocent Writer home"
             className="flex min-w-0 shrink-0 items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:gap-3"
           >
-            <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-border bg-primary text-primary-foreground sm:size-10">
-              <Feather aria-hidden="true" className="size-5" />
-            </span>
+          <img
+  src="/images/Writer.jpg"
+  alt="Innocent Writer logo"
+  className="size-9 shrink-0 rounded-lg object-contain sm:size-10"
+/>
             <span className="truncate font-serif text-base font-semibold tracking-tight sm:text-lg">
               Innocent Writer
             </span>

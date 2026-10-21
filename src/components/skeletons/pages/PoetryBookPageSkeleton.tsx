@@ -43,7 +43,7 @@ function BookCoverSkeleton({ isFront }: { isFront: boolean }) {
       className="gateway-page relative isolate box-border flex h-full w-full min-w-0 items-stretch justify-stretch overflow-hidden p-0 text-center"
       style={COVER_STYLE}
     >
-      {/* Keep the cover-image slot and theme-aware tint to prevent layout shift */}
+      {/* Keep the cover-image slot and tint to prevent layout shift. */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/70"
@@ -95,11 +95,7 @@ function BookCoverSkeleton({ isFront }: { isFront: boolean }) {
   );
 }
 
-function PoetryPageSkeleton({
-  pageNumber,
-}: {
-  pageNumber: number;
-}) {
+function PoetryPageSkeleton({ pageNumber }: { pageNumber: number }) {
   return (
     <div
       className={`gateway-page relative isolate box-border flex h-full w-full min-w-0 flex-col overflow-hidden p-3 text-[var(--gateway-text)] sm:p-4 ${
@@ -137,12 +133,12 @@ export function PoetryBookPageSkeleton() {
       >
         <div className="gateway-book flex min-h-0 w-full max-w-[1440px] flex-1 flex-col">
           <div className="relative flex min-h-0 w-full flex-1 items-center justify-center overflow-hidden rounded-[3px] bg-[var(--gateway-page)] [&_.stf__wrapper]:!mx-auto [&_.stf__block]:!mx-auto [&_.stf__item]:!overflow-hidden">
-            {/* Static book spread: no flip engine or event handlers in the skeleton */}
+            {/* Cover first, then the first poem on the right-hand page. */}
             <div className="grid h-full w-full grid-cols-1 overflow-hidden md:grid-cols-2">
-              <div className="hidden min-h-0 min-w-0 overflow-hidden md:block">
+              <div className="min-h-0 min-w-0 overflow-hidden">
                 <BookCoverSkeleton isFront />
               </div>
-              <div className="min-h-0 min-w-0 overflow-hidden">
+              <div className="hidden min-h-0 min-w-0 overflow-hidden md:block">
                 <PoetryPageSkeleton pageNumber={1} />
               </div>
             </div>
@@ -153,7 +149,7 @@ export function PoetryBookPageSkeleton() {
               className="pointer-events-none absolute bottom-0 left-1/2 top-0 z-[5] hidden w-[clamp(10px,1.5vw,20px)] -translate-x-1/2 bg-[linear-gradient(90deg,transparent,var(--gateway-page-shade)_30%,var(--gateway-page-line)_50%,var(--gateway-page-shade)_70%,transparent)] md:block"
             />
 
-            {/* Non-interactive page controls preserve the original control footprint */}
+            {/* Non-interactive controls preserve the original control footprint. */}
             <nav
               aria-label="Book page controls loading"
               className="pointer-events-none absolute bottom-2 left-2 right-2 z-20 flex justify-between gap-2"
@@ -169,14 +165,6 @@ export function PoetryBookPageSkeleton() {
             </nav>
           </div>
         </div>
-      </section>
-
-      {/* On mobile the original page places the support section below the book */}
-      <section
-        aria-label="Support section loading"
-        className="mt-3 w-full max-w-md shrink-0 md:hidden"
-      >
-        <Skeleton className="h-48 w-full rounded-xl" />
       </section>
     </main>
   );

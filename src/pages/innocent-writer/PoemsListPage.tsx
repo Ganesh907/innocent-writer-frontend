@@ -21,7 +21,7 @@ import { getPoems } from "@/features/poems/poemApi";
 import { poemQueryKeys } from "@/features/poems/poemQueryKeys";
 import { getApiErrorMessage } from "@/lib/api/apiError";
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 4;
 
 export function PoemsListPage() {
   const [searchInput, setSearchInput] = useState("");
@@ -218,8 +218,8 @@ export function PoemsListPage() {
                 </Card>
               ) : (
                 /* ONLY CHANGE: 3 poem cards horizontally on the left page */
-                <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {poems.slice(0, 3).map((poem) => (
+                <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-2 lg:grid-cols-2">
+                  {poems.slice(0, 2).map((poem) => (
                     <PoemCard key={poem.id} poem={poem} />
                   ))}
                 </div>
@@ -310,8 +310,8 @@ export function PoemsListPage() {
                 </div>
               ) : (
                 /* ONLY CHANGE: 3 poem cards horizontally on the right page */
-                <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {poems.slice(3, 6).map((poem) => (
+                <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-2 lg:grid-cols-2">
+                  {poems.slice(2, 4).map((poem) => (
                     <PoemCard key={poem.id} poem={poem} />
                   ))}
                 </div>

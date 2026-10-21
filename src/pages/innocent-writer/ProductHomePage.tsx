@@ -201,7 +201,7 @@ export function ProductHomePage() {
     className="h-11 gap-2 rounded-full border-[#c8b99f] bg-transparent px-5 hover:bg-[#e8dfcf] dark:border-border dark:hover:bg-accent"
   >
     <BookOpen aria-hidden="true" className="size-4" />
-    Open Poetry Book
+    Open Poetry Collection
   </Button>
 
   {!isInitializing && !user && (
