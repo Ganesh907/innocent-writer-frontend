@@ -160,7 +160,7 @@ export function PortfolioHomePageSkeleton() {
           </div>
 
           {/* Right profile summary */}
-          <aside className="portfolio-profile-enter w-full max-w-[420px] justify-self-start lg:justify-self-end">
+          <aside className="portfolio-profile-enter w-full max-w-[420px] hidden lg:block justify-self-start lg:justify-self-end">
             <div className="rounded-3xl border border-primary/25 bg-card p-3 text-card-foreground shadow-2xl sm:p-7 md:bg-card/95">
               <div className="mb-3 flex items-center gap-3 sm:mb-5 sm:gap-4">
                 <div className="size-12 shrink-0 overflow-hidden rounded-full sm:size-14">

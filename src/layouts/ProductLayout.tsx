@@ -1,25 +1,20 @@
 
 import { useEffect } from "react";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
-  NavLink,
-  Outlet,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
-import {
-  ArrowUpRight,
   BookOpen,
+  BriefcaseBusiness,
   ChevronDown,
   Feather,
   House,
   LogIn,
   LogOut,
   Menu,
+  PenLine,
   ShieldCheck,
   UserPlus,
   UserRound,
 } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -58,16 +53,12 @@ const mobileMenuClass = [
 export function ProductLayout() {
   const navigate = useNavigate();
   const location = useLocation();
-
   const { user, isInitializing, logout, hasRole } = useAuth();
 
   const isPoetryHome =
     location.pathname === "/app" || location.pathname === "/app/";
 
-  const isPoemDetail = /^\/app\/poems\/[^/]+\/?$/.test(
-    location.pathname,
-  );
-
+  const isPoemDetail = /^\/app\/poems\/[^/]+\/?$/.test(location.pathname);
   const isAuthorPage = location.pathname.startsWith("/app/author");
   const isAdmin = Boolean(user && hasRole("ADMIN"));
   const displayName = user?.name?.trim() || "My Account";
@@ -126,7 +117,6 @@ export function ProductLayout() {
             <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-border bg-primary text-primary-foreground sm:size-10">
               <Feather aria-hidden="true" className="size-5" />
             </span>
-
             <span className="truncate font-serif text-base font-semibold tracking-tight sm:text-lg">
               Innocent Writer
             </span>
@@ -139,24 +129,24 @@ export function ProductLayout() {
           >
             <NavLink to="/app" end className={navLinkClass}>
               <House aria-hidden="true" className="size-4" />
-              <span className="hidden sm:inline">Home</span>
+              <span>Home</span>
             </NavLink>
 
-           <NavLink to="/app/poems" className={navLinkClass}>
-  <Feather aria-hidden="true" className="size-4" />
-  <span>Explore Poems</span>
-</NavLink>
+            <NavLink to="/app/poems" className={navLinkClass}>
+              <Feather aria-hidden="true" className="size-4" />
+              <span>Browse Poems</span>
+            </NavLink>
 
-<NavLink to="/app/book" className={navLinkClass}>
-  <BookOpen aria-hidden="true" className="size-4" />
-  <span>Poetry Book</span>
-</NavLink>
+            <NavLink to="/app/book" className={navLinkClass}>
+              <BookOpen aria-hidden="true" className="size-4" />
+              <span>Poetry Collection</span>
+            </NavLink>
 
             {user && (
               <NavLink to="/app/author" className={navLinkClass}>
-                <UserRound aria-hidden="true" className="size-4" />
+                <PenLine aria-hidden="true" className="size-4" />
                 <span className="hidden md:inline">
-                  {isAdmin ? "Author Workspace" : "My Poems"}
+                  {isAdmin ? "Author Dashboard" : "My Poetry Space"}
                 </span>
               </NavLink>
             )}
@@ -173,7 +163,7 @@ export function ProductLayout() {
                       type="button"
                       variant="outline"
                       className="h-10 gap-1.5 rounded-xl px-2.5"
-                      aria-label="Open navigation menu"
+                      aria-label="Open main menu"
                     />
                   }
                 >
@@ -191,10 +181,10 @@ export function ProductLayout() {
                   <DropdownMenuGroup>
                     <DropdownMenuLabel className="px-3 py-2">
                       <span className="block font-serif text-base text-popover-foreground dark:text-slate-100">
-                        Your notebook
+                        Innocent Writer
                       </span>
                       <span className="text-xs font-normal text-muted-foreground dark:text-slate-400">
-                        Read, explore and create
+                        Discover poetry. Share your words.
                       </span>
                     </DropdownMenuLabel>
                   </DropdownMenuGroup>
@@ -209,27 +199,25 @@ export function ProductLayout() {
 
                     <DropdownMenuItem onClick={() => navigate("/app/poems")}>
                       <Feather aria-hidden="true" className="mr-2 size-4" />
-                      Explore poems
+                      Browse Poems
                     </DropdownMenuItem>
 
                     <DropdownMenuItem onClick={() => navigate("/app/book")}>
                       <BookOpen aria-hidden="true" className="mr-2 size-4" />
-                      Poetry Book
+                      Poetry Collection
                     </DropdownMenuItem>
 
                     {user && (
                       <DropdownMenuItem
                         onClick={() => navigate("/app/author")}
                       >
-                        <Feather aria-hidden="true" className="mr-2 size-4" />
-                        {isAdmin ? "Author Workspace" : "My Poems"}
+                        <PenLine aria-hidden="true" className="mr-2 size-4" />
+                        {isAdmin ? "Author Dashboard" : "My Poetry Space"}
                       </DropdownMenuItem>
                     )}
 
-                    <DropdownMenuItem
-                      onClick={() => navigate("/portfolio")}
-                    >
-                      <ArrowUpRight
+                    <DropdownMenuItem onClick={() => navigate("/portfolio")}>
+                      <BriefcaseBusiness
                         aria-hidden="true"
                         className="mr-2 size-4"
                       />
@@ -268,18 +256,16 @@ export function ProductLayout() {
                     </>
                   ) : (
                     <DropdownMenuGroup>
-                      <DropdownMenuLabel className="px-3">
-                        Welcome to Innocent Writer
-                      </DropdownMenuLabel>
+                      {/* <DropdownMenuLabel className="px-3">
+                        Welcome, writer
+                      </DropdownMenuLabel> */}
 
                       <DropdownMenuItem onClick={() => navigate("/login")}>
                         <LogIn aria-hidden="true" className="mr-2 size-4" />
                         Sign in
                       </DropdownMenuItem>
 
-                      <DropdownMenuItem
-                        onClick={() => navigate("/register")}
-                      >
+                      <DropdownMenuItem onClick={() => navigate("/register")}>
                         <UserPlus
                           aria-hidden="true"
                           className="mr-2 size-4"
@@ -349,20 +335,26 @@ export function ProductLayout() {
                           <DropdownMenuItem
                             onClick={() => navigate("/admin")}
                           >
-                            <ShieldCheck className="mr-2 size-4" />
+                            <ShieldCheck
+                              aria-hidden="true"
+                              className="mr-2 size-4"
+                            />
                             Admin Dashboard
                           </DropdownMenuItem>
                         ) : (
                           <DropdownMenuItem
                             onClick={() => navigate("/app/author")}
                           >
-                            <UserRound className="mr-2 size-4" />
-                            My Writing Desk
+                            <PenLine
+                              aria-hidden="true"
+                              className="mr-2 size-4"
+                            />
+                            My Poetry Space
                           </DropdownMenuItem>
                         )}
 
                         <DropdownMenuItem onClick={handleLogout}>
-                          <LogOut className="mr-2 size-4" />
+                          <LogOut aria-hidden="true" className="mr-2 size-4" />
                           Sign out
                         </DropdownMenuItem>
                       </DropdownMenuGroup>
@@ -371,7 +363,7 @@ export function ProductLayout() {
                     <>
                       <DropdownMenuGroup>
                         <DropdownMenuLabel>
-                          Welcome to Innocent Writer
+                          Welcome, writer
                         </DropdownMenuLabel>
                       </DropdownMenuGroup>
 
@@ -379,14 +371,15 @@ export function ProductLayout() {
 
                       <DropdownMenuGroup>
                         <DropdownMenuItem onClick={() => navigate("/login")}>
-                          <LogIn className="mr-2 size-4" />
+                          <LogIn aria-hidden="true" className="mr-2 size-4" />
                           Sign in
                         </DropdownMenuItem>
 
-                        <DropdownMenuItem
-                          onClick={() => navigate("/register")}
-                        >
-                          <UserPlus className="mr-2 size-4" />
+                        <DropdownMenuItem onClick={() => navigate("/register")}>
+                          <UserPlus
+                            aria-hidden="true"
+                            className="mr-2 size-4"
+                          />
                           Create account
                         </DropdownMenuItem>
                       </DropdownMenuGroup>
@@ -396,16 +389,19 @@ export function ProductLayout() {
               </DropdownMenu>
             </div>
 
-            {/* Portfolio button */}
+            {/* Portfolio button — desktop only; mobile uses the menu */}
             <Button
               type="button"
               size="sm"
               variant="outline"
-              className="h-10 shrink-0 gap-1 px-2 sm:gap-2 sm:px-3"
+              className="hidden h-10 shrink-0 gap-1 px-2 sm:inline-flex sm:gap-2 sm:px-3"
               onClick={() => navigate("/portfolio")}
             >
+              <BriefcaseBusiness
+                aria-hidden="true"
+                className="size-4"
+              />
               <span>Portfolio</span>
-              <ArrowUpRight aria-hidden="true" className="size-4" />
             </Button>
           </div>
         </div>
@@ -442,8 +438,7 @@ export function ProductLayout() {
           >
             Innocent Writer
           </NavLink>
-
-          <p>Read gently. Write honestly.</p>
+          <p>Words that connect hearts.</p>
         </div>
       </footer>
     </div>
