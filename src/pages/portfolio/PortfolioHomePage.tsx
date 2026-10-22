@@ -231,66 +231,66 @@ export function PortfolioHomePage() {
         <PortfolioCursor />
       </Suspense>
       {/* Navigation */}
-     {/* Navigation */}
-<header className="fixed inset-x-0 top-0 z-40 border-b border-border/70 bg-background/95 text-foreground shadow-sm backdrop-blur-xl">
-  <div className="mx-auto flex h-16 w-full max-w-[1440px] items-center justify-between gap-3 px-4 sm:gap-5 sm:px-6 lg:px-10">
-    {/* Brand */}
-    <a
-      href="#home"
-      aria-label="Ganesh Shinde portfolio home"
-      onClick={() => setMobileMenuOpen(false)}
-      className="flex shrink-0 items-center gap-2 rounded-md font-serif text-base font-extrabold tracking-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:text-xl"
-    >
-      <span className="grid size-9 place-items-center rounded-xl bg-primary text-primary-foreground">
-        <BriefcaseBusiness aria-hidden="true" className="size-5" />
-      </span>
-      <span>
-        <span className="text-primary">GANESH</span> SHINDE
-      </span>
-    </a>
-
-    {/* Desktop navigation */}
-    <nav
-      aria-label="Portfolio navigation"
-      className="hidden items-center gap-4 lg:flex xl:gap-6"
-    >
-      {navigation.map((item) => {
-        const Icon =
-          item.href === "#about"
-            ? UserRound
-            : item.href === "#skills"
-              ? Code2
-              : item.href === "#projects"
-                ? Layers3
-                : item.href === "#experience"
-                  ? GraduationCap
-                  : Mail;
-
-        return (
+      {/* Navigation */}
+      <header className="fixed inset-x-0 top-0 z-40 border-b border-border/70 bg-background/95 text-foreground shadow-sm backdrop-blur-xl">
+        <div className="mx-auto flex h-16 w-full max-w-[1440px] items-center justify-between gap-3 px-4 sm:gap-5 sm:px-6 lg:px-10">
+          {/* Brand */}
           <a
-            key={item.href}
-            href={item.href}
-            className="inline-flex items-center gap-2 rounded-md py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            href="#home"
+            aria-label="Ganesh Shinde portfolio home"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex shrink-0 items-center gap-2 rounded-md font-serif text-base font-extrabold tracking-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:text-xl"
           >
-            <Icon aria-hidden="true" className="size-4" />
-            {item.label === "Work" ? "Projects" : item.label}
+            <span className="grid size-9 place-items-center rounded-xl bg-primary text-primary-foreground">
+              <BriefcaseBusiness aria-hidden="true" className="size-5" />
+            </span>
+            <span>
+              <span className="text-primary">GANESH</span> SHINDE
+            </span>
           </a>
-        );
-      })}
-    </nav>
 
-    {/* Actions */}
-    <div className="flex shrink-0 items-center gap-2">
-      <Button
-        size="sm"
-        className="hidden h-10 shrink-0 gap-1 px-2 sm:inline-flex sm:gap-2 sm:px-3"
-        render={<a href="/" />}
-      >
-        <Feather aria-hidden="true" className="size-4" />
-        Innocent Writer
-        <ArrowUpRight aria-hidden="true" className="size-4" />
-      </Button>
-        {/* <Button
+          {/* Desktop navigation */}
+          <nav
+            aria-label="Portfolio navigation"
+            className="hidden items-center gap-4 lg:flex xl:gap-6"
+          >
+            {navigation.map((item) => {
+              const Icon =
+                item.href === "#about"
+                  ? UserRound
+                  : item.href === "#skills"
+                    ? Code2
+                    : item.href === "#projects"
+                      ? Layers3
+                      : item.href === "#experience"
+                        ? GraduationCap
+                        : Mail;
+
+              return (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className="inline-flex items-center gap-2 rounded-md py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <Icon aria-hidden="true" className="size-4" />
+                  {item.label === "Work" ? "Projects" : item.label}
+                </a>
+              );
+            })}
+          </nav>
+
+          {/* Actions */}
+          <div className="flex shrink-0 items-center gap-2">
+            <Button
+              size="sm"
+              className="hidden h-10 shrink-0 gap-1 px-2 sm:inline-flex sm:gap-2 sm:px-3"
+              render={<a href="/" />}
+            >
+              <Feather aria-hidden="true" className="size-4" />
+              Innocent Writer
+              <ArrowUpRight aria-hidden="true" className="size-4" />
+            </Button>
+            {/* <Button
               type="button"
               size="sm"
               variant="outline"
@@ -304,84 +304,88 @@ export function PortfolioHomePage() {
               <span>Portfolio</span>
             </Button> */}
 
-      {/* Mobile menu toggle */}
-      <Button
-        type="button"
-        size="icon"
-        variant="outline"
-        aria-label={mobileMenuOpen ? "Close portfolio menu" : "Open portfolio menu"}
-        aria-expanded={mobileMenuOpen}
-        aria-controls="portfolio-mobile-navigation"
-        className="size-10 rounded-xl lg:hidden"
-        onClick={() => setMobileMenuOpen((open) => !open)}
-      >
-        {mobileMenuOpen ? (
-          <X aria-hidden="true" className="size-5" />
-        ) : (
-          <Menu aria-hidden="true" className="size-5" />
-        )}
-      </Button>
-    </div>
-  </div>
-
-  {/* Mobile navigation */}
-  {mobileMenuOpen && (
-    <nav
-      id="portfolio-mobile-navigation"
-      aria-label="Mobile portfolio navigation"
-      className="border-t border-border bg-background/95 px-4 py-3 shadow-lg backdrop-blur-xl lg:hidden"
-    >
-      <div className="mx-auto flex max-w-6xl flex-col gap-1">
-        <p className="px-3 pb-2 pt-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          Explore portfolio
-        </p>
-
-        {navigation.map((item) => {
-          const Icon =
-            item.href === "#about"
-              ? UserRound
-              : item.href === "#skills"
-                ? Code2
-                : item.href === "#projects"
-                  ? Layers3
-                  : item.href === "#experience"
-                    ? GraduationCap
-                    : Mail;
-
-          return (
-            <a
-              key={item.href}
-              href={item.href}
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-foreground transition-colors hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            {/* Mobile menu toggle */}
+            <Button
+              type="button"
+              size="icon"
+              variant="outline"
+              aria-label={
+                mobileMenuOpen ? "Close portfolio menu" : "Open portfolio menu"
+              }
+              aria-expanded={mobileMenuOpen}
+              aria-controls="portfolio-mobile-navigation"
+              className="size-10 rounded-xl lg:hidden"
+              onClick={() => setMobileMenuOpen((open) => !open)}
             >
-              <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
-                <Icon aria-hidden="true" className="size-4" />
-              </span>
-              <span>{item.label === "Work" ? "Projects" : item.label}</span>
-              <ArrowUpRight
-                aria-hidden="true"
-                className="ml-auto size-4 text-muted-foreground"
-              />
-            </a>
-          );
-        })}
-
-        <div className="mt-2 border-t border-border pt-3">
-          <a
-            href="/"
-            onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-[var(--color-primary-hover)]"
-          >
-            <Feather aria-hidden="true" className="size-4" />
-            Visit Innocent Writer
-            <ArrowUpRight aria-hidden="true" className="size-4" />
-          </a>
+              {mobileMenuOpen ? (
+                <X aria-hidden="true" className="size-5" />
+              ) : (
+                <Menu aria-hidden="true" className="size-5" />
+              )}
+            </Button>
+          </div>
         </div>
-      </div>
-    </nav>
-  )}
-</header>
+
+        {/* Mobile navigation */}
+        {mobileMenuOpen && (
+          <nav
+            id="portfolio-mobile-navigation"
+            aria-label="Mobile portfolio navigation"
+            className="border-t border-border bg-background/95 px-4 py-3 shadow-lg backdrop-blur-xl lg:hidden"
+          >
+            <div className="mx-auto flex max-w-6xl flex-col gap-1">
+              <p className="px-3 pb-2 pt-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                Explore portfolio
+              </p>
+
+              {navigation.map((item) => {
+                const Icon =
+                  item.href === "#about"
+                    ? UserRound
+                    : item.href === "#skills"
+                      ? Code2
+                      : item.href === "#projects"
+                        ? Layers3
+                        : item.href === "#experience"
+                          ? GraduationCap
+                          : Mail;
+
+                return (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-foreground transition-colors hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
+                      <Icon aria-hidden="true" className="size-4" />
+                    </span>
+                    <span>
+                      {item.label === "Work" ? "Projects" : item.label}
+                    </span>
+                    <ArrowUpRight
+                      aria-hidden="true"
+                      className="ml-auto size-4 text-muted-foreground"
+                    />
+                  </a>
+                );
+              })}
+
+              <div className="mt-2 border-t border-border pt-3">
+                <a
+                  href="/"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-[var(--color-primary-hover)]"
+                >
+                  <Feather aria-hidden="true" className="size-4" />
+                  Visit Innocent Writer
+                  <ArrowUpRight aria-hidden="true" className="size-4" />
+                </a>
+              </div>
+            </div>
+          </nav>
+        )}
+      </header>
 
       {/* Hero */}
       <section

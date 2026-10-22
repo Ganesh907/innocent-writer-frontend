@@ -1,4 +1,3 @@
-
 import { Skeleton } from "./Skeleton";
 
 interface CardSkeletonProps {

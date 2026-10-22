@@ -1,7 +1,6 @@
 import { lazy, Suspense } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 
-
 import {
   GatewayPageSkeleton,
   LoginPageSkeleton,
@@ -27,43 +26,43 @@ import { ScrollToTop } from "./components/shared/ScrollToTop";
 const IndexPage = lazy(() =>
   import("./pages/IndexPage").then((m) => ({
     default: m.IndexPage,
-  }))
+  })),
 );
 
 const LoginPage = lazy(() =>
   import("./pages/innocent-writer/LoginPage").then((m) => ({
     default: m.LoginPage,
-  }))
+  })),
 );
 
 const RegisterPage = lazy(() =>
   import("./pages/innocent-writer/RegisterPage").then((m) => ({
     default: m.RegisterPage,
-  }))
+  })),
 );
 
 const PoetryBookPage = lazy(() =>
   import("./pages/innocent-writer/PoetryBookPage").then((m) => ({
     default: m.PoetryBookPage,
-  }))
+  })),
 );
 
 const PortfolioRoutes = lazy(() =>
   import("./routes/PortfolioRoutes").then((m) => ({
     default: m.PortfolioRoutes,
-  }))
+  })),
 );
 
 const ProductRoutes = lazy(() =>
   import("./routes/ProductRoutes").then((m) => ({
     default: m.ProductRoutes,
-  }))
+  })),
 );
 
 const AdminRoutes = lazy(() =>
   import("./routes/AdminRoutes").then((m) => ({
     default: m.AdminRoutes,
-  }))
+  })),
 );
 
 // Select the loading skeleton using the current URL.
@@ -89,10 +88,7 @@ function RouteLoadingFallback() {
   }
 
   // Portfolio routes
-  if (
-    pathname === "/portfolio" ||
-    pathname.startsWith("/portfolio/")
-  ) {
+  if (pathname === "/portfolio" || pathname.startsWith("/portfolio/")) {
     return <PortfolioHomePageSkeleton />;
   }
 
@@ -155,7 +151,7 @@ function RouteLoadingFallback() {
 function App() {
   return (
     <AuthProvider>
-      <ScrollToTop/>
+      <ScrollToTop />
       <Suspense fallback={<RouteLoadingFallback />}>
         <Routes>
           <Route element={<MainLayout />}>

@@ -170,10 +170,9 @@ export function ProductHomePage() {
           >
             Every feeling
             <br />
-            has a {" "}
-            {/* <br /> */}
+            has a {/* <br /> */}
             <span className="italic text-[#98674d] dark:text-primary">
-               poem.
+              poem.
             </span>
           </h1>
 
@@ -183,55 +182,53 @@ export function ProductHomePage() {
             remembered.
           </p>
 
-        <div className="mt-6 flex flex-wrap gap-3">
-  <Button
-    type="button"
-    size="lg"
-    onClick={() => navigate("/app/poems")}
-    className="h-11 gap-2 rounded-full bg-[#49392d] px-5 text-[#fff8eb] hover:bg-[#35291f] dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90"
-  >
-    <Compass aria-hidden="true" className="size-4" />
-    Read poems
-  </Button>
-    <Button
-    type="button"
-    size="lg"
-    variant="outline"
-    onClick={() => navigate("/app/book")}
-    className="h-11 gap-2 rounded-full border-[#c8b99f] bg-transparent px-5 hover:bg-[#e8dfcf] dark:border-border dark:hover:bg-accent"
-  >
-    <BookOpen aria-hidden="true" className="size-4" />
-    Open Poetry Collection
-  </Button>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Button
+              type="button"
+              size="lg"
+              onClick={() => navigate("/app/poems")}
+              className="h-11 gap-2 rounded-full bg-[#49392d] px-5 text-[#fff8eb] hover:bg-[#35291f] dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90"
+            >
+              <Compass aria-hidden="true" className="size-4" />
+              Read poems
+            </Button>
+            <Button
+              type="button"
+              size="lg"
+              variant="outline"
+              onClick={() => navigate("/app/book")}
+              className="h-11 gap-2 rounded-full border-[#c8b99f] bg-transparent px-5 hover:bg-[#e8dfcf] dark:border-border dark:hover:bg-accent"
+            >
+              <BookOpen aria-hidden="true" className="size-4" />
+              Open Poetry Collection
+            </Button>
 
-  {!isInitializing && !user && (
-    <Button
-      type="button"
-      size="lg"
-      variant="outline"
-      onClick={() => navigate("/register")}
-      className="h-11 gap-2 rounded-full border-[#c8b99f] bg-transparent px-5 hover:bg-[#e8dfcf] dark:border-border dark:hover:bg-accent"
-    >
-      <Feather aria-hidden="true" className="size-4" />
-      Share your poetry
-    </Button>
-  )}
+            {!isInitializing && !user && (
+              <Button
+                type="button"
+                size="lg"
+                variant="outline"
+                onClick={() => navigate("/register")}
+                className="h-11 gap-2 rounded-full border-[#c8b99f] bg-transparent px-5 hover:bg-[#e8dfcf] dark:border-border dark:hover:bg-accent"
+              >
+                <Feather aria-hidden="true" className="size-4" />
+                Share your poetry
+              </Button>
+            )}
 
-
-
-  {!isInitializing && user && (
-    <Button
-      type="button"
-      size="lg"
-      variant="outline"
-      onClick={() => navigate(writingDestination)}
-      className="h-11 gap-2 rounded-full border-[#c8b99f] bg-transparent px-5 hover:bg-[#e8dfcf] dark:border-border dark:hover:bg-accent"
-    >
-      <PenLine aria-hidden="true" className="size-4" />
-      {writingAction}
-    </Button>
-  )}
-</div>
+            {!isInitializing && user && (
+              <Button
+                type="button"
+                size="lg"
+                variant="outline"
+                onClick={() => navigate(writingDestination)}
+                className="h-11 gap-2 rounded-full border-[#c8b99f] bg-transparent px-5 hover:bg-[#e8dfcf] dark:border-border dark:hover:bg-accent"
+              >
+                <PenLine aria-hidden="true" className="size-4" />
+                {writingAction}
+              </Button>
+            )}
+          </div>
           <div className="mt-6 flex items-center gap-3 text-xs text-[#8b7b67] dark:text-muted-foreground">
             <span className="h-px w-9 bg-[#b7a48a] dark:bg-primary/60" />
             Read slowly. Feel deeply. Write freely.

@@ -18,13 +18,9 @@
    ------------------------------------------ */
 
 :root {
-    font-family:
-    "Iowan Old Style",
-    "Palatino Linotype",
-    Palatino,
-    Georgia,
-    "Times New Roman",
-    serif;
+  font-family:
+    "Iowan Old Style", "Palatino Linotype", Palatino, Georgia,
+    "Times New Roman", serif;
   /* font-family:
     "Geist Variable",
     system-ui,
@@ -1614,5 +1610,3 @@ img {
     transition-duration: 0.01ms !important;
   }
 }
-
-

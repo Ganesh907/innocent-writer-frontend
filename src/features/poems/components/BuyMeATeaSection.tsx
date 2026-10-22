@@ -2,8 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import QRCode from "qrcode";
 import { Check, Copy, Coffee, ExternalLink, QrCode, Heart } from "lucide-react";
 
-
-
 export default function BuyMeATeaSection() {
   const [amount, setAmount] = useState(10);
   const [customAmount, setCustomAmount] = useState("10");
@@ -206,7 +204,7 @@ export default function BuyMeATeaSection() {
                 );
               })}
             </div>
-{/* 
+            {/* 
             <label htmlFor="tea-custom-amount" className="sr-only">
               Custom amount in rupees
             </label> */}

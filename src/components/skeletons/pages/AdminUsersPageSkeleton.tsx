@@ -25,11 +25,7 @@ function AdminUserCardSkeleton() {
 
 export function AdminUsersPageSkeleton() {
   return (
-    <div
-      className="space-y-6 py-4"
-      aria-busy="true"
-      aria-label="Loading users"
-    >
+    <div className="space-y-6 py-4" aria-busy="true" aria-label="Loading users">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0 flex-1 space-y-2">
           <Skeleton className="h-4 w-52 max-w-full" />

@@ -1,4 +1,3 @@
-
 import { useEffect, useState, type FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -27,18 +26,13 @@ import {
   type PoemComment,
 } from "@/features/comments/commentApi";
 import { useAuth } from "@/features/auth/authContext";
-import {
-  getPoemLikeStatus,
-  togglePoemLike,
-} from "@/features/likes/likeApi";
+import { getPoemLikeStatus, togglePoemLike } from "@/features/likes/likeApi";
 import { getPoemById, recordPoemView } from "@/features/poems/poemApi";
 import { poemQueryKeys } from "@/features/poems/poemQueryKeys";
 import { getApiErrorMessage } from "@/lib/api/apiError";
 
-const likeStatusQueryKey = (
-  poemId: string,
-  userId: string,
-) => ["poem-like-status", poemId, userId] as const;
+const likeStatusQueryKey = (poemId: string, userId: string) =>
+  ["poem-like-status", poemId, userId] as const;
 
 const likeMutationKey = (poemId: string) => ["poem-like", poemId] as const;
 
@@ -74,7 +68,6 @@ function isValidInstagramPostUrl(
     return false;
   }
 }
-
 
 function ContentImage({ imageUrl }: { imageUrl?: string | null }) {
   const [failed, setFailed] = useState(false);
@@ -178,16 +171,11 @@ export function PoemDetailPage() {
     queryKey: likeStatusQueryKey(id ?? "", userId),
     queryFn: ({ signal }) => getPoemLikeStatus(id as string, signal),
     enabled:
-      Boolean(id) &&
-      poemQuery.isSuccess &&
-      isAuthenticated &&
-      !isInitializing,
+      Boolean(id) && poemQuery.isSuccess && isAuthenticated && !isInitializing,
     retry: 1,
   });
 
-  const liked = isAuthenticated
-    ? likeStatusQuery.data?.liked === true
-    : false;
+  const liked = isAuthenticated ? likeStatusQuery.data?.liked === true : false;
 
   useEffect(() => {
     if (!id || !poemQuery.isSuccess) return;
@@ -208,10 +196,7 @@ export function PoemDetailPage() {
     mutationFn: () => togglePoemLike(id as string),
 
     onSuccess: async (result) => {
-      queryClient.setQueryData(
-        likeStatusQueryKey(id ?? "", userId),
-        result,
-      );
+      queryClient.setQueryData(likeStatusQueryKey(id ?? "", userId), result);
 
       setLikeError(null);
 
@@ -278,8 +263,7 @@ export function PoemDetailPage() {
 
         return [createdComment, ...remainingComments].sort(
           (a, b) =>
-            new Date(b.createdAt).getTime() -
-            new Date(a.createdAt).getTime(),
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
         );
       });
     },
@@ -402,12 +386,9 @@ export function PoemDetailPage() {
   const author = poem.authorName?.trim() || "Unknown author";
   const comments = commentsQuery.data ?? [];
 
-const seoDescription = poem.content
-  .replace(/\s+/g, " ")
-  .trim()
-  .slice(0, 155);
+  const seoDescription = poem.content.replace(/\s+/g, " ").trim().slice(0, 155);
 
-const seoTitle = `${poem.title} by ${author} | Innocent Writer`;
+  const seoTitle = `${poem.title} by ${author} | Innocent Writer`;
 
   const instagramUrl = isValidInstagramPostUrl(poem.instagramPostUrl)
     ? poem.instagramPostUrl
@@ -458,13 +439,13 @@ const seoTitle = `${poem.title} by ${author} | Innocent Writer`;
   return (
     <main className="mx-auto w-full px-3 py-3 text-foreground sm:px-5 sm:py-5">
       <SEO
-  title={seoTitle}
-  description={
-    seoDescription ||
-    `Read "${poem.title}" by ${author} on Innocent Writer.`
-  }
-  path={`/app/poems/${encodeURIComponent(id)}`}
-/>
+        title={seoTitle}
+        description={
+          seoDescription ||
+          `Read "${poem.title}" by ${author} on Innocent Writer.`
+        }
+        path={`/app/poems/${encodeURIComponent(id)}`}
+      />
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-border/70 pb-2">
         <Link
           to="/app/poems"
@@ -504,10 +485,10 @@ const seoTitle = `${poem.title} by ${author} | Innocent Writer`;
             <div className="mx-auto flex w-full max-w-lg flex-1 flex-col items-center py-3 text-center">
               <div className="w-full border border-border p-1.5 sm:p-2">
                 <div className="border border-border/70 bg-muted/20 p-2 sm:p-3">
-               <ContentImage
-  key={poemImageSrc ?? "no-poem-image"}
-  imageUrl={poemImageSrc}
-/>
+                  <ContentImage
+                    key={poemImageSrc ?? "no-poem-image"}
+                    imageUrl={poemImageSrc}
+                  />
                 </div>
               </div>
 
@@ -681,9 +662,7 @@ const seoTitle = `${poem.title} by ${author} | Innocent Writer`;
                 >
                   <Send aria-hidden="true" className="size-3.5" />
                   <span className="hidden sm:inline">
-                    {addCommentMutation.isPending
-                      ? "Posting…"
-                      : "Post comment"}
+                    {addCommentMutation.isPending ? "Posting…" : "Post comment"}
                   </span>
                   <span className="sm:hidden">
                     {addCommentMutation.isPending ? "…" : "Post"}
@@ -699,10 +678,7 @@ const seoTitle = `${poem.title} by ${author} | Innocent Writer`;
 
               <div className="mt-4">
                 {commentsQuery.isPending ? (
-                  <p
-                    className="text-xs text-muted-foreground"
-                    aria-busy="true"
-                  >
+                  <p className="text-xs text-muted-foreground" aria-busy="true">
                     Loading comments…
                   </p>
                 ) : commentsQuery.isError ? (
@@ -888,9 +864,7 @@ function DetailMessage({
 
           <div className="space-y-2">
             <h1 className="font-serif text-xl font-semibold">{title}</h1>
-            <p className="text-sm leading-6 text-muted-foreground">
-              {message}
-            </p>
+            <p className="text-sm leading-6 text-muted-foreground">{message}</p>
           </div>
 
           <Button
@@ -900,10 +874,7 @@ function DetailMessage({
             disabled={loading}
           >
             {loading && (
-              <RefreshCw
-                aria-hidden="true"
-                className="size-4 animate-spin"
-              />
+              <RefreshCw aria-hidden="true" className="size-4 animate-spin" />
             )}
             {retryLabel}
           </Button>

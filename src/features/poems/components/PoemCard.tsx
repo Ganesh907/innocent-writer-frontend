@@ -1,4 +1,3 @@
-
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -24,10 +23,7 @@ import {
   type PoemComment,
 } from "@/features/comments/commentApi";
 import { useAuth } from "@/features/auth/authContext";
-import {
-  getPoemLikeStatus,
-  togglePoemLike,
-} from "@/features/likes/likeApi";
+import { getPoemLikeStatus, togglePoemLike } from "@/features/likes/likeApi";
 import { PoemCoverImage } from "@/features/poems/components/PoemCoverImage";
 import { poemQueryKeys } from "@/features/poems/poemQueryKeys";
 import { getApiErrorMessage } from "@/lib/api/apiError";
@@ -263,9 +259,7 @@ export function PoemCard({ poem }: PoemCardProps) {
                 (isAuthenticated &&
                   (likeStatusQuery.isPending || likeStatusQuery.isError))
               }
-              aria-label={
-                liked ? `Unlike ${poem.title}` : `Like ${poem.title}`
-              }
+              aria-label={liked ? `Unlike ${poem.title}` : `Like ${poem.title}`}
               aria-pressed={liked}
               className={`inline-flex h-8 shrink-0 items-center gap-1.5 text-xs transition-colors hover:text-rose-500 disabled:cursor-not-allowed disabled:opacity-60 ${
                 liked ? "text-rose-500" : "text-muted-foreground"
@@ -302,8 +296,6 @@ export function PoemCard({ poem }: PoemCardProps) {
                 {analyticsQuery.data?.views ?? poem.viewCount ?? 0}
               </span>
             </span>
-
-       
           </div>
 
           {isAuthenticated && likeStatusQuery.isError && (
@@ -395,13 +387,13 @@ export function PoemCard({ poem }: PoemCardProps) {
             </form>
           )}
 
-               <Link
-              to={`${detailPath}#comments-title`}
-              className="ml-auto inline-flex shrink-0 items-center gap-1 text-[11px] font-medium text-primary hover:underline"
-            >
-              <span>Read all comments</span>
-              <ArrowUpRight aria-hidden="true" className="size-3" />
-            </Link>
+          <Link
+            to={`${detailPath}#comments-title`}
+            className="ml-auto inline-flex shrink-0 items-center gap-1 text-[11px] font-medium text-primary hover:underline"
+          >
+            <span>Read all comments</span>
+            <ArrowUpRight aria-hidden="true" className="size-3" />
+          </Link>
         </CardContent>
       </Card>
 

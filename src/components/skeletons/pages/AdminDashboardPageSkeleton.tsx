@@ -1,4 +1,13 @@
-import { BookOpen, CalendarDays, Eye, Heart, ImagePlus, MessageCircle, Plus, Link2 } from "lucide-react";
+import {
+  BookOpen,
+  CalendarDays,
+  Eye,
+  Heart,
+  ImagePlus,
+  MessageCircle,
+  Plus,
+  Link2,
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/skeletons";
 
@@ -84,7 +93,10 @@ export function AdminDashboardPageSkeleton() {
                 aria-label="Poem editor loading"
                 className="relative min-w-0 border-b border-border px-5 py-7 sm:px-8 sm:py-8 lg:border-b-0 lg:border-r lg:px-10 lg:py-8"
               >
-                <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-0 hidden w-5 bg-gradient-to-l from-muted/60 to-transparent lg:block" />
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-y-0 right-0 hidden w-5 bg-gradient-to-l from-muted/60 to-transparent lg:block"
+                />
 
                 <header className="mb-6 flex items-center gap-3">
                   <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
@@ -140,7 +152,10 @@ export function AdminDashboardPageSkeleton() {
                 <div
                   aria-hidden="true"
                   className="pointer-events-none absolute right-8 top-0 h-16 w-7 bg-primary"
-                  style={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%)" }}
+                  style={{
+                    clipPath:
+                      "polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%)",
+                  }}
                 />
 
                 <header className="mb-6 pr-8">
@@ -163,7 +178,10 @@ export function AdminDashboardPageSkeleton() {
                 </div>
 
                 {/* Poem collection */}
-                <section aria-label="Poem collection loading" className="min-w-0">
+                <section
+                  aria-label="Poem collection loading"
+                  className="min-w-0"
+                >
                   <div className="mb-3 flex items-center justify-between gap-3">
                     <Skeleton className="h-7 w-28" />
                     <Skeleton className="h-6 w-16 rounded-full" />

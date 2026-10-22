@@ -1,4 +1,3 @@
-
 import { useState, type FormEvent, type ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -96,13 +95,8 @@ export function AuthorDashboardPage() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({
-      id,
-      payload,
-    }: {
-      id: string;
-      payload: UpdatePoemRequest;
-    }) => updatePoem(id, payload),
+    mutationFn: ({ id, payload }: { id: string; payload: UpdatePoemRequest }) =>
+      updatePoem(id, payload),
     onSuccess: async () => {
       resetForm();
       await refreshData();
@@ -137,10 +131,7 @@ export function AuthorDashboardPage() {
     updateMutation.reset();
   }
 
-  function updateField<K extends keyof PoemForm>(
-    key: K,
-    value: PoemForm[K],
-  ) {
+  function updateField<K extends keyof PoemForm>(key: K, value: PoemForm[K]) {
     setForm((current) => ({ ...current, [key]: value }));
   }
 
@@ -301,9 +292,7 @@ export function AuthorDashboardPage() {
 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between gap-2">
-                      <Label htmlFor="author-poem-content">
-                        Poem content
-                      </Label>
+                      <Label htmlFor="author-poem-content">Poem content</Label>
                       <span className="text-[10px] tabular-nums text-muted-foreground">
                         {form.content.length.toLocaleString()} / 100,000
                       </span>
@@ -406,10 +395,7 @@ export function AuthorDashboardPage() {
                           type="file"
                           accept={IMAGE_ACCEPT}
                           onChange={(event) =>
-                            updateField(
-                              field,
-                              event.target.files?.[0] ?? null,
-                            )
+                            updateField(field, event.target.files?.[0] ?? null)
                           }
                           className="mt-3 h-auto min-h-9 cursor-pointer bg-card py-1.5 text-xs file:mr-2 file:rounded-md file:border-0 file:bg-primary/10 file:px-2 file:py-1 file:text-xs file:font-medium file:text-primary"
                         />
@@ -486,7 +472,8 @@ export function AuthorDashboardPage() {
                   aria-hidden="true"
                   className="pointer-events-none absolute right-8 top-0 h-16 w-7 bg-primary"
                   style={{
-                    clipPath: "polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%)",
+                    clipPath:
+                      "polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%)",
                   }}
                 />
 
@@ -548,8 +535,7 @@ export function AuthorDashboardPage() {
 
                     {!poemsQuery.isPending && !poemsQuery.isError && (
                       <span className="shrink-0 rounded-full bg-primary/10 px-3 py-1 text-[10px] font-medium text-primary">
-                        {poems.length}{" "}
-                        {poems.length === 1 ? "poem" : "poems"}
+                        {poems.length} {poems.length === 1 ? "poem" : "poems"}
                       </span>
                     )}
                   </div>
@@ -599,8 +585,8 @@ export function AuthorDashboardPage() {
                           A blank page awaits
                         </h3>
                         <p className="mt-1 max-w-xs text-xs leading-5 text-muted-foreground">
-                          Your collection starts with one poem. Write
-                          something worth remembering.
+                          Your collection starts with one poem. Write something
+                          worth remembering.
                         </p>
                         <Button
                           type="button"
@@ -772,9 +758,7 @@ function Metric({
             </p>
           )}
         </div>
-        <span className="shrink-0 text-primary [&_svg]:size-3.5">
-          {icon}
-        </span>
+        <span className="shrink-0 text-primary [&_svg]:size-3.5">{icon}</span>
       </CardContent>
     </Card>
   );

@@ -1,4 +1,3 @@
-
 import { useEffect, type ReactNode } from "react";
 import { useTheme } from "@/theme/useTheme";
 
@@ -7,10 +6,7 @@ interface RouteThemeProps {
   theme?: "light" | "dark";
 }
 
-export function RouteTheme({
-  children,
-  theme = "dark",
-}: RouteThemeProps) {
+export function RouteTheme({ children, theme = "dark" }: RouteThemeProps) {
   const { setTheme } = useTheme();
 
   useEffect(() => {

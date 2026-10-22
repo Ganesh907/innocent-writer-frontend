@@ -45,7 +45,10 @@ export function AdminModerationPageSkeleton() {
         <Skeleton className="h-10 w-28 shrink-0 rounded-md" />
       </header>
 
-      <div className="flex flex-wrap gap-2" aria-label="Publication filters loading">
+      <div
+        className="flex flex-wrap gap-2"
+        aria-label="Publication filters loading"
+      >
         <Skeleton className="h-9 w-24 rounded-md" />
         <Skeleton className="h-9 w-24 rounded-md" />
         <Skeleton className="h-9 w-28 rounded-md" />

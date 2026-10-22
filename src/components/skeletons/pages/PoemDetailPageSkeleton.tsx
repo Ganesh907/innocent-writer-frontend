@@ -1,4 +1,11 @@
-import { ArrowLeft, Eye, Feather, Heart, MessageCircle, UserRound } from "lucide-react";
+import {
+  ArrowLeft,
+  Eye,
+  Feather,
+  Heart,
+  MessageCircle,
+  UserRound,
+} from "lucide-react";
 import { Skeleton } from "../Skeleton";
 
 export function PoemDetailPageSkeleton() {
@@ -40,7 +47,10 @@ export function PoemDetailPageSkeleton() {
               <Skeleton className="h-3 w-28" />
             </div>
 
-            <div aria-hidden="true" className="flex items-center gap-2 py-1 text-primary/70">
+            <div
+              aria-hidden="true"
+              className="flex items-center gap-2 py-1 text-primary/70"
+            >
               <span className="h-px flex-1 bg-border" />
               <Skeleton className="h-5 w-5 rounded-full" />
               <span className="h-px flex-1 bg-border" />
@@ -57,14 +67,20 @@ export function PoemDetailPageSkeleton() {
                 <Skeleton className="h-9 w-4/5 sm:h-10" />
                 <Skeleton className="h-px w-16" />
                 <div className="inline-flex items-center justify-center gap-1.5">
-                  <UserRound aria-hidden="true" className="size-3.5 text-muted-foreground" />
+                  <UserRound
+                    aria-hidden="true"
+                    className="size-3.5 text-muted-foreground"
+                  />
                   <Skeleton className="h-4 w-28" />
                 </div>
                 <Skeleton className="h-3 w-40" />
               </div>
             </div>
 
-            <div aria-hidden="true" className="flex items-center gap-2 py-1 text-primary/70">
+            <div
+              aria-hidden="true"
+              className="flex items-center gap-2 py-1 text-primary/70"
+            >
               <span className="h-px flex-1 bg-border" />
               <Skeleton className="h-5 w-8 rounded-full" />
               <span className="h-px flex-1 bg-border" />
@@ -117,7 +133,10 @@ export function PoemDetailPageSkeleton() {
               </div>
             </div>
 
-            <div className="my-4 flex items-center gap-2 sm:my-5" aria-hidden="true">
+            <div
+              className="my-4 flex items-center gap-2 sm:my-5"
+              aria-hidden="true"
+            >
               <span className="h-px flex-1 bg-border" />
               <Feather className="size-4 text-primary/70" />
               <span className="h-px flex-1 bg-border" />

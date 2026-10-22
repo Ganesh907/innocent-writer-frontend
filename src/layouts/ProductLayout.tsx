@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
@@ -114,11 +113,11 @@ export function ProductLayout() {
             aria-label="Innocent Writer home"
             className="flex min-w-0 shrink-0 items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:gap-3"
           >
-          <img
-  src="/images/Writer.jpg"
-  alt="Innocent Writer logo"
-  className="size-9 shrink-0 rounded-lg object-contain sm:size-10"
-/>
+            <img
+              src="/images/Writer.jpg"
+              alt="Innocent Writer logo"
+              className="size-9 shrink-0 rounded-lg object-contain sm:size-10"
+            />
             <span className="truncate font-serif text-base font-semibold tracking-tight sm:text-lg">
               Innocent Writer
             </span>
@@ -210,9 +209,7 @@ export function ProductLayout() {
                     </DropdownMenuItem>
 
                     {user && (
-                      <DropdownMenuItem
-                        onClick={() => navigate("/app/author")}
-                      >
+                      <DropdownMenuItem onClick={() => navigate("/app/author")}>
                         <PenLine aria-hidden="true" className="mr-2 size-4" />
                         {isAdmin ? "Author Dashboard" : "My Poetry Space"}
                       </DropdownMenuItem>
@@ -239,9 +236,7 @@ export function ProductLayout() {
 
                       <DropdownMenuGroup>
                         {isAdmin && (
-                          <DropdownMenuItem
-                            onClick={() => navigate("/admin")}
-                          >
+                          <DropdownMenuItem onClick={() => navigate("/admin")}>
                             <ShieldCheck
                               aria-hidden="true"
                               className="mr-2 size-4"
@@ -268,10 +263,7 @@ export function ProductLayout() {
                       </DropdownMenuItem>
 
                       <DropdownMenuItem onClick={() => navigate("/register")}>
-                        <UserPlus
-                          aria-hidden="true"
-                          className="mr-2 size-4"
-                        />
+                        <UserPlus aria-hidden="true" className="mr-2 size-4" />
                         Create account
                       </DropdownMenuItem>
                     </DropdownMenuGroup>
@@ -334,9 +326,7 @@ export function ProductLayout() {
 
                       <DropdownMenuGroup>
                         {isAdmin ? (
-                          <DropdownMenuItem
-                            onClick={() => navigate("/admin")}
-                          >
+                          <DropdownMenuItem onClick={() => navigate("/admin")}>
                             <ShieldCheck
                               aria-hidden="true"
                               className="mr-2 size-4"
@@ -364,9 +354,7 @@ export function ProductLayout() {
                   ) : (
                     <>
                       <DropdownMenuGroup>
-                        <DropdownMenuLabel>
-                          Welcome, writer
-                        </DropdownMenuLabel>
+                        <DropdownMenuLabel>Welcome, writer</DropdownMenuLabel>
                       </DropdownMenuGroup>
 
                       <DropdownMenuSeparator />
@@ -399,10 +387,7 @@ export function ProductLayout() {
               className="hidden h-10 shrink-0 gap-1 px-2 sm:inline-flex sm:gap-2 sm:px-3"
               onClick={() => navigate("/portfolio")}
             >
-              <BriefcaseBusiness
-                aria-hidden="true"
-                className="size-4"
-              />
+              <BriefcaseBusiness aria-hidden="true" className="size-4" />
               <span>Portfolio</span>
             </Button>
           </div>
@@ -417,9 +402,7 @@ export function ProductLayout() {
             ? "p-0"
             : [
                 "mx-auto px-3 sm:px-5 lg:px-8",
-                isPoemDetail
-                  ? "pb-5 pt-1 sm:pb-8"
-                  : "pb-8 pt-5 sm:pt-8",
+                isPoemDetail ? "pb-5 pt-1 sm:pb-8" : "pb-8 pt-5 sm:pt-8",
                 isAuthorPage ? "poetry-author-page" : "",
               ].join(" "),
         ].join(" ")}

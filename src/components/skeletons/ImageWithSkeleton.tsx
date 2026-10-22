@@ -3,8 +3,10 @@ import type { ImgHTMLAttributes, ReactNode } from "react";
 import { ImageSkeleton } from "./ImageSkeleton";
 import { cn } from "@/lib/utils";
 
-interface ImageWithSkeletonProps
-  extends Omit<ImgHTMLAttributes<HTMLImageElement>, "src"> {
+interface ImageWithSkeletonProps extends Omit<
+  ImgHTMLAttributes<HTMLImageElement>,
+  "src"
+> {
   src: string | null | undefined;
   skeletonAspectRatio?: "square" | "portrait" | "landscape";
   wrapperClassName?: string;
@@ -65,7 +67,11 @@ export function ImageWithSkeleton({
           setFailedSrc(imageSrc);
           onError?.(event);
         }}
-        className={cn("relative z-[1] transition-opacity duration-200", isLoaded ? "opacity-100" : "opacity-0", className)}
+        className={cn(
+          "relative z-[1] transition-opacity duration-200",
+          isLoaded ? "opacity-100" : "opacity-0",
+          className,
+        )}
       />
     </span>
   );

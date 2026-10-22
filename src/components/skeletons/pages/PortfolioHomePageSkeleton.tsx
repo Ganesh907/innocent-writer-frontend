@@ -86,7 +86,10 @@ function ContactItemSkeleton() {
         <Skeleton className="h-3 w-16 rounded" />
         <Skeleton className="h-4 w-44 max-w-full rounded" />
       </span>
-      <ArrowUpRight aria-hidden="true" className="size-4 shrink-0 text-primary dark:text-primary" />
+      <ArrowUpRight
+        aria-hidden="true"
+        className="size-4 shrink-0 text-primary dark:text-primary"
+      />
     </div>
   );
 }
@@ -106,7 +109,10 @@ export function PortfolioHomePageSkeleton() {
             <Skeleton className="h-5 w-36 rounded sm:h-6 sm:w-44" />
           </div>
 
-          <nav aria-label="Main navigation" className="hidden items-center gap-4 lg:flex xl:gap-6">
+          <nav
+            aria-label="Main navigation"
+            className="hidden items-center gap-4 lg:flex xl:gap-6"
+          >
             {Array.from({ length: 5 }).map((_, index) => (
               <Skeleton key={index} className="h-4 w-14 rounded" />
             ))}
@@ -179,7 +185,10 @@ export function PortfolioHomePageSkeleton() {
                   { label: "Core focus", Icon: Code2 },
                 ].map(({ label, Icon }) => (
                   <div key={label} className="flex items-start gap-3">
-                    <Icon aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-primary" />
+                    <Icon
+                      aria-hidden="true"
+                      className="mt-0.5 size-5 shrink-0 text-primary"
+                    />
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold">{label}</p>
                       <div className="mt-2 space-y-2">
@@ -261,7 +270,10 @@ export function PortfolioHomePageSkeleton() {
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
           <SectionHeadingSkeleton />
 
-          <div className="mb-6 flex flex-wrap gap-2" aria-label="Loading skill categories">
+          <div
+            className="mb-6 flex flex-wrap gap-2"
+            aria-label="Loading skill categories"
+          >
             {Array.from({ length: 6 }).map((_, index) => (
               <Skeleton key={index} className="h-9 w-20 rounded-md" />
             ))}
@@ -274,11 +286,14 @@ export function PortfolioHomePageSkeleton() {
                 className="portfolio-reveal portfolio-card flex min-w-0 items-center gap-3 rounded-xl border border-[var(--color-border-strong)]/15 bg-card p-3.5 sm:p-4"
               >
                 <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary dark:text-primary">
-                  {[Database, Server, Layers3, Code2][index % 4] === Database ? (
+                  {[Database, Server, Layers3, Code2][index % 4] ===
+                  Database ? (
                     <Database aria-hidden="true" className="size-5" />
-                  ) : [Database, Server, Layers3, Code2][index % 4] === Server ? (
+                  ) : [Database, Server, Layers3, Code2][index % 4] ===
+                    Server ? (
                     <Server aria-hidden="true" className="size-5" />
-                  ) : [Database, Server, Layers3, Code2][index % 4] === Layers3 ? (
+                  ) : [Database, Server, Layers3, Code2][index % 4] ===
+                    Layers3 ? (
                     <Layers3 aria-hidden="true" className="size-5" />
                   ) : (
                     <Code2 aria-hidden="true" className="size-5" />
@@ -299,7 +314,10 @@ export function PortfolioHomePageSkeleton() {
       </section>
 
       {/* Projects */}
-      <section id="projects" className="portfolio-section scroll-mt-20 bg-background">
+      <section
+        id="projects"
+        className="portfolio-section scroll-mt-20 bg-background"
+      >
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
           <SectionHeadingSkeleton />
           <div className="grid items-stretch gap-4 sm:gap-5 lg:grid-cols-2">
@@ -323,7 +341,10 @@ export function PortfolioHomePageSkeleton() {
           <div className="grid gap-8 lg:grid-cols-2 lg:gap-10">
             <div className="min-w-0">
               <h3 className="mb-5 flex items-center gap-3 text-xl font-bold text-foreground">
-                <BriefcaseBusiness aria-hidden="true" className="size-5 text-primary dark:text-primary" />
+                <BriefcaseBusiness
+                  aria-hidden="true"
+                  className="size-5 text-primary dark:text-primary"
+                />
                 Work experience
               </h3>
 
@@ -349,7 +370,10 @@ export function PortfolioHomePageSkeleton() {
 
             <div className="min-w-0">
               <h3 className="mb-5 flex items-center gap-3 text-xl font-bold text-foreground">
-                <GraduationCap aria-hidden="true" className="size-5 text-primary dark:text-primary" />
+                <GraduationCap
+                  aria-hidden="true"
+                  className="size-5 text-primary dark:text-primary"
+                />
                 Education
               </h3>
 
@@ -374,9 +398,15 @@ export function PortfolioHomePageSkeleton() {
                   <Skeleton className="h-4 w-11/12 rounded" />
                 </div>
                 <div className="mt-4 flex items-center gap-2">
-                  <FileText aria-hidden="true" className="size-4 text-primary" />
+                  <FileText
+                    aria-hidden="true"
+                    className="size-4 text-primary"
+                  />
                   <Skeleton className="h-4 w-32 rounded" />
-                  <ArrowDown aria-hidden="true" className="size-4 text-primary" />
+                  <ArrowDown
+                    aria-hidden="true"
+                    className="size-4 text-primary"
+                  />
                 </div>
               </div>
             </div>
@@ -385,7 +415,10 @@ export function PortfolioHomePageSkeleton() {
       </section>
 
       {/* Contact */}
-      <section id="contact" className="portfolio-section scroll-mt-20 bg-background">
+      <section
+        id="contact"
+        className="portfolio-section scroll-mt-20 bg-background"
+      >
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
           <div className="portfolio-reveal overflow-hidden rounded-3xl border border-[var(--color-border-strong)]/25 bg-card shadow-[0_12px_45px_rgba(0,184,219,0.06)]">
             <div className="grid gap-7 p-5 sm:gap-9 sm:p-8 md:p-10 lg:grid-cols-[1fr_0.9fr] lg:gap-12 lg:p-12">

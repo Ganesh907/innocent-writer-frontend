@@ -128,10 +128,7 @@ export function ProductHomePageSkeleton() {
           <Skeleton className="mb-3 h-4 w-72 max-w-full rounded" />
 
           {/* Main heading */}
-          <div
-            id="poetry-home-title"
-            className="max-w-lg space-y-2"
-          >
+          <div id="poetry-home-title" className="max-w-lg space-y-2">
             <Skeleton className="h-10 w-64 max-w-full rounded sm:h-12 lg:h-14" />
             <Skeleton className="h-10 w-36 max-w-full rounded sm:h-12 lg:h-14" />
             <Skeleton className="h-10 w-48 max-w-full rounded sm:h-12 lg:h-14" />

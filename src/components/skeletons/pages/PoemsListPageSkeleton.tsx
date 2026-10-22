@@ -79,8 +79,7 @@ export function PoemsListPageSkeleton() {
                 aria-hidden="true"
                 className="pointer-events-none absolute right-8 top-0 h-14 w-7 bg-primary"
                 style={{
-                  clipPath:
-                    "polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%)",
+                  clipPath: "polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%)",
                 }}
               />
 

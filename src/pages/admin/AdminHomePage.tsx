@@ -94,7 +94,7 @@ export function AdminHomePage() {
   const totals = useMemo(() => {
     return analyticsQueries.reduce(
       (result, query) => {
-          result.views += query.data?.views ?? 0;
+        result.views += query.data?.views ?? 0;
         result.likes += query.data?.likes ?? 0;
         result.comments += query.data?.comments ?? 0;
         return result;
@@ -172,7 +172,7 @@ export function AdminHomePage() {
 
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
-  
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setFormError(null);
@@ -320,8 +320,7 @@ export function AdminHomePage() {
                   onChange={(file) => updateField("coverImageFile", file)}
                 />
 
-
-                 <ImageInput
+                <ImageInput
                   id="admin-poem-image"
                   label="Poem image"
                   file={form.poemImageFile}
@@ -393,8 +392,7 @@ export function AdminHomePage() {
             </p>
           </div>
 
-
-   <Button
+          <Button
             variant="outline"
             onClick={() => void poemsQuery.refetch()}
             disabled={poemsQuery.isFetching}
@@ -494,7 +492,7 @@ export function AdminHomePage() {
                     </Button>
                   </div>
 
- {poem.instagramPostUrl && (
+                  {poem.instagramPostUrl && (
                     <a
                       href={poem.instagramPostUrl}
                       target="_blank"

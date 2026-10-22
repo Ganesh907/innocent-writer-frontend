@@ -1,13 +1,10 @@
-
 import { Skeleton } from "./Skeleton";
 
 interface PageSkeletonProps {
   label?: string;
 }
 
-export function PageSkeleton({
-  label = "Loading page",
-}: PageSkeletonProps) {
+export function PageSkeleton({ label = "Loading page" }: PageSkeletonProps) {
   return (
     <main
       className="mx-auto w-full max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8"

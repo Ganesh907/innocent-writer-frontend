@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { SEO } from "@/components/shared/SEO";
 import { axiosClient } from "@/lib/api/axiosClient";
 
-
 export function IndexPage() {
   const navigate = useNavigate();
   useEffect(() => {

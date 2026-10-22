@@ -1,4 +1,3 @@
-
 export { Skeleton } from "./Skeleton";
 export { PageSkeleton } from "./PageSkeleton";
 export { ImageSkeleton } from "./ImageSkeleton";
