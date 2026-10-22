@@ -15,6 +15,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { adminQueryKeys } from "@/features/admin/adminQueryKeys";
 import { getAdminAnalytics } from "@/features/admin/adminApi";
 import { getApiErrorMessage } from "@/lib/api/apiError";
+import { ResumeManagerCard } from "./ResumeManagerCard";
 
 export function AdminDashboardPage() {
   const analyticsQuery = useQuery({
@@ -129,7 +130,7 @@ export function AdminDashboardPage() {
           ))}
         </section>
       )}
-
+<ResumeManagerCard />
       <p className="text-xs text-muted-foreground">
         Views represent the lifetime view counts recorded by the platform.
         Analytics reflect the backend response and are not calculated from the

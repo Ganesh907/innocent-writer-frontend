@@ -11,7 +11,7 @@ export const portfolioProfile = {
   phone: "+91-9653426260",
   linkedin: "https://linkedin.com/in/ganesh-shinde0907",
   github: "https://github.com/Ganesh907",
-  resumePath: "/resume/Ganesh_Shinde_Resume.pdf",
+  // resumePath: "/resume/Ganesh_Shinde_Resume.pdf",
   availabilityNote: "For professional enquiries, please get in touch by email.",
 } as const;
 

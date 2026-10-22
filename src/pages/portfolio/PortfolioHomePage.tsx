@@ -38,6 +38,7 @@ import {
   type PortfolioProject,
   type SkillCategory,
 } from "@/features/portfolio/portfolioContent";
+import { useActiveResume } from "@/features/portfolio/useActiveResume";
 
 const PortfolioCursor = lazy(
   () => import("@/features/portfolio/components/PortfolioCursor"),
@@ -157,6 +158,8 @@ export function PortfolioHomePage() {
   const [showAllSkills, setShowAllSkills] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [emailCopied, setEmailCopied] = useState(false);
+  const resumeQuery = useActiveResume();
+  const resumeUrl = resumeQuery.data?.secureUrl;
   const filteredSkills =
     activeCategory === "All"
       ? portfolioSkills
@@ -501,6 +504,23 @@ export function PortfolioHomePage() {
               >
                 Contact Me
                 <ArrowUpRight aria-hidden="true" />
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-white/30 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+                render={
+                  <a
+                    href={resumeUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    download="Ganesh_Shinde_Resume.pdf"
+                  />
+                }
+              >
+                <FileText aria-hidden="true" />
+                Resume
+                <ArrowDown aria-hidden="true" />
               </Button>
             </div>
           </div>
@@ -876,7 +896,25 @@ export function PortfolioHomePage() {
                   experience, skills, and education.
                 </p>
 
-                <a
+                {resumeUrl ? (
+                  <a
+                    href={resumeUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    download="Ganesh_Shinde_Resume.pdf"
+                  >
+                    <FileText aria-hidden="true" className="size-4" />
+                    Download resume
+                    <ArrowDown aria-hidden="true" className="size-4" />
+                  </a>
+                ) : (
+                  <span className="text-sm text-muted-foreground">
+                    {resumeQuery.isPending
+                      ? "Loading resume..."
+                      : "Resume currently unavailable"}
+                  </span>
+                )}
+                {/* <a
                   href={portfolioProfile.resumePath}
                   download="Ganesh_Shinde_Resume.pdf"
                   className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-[var(--color-primary-hover)] hover:underline dark:text-primary dark:hover:text-[var(--color-primary-hover)]"
@@ -884,7 +922,7 @@ export function PortfolioHomePage() {
                   <FileText aria-hidden="true" className="size-4" />
                   Download resume
                   <ArrowDown aria-hidden="true" className="size-4" />
-                </a>
+                </a> */}
               </div>
             </div>
           </div>
@@ -931,7 +969,9 @@ export function PortfolioHomePage() {
                     className="border-[var(--color-border-strong)]/25 bg-primary/5 text-primary hover:bg-[var(--color-primary-hover)]/10 hover:text-[var(--color-primary-hover)] dark:text-primary dark:hover:text-[var(--color-primary-hover)]"
                     render={
                       <a
-                        href={portfolioProfile.resumePath}
+                        href={resumeUrl}
+                        target="_blank"
+                        rel="noreferrer"
                         download="Ganesh_Shinde_Resume.pdf"
                       />
                     }
