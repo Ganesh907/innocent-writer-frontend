@@ -18,21 +18,17 @@ export class ApiError extends Error {
 
   constructor(message: string, options: ApiErrorOptions = {}) {
     super(message);
-
     this.name = "ApiError";
     this.status = options.status;
     this.validationErrors = options.validationErrors;
     this.code = options.code;
     this.requestId = options.requestId;
-
     Object.setPrototypeOf(this, new.target.prototype);
   }
 }
 
 const isApiErrorResponse = (value: unknown): value is ApiErrorResponse => {
-  if (typeof value !== "object" || value === null) {
-    return false;
-  }
+  if (typeof value !== "object" || value === null) return false;
 
   const candidate = value as Partial<ApiErrorResponse>;
   const nestedError = candidate.error;
@@ -42,46 +38,80 @@ const isApiErrorResponse = (value: unknown): value is ApiErrorResponse => {
     nestedError !== null &&
     typeof nestedError.detail === "string";
 
-  const hasLegacyError = typeof candidate.message === "string";
+  return (
+    candidate.success === false &&
+    (hasNestedError || typeof candidate.message === "string")
+  );
+};
 
-  return candidate.success === false && (hasNestedError || hasLegacyError);
+const GENERIC_ERROR = "Something went wrong. Please try again later.";
+
+const safeClientMessage = (status: number, serverMessage?: string): string => {
+  // Never expose server/internal errors for 5xx responses.
+  if (status >= 500) return GENERIC_ERROR;
+
+  // Only use server messages for client errors (4xx).
+  if (serverMessage?.trim()) return serverMessage;
+
+  switch (status) {
+    case 400:
+      return "Please check the information you entered and try again.";
+    case 401:
+      return "Your email or password is incorrect.";
+    case 403:
+      return "You don't have permission to perform this action.";
+    case 404:
+      return "The requested item could not be found.";
+    case 409:
+      return "This request conflicts with existing information.";
+    case 413:
+      return "The submitted content is too large.";
+    case 422:
+      return "Please check the information you entered.";
+    case 429:
+      return "Too many attempts. Please wait and try again.";
+    default:
+      return "The request could not be completed. Please try again.";
+  }
 };
 
 /** Converts an unknown failure into the shared ApiError type. */
 export const normalizeApiError = (error: unknown): ApiError => {
-  if (error instanceof ApiError) {
-    return error;
-  }
+  if (error instanceof ApiError) return error;
 
   if (axios.isAxiosError<unknown>(error)) {
     const body = error.response?.data;
-
     const apiError = isApiErrorResponse(body) ? body : undefined;
-
     const problem = apiError?.error;
+    const status = problem?.status ?? error.response?.status;
 
-    let message = problem?.detail ?? apiError?.message;
+    let message: string;
 
-    if (!message && error.code === "ECONNABORTED") {
+    if (error.code === "ECONNABORTED") {
       message = "The request timed out. Please try again.";
-    } else if (!message && !error.response) {
+    } else if (!error.response) {
       message =
         "Unable to reach the server. Check your connection and try again.";
-    } else if (!message) {
-      message = error.message || "The request failed. Please try again.";
+    } else if (status !== undefined) {
+      message = safeClientMessage(status, problem?.detail ?? apiError?.message);
+    } else {
+      message = GENERIC_ERROR;
     }
 
     return new ApiError(message, {
-      status: problem?.status ?? error.response?.status,
-      validationErrors: problem?.errors ?? apiError?.errors,
+      status,
+      // Do not expose validation details from server errors.
+      validationErrors:
+        status !== undefined && status < 500
+          ? (problem?.errors ?? apiError?.errors)
+          : undefined,
       code: problem?.type ?? error.code,
       requestId: problem?.requestId,
     });
   }
 
-  return new ApiError(
-    error instanceof Error ? error.message : "An unexpected error occurred.",
-  );
+  // Do not display arbitrary JavaScript error messages in the UI.
+  return new ApiError(GENERIC_ERROR);
 };
 
 /** Returns a message suitable for displaying in the UI. */
@@ -90,11 +120,7 @@ export const getApiErrorMessage = (error: unknown): string => {
     return error.message;
   }
 
-  if (error instanceof Error) {
-    return error.message;
-  }
-
-  return "An unexpected error occurred.";
+  return GENERIC_ERROR;
 };
 
 /** Returns backend field validation errors, when available. */

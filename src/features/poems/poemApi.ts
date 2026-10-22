@@ -120,12 +120,43 @@ export interface RecordPoemViewResult {
  *
  * The backend permanently deduplicates views by visitor and poem.
  */
+
+const GUEST_VISITOR_ID_KEY = "innocent-writer-guest-visitor-id";
+
+const getGuestVisitorId = (): string => {
+  const existingId = window.localStorage.getItem(GUEST_VISITOR_ID_KEY);
+
+  if (
+    existingId &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      existingId,
+    )
+  ) {
+    return existingId;
+  }
+
+  const visitorId = window.crypto.randomUUID();
+  window.localStorage.setItem(GUEST_VISITOR_ID_KEY, visitorId);
+
+  return visitorId;
+};
+
 export const recordPoemView = async (
   id: string,
 ): Promise<RecordPoemViewResult> => {
+  const visitorId = getGuestVisitorId();
+
   const response = await axiosClient.post<
     ApiSuccessResponse<RecordPoemViewResult>
-  >(`/poems/${encodeURIComponent(id)}/view`);
+  >(
+    `/poems/${encodeURIComponent(id)}/view`,
+    {},
+    {
+      headers: {
+        "X-Visitor-Id": visitorId,
+      },
+    },
+  );
 
   return response.data.data;
 };
