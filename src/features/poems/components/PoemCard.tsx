@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useState, type SyntheticEvent } from "react";
 import { createPortal } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -8,11 +8,9 @@ import {
   ExternalLink,
   Eye,
   Feather,
-  FlipHorizontal2,
   Heart,
   Maximize2,
   MessageCircle,
-  Repeat2,
   Send,
   X,
 } from "lucide-react";
@@ -60,7 +58,6 @@ export function PoemCard({ poem }: PoemCardProps) {
   const commentsKey = poemQueryKeys.comments(poem.id);
   const analyticsKey = poemQueryKeys.analytics(poem.id);
   const statusKey = likeStatusQueryKey(poem.id, userId);
-  const [isImageFlipped, setIsImageFlipped] = useState(false);
   const [showPoemImage, setShowPoemImage] = useState(false);
   const analyticsQuery = useQuery({
     queryKey: analyticsKey,
@@ -125,7 +122,7 @@ export function PoemCard({ poem }: PoemCardProps) {
     if (!requireLogin()) return;
     navigate(`${detailPath}#comments-title`);
   }
-  function handleCommentSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleCommentSubmit(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!requireLogin()) return;
     const content = commentDraft.trim();
@@ -137,7 +134,7 @@ export function PoemCard({ poem }: PoemCardProps) {
     setLoginPrompt(false);
     navigate("/login", { state: { from: detailPath } });
   }
-  const previewImage = poem.poemImageUrl || poem.coverImageUrl;
+  const previewImage = poem.poemImageUrl || poem.coverImageUrl || undefined;
   return (
     <>
       <Card className="poetry-card group flex h-full min-w-0 flex-col gap-0 overflow-hidden rounded-xl border border-border/80 bg-white py-0 text-card-foreground shadow-sm transition-colors hover:border-primary/30 dark:bg-card">
@@ -352,41 +349,40 @@ export function PoemCard({ poem }: PoemCardProps) {
       {/* Fullscreen poem image preview */}
       {imagePreviewOpen &&
         createPortal(
-        <div
-          className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/95 p-3 pt-16 backdrop-blur-sm sm:p-6"
-          role="dialog"
-          aria-modal="true"
-          aria-label={`Full image preview: ${poem.title}`}
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) {
-              setImagePreviewOpen(false);
-            }
-          }}
-        >
-          <button
-            type="button"
-            onClick={() => setImagePreviewOpen(false)}
-            aria-label="Close image preview"
-            title="Close"
-            className="fixed right-4 top-4 z-[100000] grid size-11 place-items-center rounded-full border border-white/30 bg-black/70 text-white shadow-lg transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          <div
+            className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/95 p-3 pt-16 backdrop-blur-sm sm:p-6"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Full image preview: ${poem.title}`}
+            onMouseDown={(event) => {
+              if (event.target === event.currentTarget) {
+                setImagePreviewOpen(false);
+              }
+            }}
           >
-            <X aria-hidden="true" className="size-6" />
-          </button>
-          <div className="flex max-h-full w-full max-w-5xl flex-col items-center">
-            <p className="mb-3 max-w-full truncate text-center font-serif text-lg font-semibold text-white">
-              {poem.title}
-            </p>
-            <div className="flex min-h-0 w-full flex-1 items-center justify-center">
-              <img
-                src={previewImage}
-                alt={poem.title}
-                className="max-h-[80vh] max-w-full rounded-lg object-contain"
-              />
+            <button
+              type="button"
+              onClick={() => setImagePreviewOpen(false)}
+              aria-label="Close image preview"
+              title="Close"
+              className="fixed right-4 top-4 z-[100000] grid size-11 place-items-center rounded-full border border-white/30 bg-black/70 text-white shadow-lg transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            >
+              <X aria-hidden="true" className="size-6" />
+            </button>
+            <div className="flex max-h-full w-full max-w-5xl flex-col items-center">
+              <p className="mb-3 max-w-full truncate text-center font-serif text-lg font-semibold text-white">
+                {poem.title}
+              </p>
+              <div className="flex min-h-0 w-full flex-1 items-center justify-center">
+                <img
+                  src={previewImage}
+                  alt={poem.title}
+                  className="max-h-[80vh] max-w-full rounded-lg object-contain"
+                />
+              </div>
             </div>
-          </div>
-        </div>
-          ,
-          document.body
+          </div>,
+          document.body,
         )}
       {/* Sign-in dialog */}
       {loginPrompt && (
