@@ -71,7 +71,6 @@ function isValidInstagramPostUrl(
 
 function ContentImage({ imageUrl }: { imageUrl?: string | null }) {
   const [failed, setFailed] = useState(false);
-
   if (!imageUrl || failed) {
     return (
       <div className="flex min-h-48 items-center justify-center rounded-xl bg-muted text-muted-foreground">
@@ -79,7 +78,6 @@ function ContentImage({ imageUrl }: { imageUrl?: string | null }) {
       </div>
     );
   }
-
   return (
     <ImageWithSkeleton
       src={imageUrl}
@@ -87,8 +85,8 @@ function ContentImage({ imageUrl }: { imageUrl?: string | null }) {
       loading="lazy"
       decoding="async"
       skeletonAspectRatio="portrait"
-      wrapperClassName="relative aspect-[3/4] w-full overflow-hidden rounded-xl"
-      className="absolute inset-0 h-full w-full object-contain"
+      wrapperClassName="relative w-full overflow-hidden rounded-xl"
+      className="block h-auto w-full object-contain"
       onError={() => setFailed(true)}
     />
   );
@@ -482,7 +480,7 @@ export function PoemDetailPage() {
 
             <BookDivider label="✦" />
 
-            <div className="mx-auto flex w-full max-w-lg flex-1 flex-col items-center py-3 text-center">
+            <div className="mx-auto flex w-full flex-1 flex-col items-center py-3 text-center">
               <div className="w-full border border-border p-1.5 sm:p-2">
                 <div className="border border-border/70 bg-muted/20 p-2 sm:p-3">
                   <ContentImage

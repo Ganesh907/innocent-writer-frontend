@@ -1,17 +1,21 @@
 import { useState, type FormEvent } from "react";
+import { createPortal } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  ArrowLeftRight,
   ArrowUpRight,
   ExternalLink,
   Eye,
   Feather,
+  FlipHorizontal2,
   Heart,
+  Maximize2,
   MessageCircle,
+  Repeat2,
   Send,
   X,
 } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -27,189 +31,127 @@ import { getPoemLikeStatus, togglePoemLike } from "@/features/likes/likeApi";
 import { PoemCoverImage } from "@/features/poems/components/PoemCoverImage";
 import { poemQueryKeys } from "@/features/poems/poemQueryKeys";
 import { getApiErrorMessage } from "@/lib/api/apiError";
-
 interface PoemCardProps {
   poem: Poem;
 }
-
 const likeStatusQueryKey = (poemId: string, userId: string) =>
   ["poem-like-status", poemId, userId] as const;
-
 function formatDate(value: string): string {
   const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return "Date unavailable";
-  }
-
+  if (Number.isNaN(date.getTime())) return "Date unavailable";
   return new Intl.DateTimeFormat(undefined, {
     month: "short",
     day: "numeric",
     year: "numeric",
   }).format(date);
 }
-
 export function PoemCard({ poem }: PoemCardProps) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { user, isAuthenticated, isInitializing } = useAuth();
-
   const [commentDraft, setCommentDraft] = useState("");
   const [loginPrompt, setLoginPrompt] = useState(false);
   const [likeError, setLikeError] = useState<string | null>(null);
   const [commentError, setCommentError] = useState<string | null>(null);
-
+  const [imagePreviewOpen, setImagePreviewOpen] = useState(false);
   const detailPath = `/app/poems/${encodeURIComponent(poem.id)}`;
   const author = poem.authorName?.trim() || "Unknown author";
   const userId = user?.id ?? "guest";
-
   const commentsKey = poemQueryKeys.comments(poem.id);
   const analyticsKey = poemQueryKeys.analytics(poem.id);
   const statusKey = likeStatusQueryKey(poem.id, userId);
-
+  const [isImageFlipped, setIsImageFlipped] = useState(false);
+  const [showPoemImage, setShowPoemImage] = useState(false);
   const analyticsQuery = useQuery({
     queryKey: analyticsKey,
     queryFn: ({ signal }) => getPoemAnalytics(poem.id, signal),
     staleTime: 30_000,
   });
-
   const commentsQuery = useQuery({
     queryKey: commentsKey,
     queryFn: ({ signal }) => getCommentsByPoem(poem.id, signal),
     staleTime: 30_000,
   });
-
-  // Retrieve this user's persisted like status from the backend.
   const likeStatusQuery = useQuery({
     queryKey: statusKey,
     queryFn: ({ signal }) => getPoemLikeStatus(poem.id, signal),
     enabled: isAuthenticated && !isInitializing,
     retry: 1,
   });
-
   const liked = isAuthenticated && likeStatusQuery.data?.liked === true;
   const comments = commentsQuery.data ?? [];
-
   const likeMutation = useMutation({
     mutationFn: () => togglePoemLike(poem.id),
-
     onSuccess: async (result) => {
-      // Keep the card and poem detail page synchronized.
       queryClient.setQueryData(statusKey, result);
       setLikeError(null);
-
-      await queryClient.invalidateQueries({
-        queryKey: analyticsKey,
-      });
+      await queryClient.invalidateQueries({ queryKey: analyticsKey });
     },
-
     onError: (error) => {
       setLikeError(getApiErrorMessage(error));
     },
   });
-
   const commentMutation = useMutation({
     mutationFn: (content: string) => addPoemComment(poem.id, content),
-
     onSuccess: async (created) => {
       setCommentDraft("");
       setCommentError(null);
-
       queryClient.setQueryData<PoemComment[]>(commentsKey, (current) => [
         created,
         ...(current ?? []).filter((item) => item.id !== created.id),
       ]);
-
       await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: commentsKey,
-        }),
-        queryClient.invalidateQueries({
-          queryKey: analyticsKey,
-        }),
+        queryClient.invalidateQueries({ queryKey: commentsKey }),
+        queryClient.invalidateQueries({ queryKey: analyticsKey }),
       ]);
     },
-
     onError: (error) => {
       setCommentError(getApiErrorMessage(error));
     },
   });
-
   function requireLogin(): boolean {
-    if (isInitializing) {
-      return false;
-    }
-
-    if (isAuthenticated) {
-      return true;
-    }
-
+    if (isInitializing) return false;
+    if (isAuthenticated) return true;
     setLoginPrompt(true);
     return false;
   }
-
   function handleLike() {
-    if (!requireLogin() || likeMutation.isPending) {
-      return;
-    }
-
-    // Do not toggle until the persisted state is known.
-    if (likeStatusQuery.isPending || likeStatusQuery.isError) {
-      return;
-    }
-
+    if (!requireLogin() || likeMutation.isPending) return;
+    if (likeStatusQuery.isPending || likeStatusQuery.isError) return;
     setLikeError(null);
     likeMutation.mutate();
   }
-
   function handleCommentsClick() {
-    if (!requireLogin()) {
-      return;
-    }
-
+    if (!requireLogin()) return;
     navigate(`${detailPath}#comments-title`);
   }
-
   function handleCommentSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
-    if (!requireLogin()) {
-      return;
-    }
-
+    if (!requireLogin()) return;
     const content = commentDraft.trim();
-
-    if (!content || commentMutation.isPending) {
-      return;
-    }
-
+    if (!content || commentMutation.isPending) return;
     setCommentError(null);
     commentMutation.mutate(content);
   }
-
   function handleSignIn() {
     setLoginPrompt(false);
-    navigate("/login", {
-      state: { from: detailPath },
-    });
+    navigate("/login", { state: { from: detailPath } });
   }
-
+  const previewImage = poem.poemImageUrl || poem.coverImageUrl;
   return (
     <>
-      <Card className="poetry-card group flex h-full min-w-0 flex-col gap-0 overflow-hidden rounded-xl border border-border/80 bg-white  dark:bg-card py-0 text-card-foreground shadow-sm transition-colors hover:border-primary/30">
+      <Card className="poetry-card group flex h-full min-w-0 flex-col gap-0 overflow-hidden rounded-xl border border-border/80 bg-white py-0 text-card-foreground shadow-sm transition-colors hover:border-primary/30 dark:bg-card">
         {/* Author */}
         <header className="flex items-center gap-2 px-3 py-2">
           <span className="grid size-8 shrink-0 place-items-center rounded-full border border-primary/15 bg-primary/10 text-primary">
             <Feather aria-hidden="true" className="size-4" />
           </span>
-
           <div className="min-w-0 flex-1">
             <p className="truncate text-xs font-semibold">{author}</p>
             <p className="text-[10px] text-muted-foreground">
               {formatDate(poem.createdAt)}
             </p>
           </div>
-
           {poem.instagramPostUrl && (
             <a
               href={poem.instagramPostUrl}
@@ -223,31 +165,52 @@ export function PoemCard({ poem }: PoemCardProps) {
             </a>
           )}
         </header>
-
-        {/* Poem artwork */}
-        <Link
-          to={detailPath}
-          aria-label={`Read ${poem.title}`}
-          className="mx-3 block overflow-hidden rounded-lg border border-border/60 bg-muted/30"
-        >
-          <PoemCoverImage
-            src={poem.coverImageUrl}
-            poemImageSrc={poem.poemImageUrl}
-            title={poem.title}
-          />
-        </Link>
-
+        {/* Poem artwork with always-visible preview button */}
+        <div className="relative mx-3 overflow-hidden rounded-lg border border-border/60 bg-muted/30">
+          <Link
+            to={detailPath}
+            aria-label={`Read ${poem.title}`}
+            className="block"
+          >
+            <PoemCoverImage
+              src={showPoemImage ? poem.poemImageUrl : poem.coverImageUrl}
+              poemImageSrc={
+                showPoemImage ? poem.coverImageUrl : poem.poemImageUrl
+              }
+              title={poem.title}
+            />
+          </Link>
+          <button
+            type="button"
+            onClick={() => setShowPoemImage((prev) => !prev)}
+            aria-label="Switch between cover and poem image"
+            title={showPoemImage ? "Show cover image" : "Show poem image"}
+            className="absolute bottom-2 right-2 z-10 grid size-10 place-items-center rounded-full border border-white/30 bg-black/70 text-white shadow-md transition hover:bg-black/90"
+          >
+            <ArrowLeftRight aria-hidden="true" className="size-5" />
+          </button>
+        </div>
         <CardContent className="flex flex-1 flex-col gap-2 p-3">
-          {/* Title */}
-          <h2 className="line-clamp-2 font-serif text-base font-semibold leading-snug">
-            <Link
-              to={detailPath}
-              className="transition-colors hover:text-primary"
+          {/* Title and fullscreen preview button */}
+          <div className="flex min-w-0 items-start gap-2">
+            <h2 className="min-w-0 flex-1 line-clamp-2 font-serif text-base font-semibold leading-snug">
+              <Link
+                to={detailPath}
+                className="transition-colors hover:text-primary"
+              >
+                {poem.title}
+              </Link>
+            </h2>
+            <button
+              type="button"
+              aria-label={`View full image of ${poem.title}`}
+              title="View full poem image"
+              onClick={() => setImagePreviewOpen(true)}
+              className="grid size-8 shrink-0 place-items-center rounded-lg border border-border bg-muted/40 text-muted-foreground transition hover:border-primary/40 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              {poem.title}
-            </Link>
-          </h2>
-
+              <Maximize2 aria-hidden="true" className="size-4" />
+            </button>
+          </div>
           {/* Likes, comments, and views */}
           <div className="flex items-center gap-3 border-y border-border/70 py-1">
             <button
@@ -273,7 +236,6 @@ export function PoemCard({ poem }: PoemCardProps) {
                 {analyticsQuery.data?.likes ?? "—"}
               </span>
             </button>
-
             <button
               type="button"
               onClick={handleCommentsClick}
@@ -286,7 +248,6 @@ export function PoemCard({ poem }: PoemCardProps) {
                 {analyticsQuery.data?.comments ?? comments.length}
               </span>
             </button>
-
             <span
               className="inline-flex h-8 shrink-0 items-center gap-1.5 text-xs text-muted-foreground"
               aria-label={`${analyticsQuery.data?.views ?? poem.viewCount ?? 0} views`}
@@ -297,7 +258,6 @@ export function PoemCard({ poem }: PoemCardProps) {
               </span>
             </span>
           </div>
-
           {isAuthenticated && likeStatusQuery.isError && (
             <div className="flex flex-wrap items-center gap-2 text-xs text-destructive">
               <span>Could not load your like status.</span>
@@ -311,13 +271,11 @@ export function PoemCard({ poem }: PoemCardProps) {
               </button>
             </div>
           )}
-
           {likeError && (
             <p role="alert" className="text-xs text-destructive">
               {likeError}
             </p>
           )}
-
           {/* Comments preview */}
           <section aria-label={`Comments on ${poem.title}`} className="min-w-0">
             {commentsQuery.isPending ? (
@@ -343,7 +301,6 @@ export function PoemCard({ poem }: PoemCardProps) {
               </div>
             )}
           </section>
-
           {/* Comment input for authenticated users */}
           {isAuthenticated && (
             <form onSubmit={handleCommentSubmit} className="mt-0.5 space-y-1">
@@ -357,7 +314,6 @@ export function PoemCard({ poem }: PoemCardProps) {
                   className="h-8 min-w-0 text-xs"
                   disabled={commentMutation.isPending || isInitializing}
                 />
-
                 <Button
                   type="submit"
                   size="icon"
@@ -372,13 +328,11 @@ export function PoemCard({ poem }: PoemCardProps) {
                   <Send aria-hidden="true" className="size-3.5" />
                 </Button>
               </div>
-
               {commentMutation.isPending && (
                 <p role="status" className="text-[10px] text-muted-foreground">
                   Posting comment…
                 </p>
               )}
-
               {commentError && (
                 <p role="alert" className="text-xs text-destructive">
                   {commentError}
@@ -386,7 +340,6 @@ export function PoemCard({ poem }: PoemCardProps) {
               )}
             </form>
           )}
-
           <Link
             to={`${detailPath}#comments-title`}
             className="ml-auto inline-flex shrink-0 items-center gap-1 text-[11px] font-medium text-primary hover:underline"
@@ -396,7 +349,45 @@ export function PoemCard({ poem }: PoemCardProps) {
           </Link>
         </CardContent>
       </Card>
-
+      {/* Fullscreen poem image preview */}
+      {imagePreviewOpen &&
+        createPortal(
+        <div
+          className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/95 p-3 pt-16 backdrop-blur-sm sm:p-6"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Full image preview: ${poem.title}`}
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              setImagePreviewOpen(false);
+            }
+          }}
+        >
+          <button
+            type="button"
+            onClick={() => setImagePreviewOpen(false)}
+            aria-label="Close image preview"
+            title="Close"
+            className="fixed right-4 top-4 z-[100000] grid size-11 place-items-center rounded-full border border-white/30 bg-black/70 text-white shadow-lg transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          >
+            <X aria-hidden="true" className="size-6" />
+          </button>
+          <div className="flex max-h-full w-full max-w-5xl flex-col items-center">
+            <p className="mb-3 max-w-full truncate text-center font-serif text-lg font-semibold text-white">
+              {poem.title}
+            </p>
+            <div className="flex min-h-0 w-full flex-1 items-center justify-center">
+              <img
+                src={previewImage}
+                alt={poem.title}
+                className="max-h-[80vh] max-w-full rounded-lg object-contain"
+              />
+            </div>
+          </div>
+        </div>
+          ,
+          document.body
+        )}
       {/* Sign-in dialog */}
       {loginPrompt && (
         <div
@@ -419,7 +410,6 @@ export function PoemCard({ poem }: PoemCardProps) {
                 <span className="grid size-10 shrink-0 place-items-center rounded-lg border border-primary/20 bg-primary/10 text-primary">
                   <Feather aria-hidden="true" className="size-5" />
                 </span>
-
                 <div>
                   <h2
                     id={`sign-in-title-${poem.id}`}
@@ -432,7 +422,6 @@ export function PoemCard({ poem }: PoemCardProps) {
                   </p>
                 </div>
               </div>
-
               <button
                 type="button"
                 onClick={() => setLoginPrompt(false)}
@@ -442,7 +431,6 @@ export function PoemCard({ poem }: PoemCardProps) {
                 <X aria-hidden="true" className="size-4" />
               </button>
             </div>
-
             <p
               id={`sign-in-description-${poem.id}`}
               className="mt-4 text-sm leading-relaxed text-muted-foreground"
@@ -450,7 +438,6 @@ export function PoemCard({ poem }: PoemCardProps) {
               Sign in to like poems and share your thoughts with the writing
               community.
             </p>
-
             <div className="mt-5 flex gap-2">
               <Button
                 type="button"
@@ -460,7 +447,6 @@ export function PoemCard({ poem }: PoemCardProps) {
               >
                 Not now
               </Button>
-
               <Button type="button" className="flex-1" onClick={handleSignIn}>
                 Sign in
                 <ArrowUpRight aria-hidden="true" className="ml-1 size-4" />

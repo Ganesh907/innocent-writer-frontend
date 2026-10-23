@@ -139,7 +139,7 @@ export function PortfolioHomePageSkeleton() {
         />
         <div
           className="absolute inset-0 hidden bg-cover bg-top sm:block"
-          style={{ backgroundImage: "url('/images/BgTwo.png')" }}
+          style={{ backgroundImage: "url('/images/PortfolioBg.png')" }}
           aria-hidden="true"
         />
         <div

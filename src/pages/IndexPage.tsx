@@ -1,14 +1,27 @@
+
 import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, Code2, Feather } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { SEO } from "@/components/shared/SEO";
 import { axiosClient } from "@/lib/api/axiosClient";
+import { getActiveResume } from "@/features/portfolio/resumeApi";
 
 export function IndexPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   useEffect(() => {
+    // Start the Resume GET request immediately when the website's first page mounts.
+    void queryClient.prefetchQuery({
+      queryKey: ["portfolio", "resume"],
+      queryFn: ({ signal }) => getActiveResume(signal),
+      staleTime: 60_000,
+    });
+
+    // Warm up the backend without blocking page rendering or navigation.
     const apiBaseUrl = axiosClient.defaults.baseURL ?? "/api";
     const backendBaseUrl = apiBaseUrl.replace(/\/api\/?$/, "");
 
@@ -16,9 +29,9 @@ export function IndexPage() {
       method: "GET",
       cache: "no-store",
     }).catch(() => {
-      // dont block navigation even if health api failed.
+      // Ignore health-check failures; the page should remain usable.
     });
-  }, []);
+  }, [queryClient]);
 
   return (
     <>
@@ -81,11 +94,11 @@ export function IndexPage() {
                     give your thoughts a place to live.
                   </p>
 
-                  {/* LEFT IMAGE — fixed preview slot */}
+                  {/* LEFT IMAGE */}
                   <div className="my-5 flex h-[180px] w-full shrink-0 items-center justify-center sm:h-[196px]">
                     <div className="h-full w-full max-w-[350px] overflow-hidden rounded-md border border-[var(--gateway-border)] shadow-md">
                       <img
-                        src="/images/ProductBgTwo.png"
+                        src="/images/ProductBg.png"
                         alt="Innocent Writer homepage preview"
                         className="block h-full w-full object-cover"
                         loading="lazy"
@@ -97,7 +110,7 @@ export function IndexPage() {
                     <Button
                       type="button"
                       size="lg"
-                      className="gateway-cta w-full sm:w-auto cursor-pointer"
+                      className="gateway-cta w-full cursor-pointer sm:w-auto"
                       onClick={() => navigate("/app")}
                     >
                       Explore Innocent Writer
@@ -134,7 +147,6 @@ export function IndexPage() {
                 </div>
 
                 <div className="flex flex-1 flex-col items-center justify-center">
-                  {/* <div className="flex flex-1 flex-col items-center justify-center"> */}
                   <div className="relative mb-5 size-20 shrink-0 sm:size-24">
                     <div className="size-full overflow-hidden rounded-full border border-[var(--gateway-border)] bg-[var(--gateway-page)] shadow-md ring-4 ring-[var(--gateway-page-shade)]">
                       <img
@@ -161,11 +173,11 @@ export function IndexPage() {
                     engineering behind practical applications.
                   </p>
 
-                  {/* RIGHT IMAGE — same slot and dimensions */}
+                  {/* RIGHT IMAGE */}
                   <div className="my-5 flex h-[180px] w-full shrink-0 items-center justify-center sm:h-[196px]">
                     <div className="h-full w-full max-w-[350px] overflow-hidden rounded-md border border-[var(--gateway-border)] shadow-md">
                       <img
-                        src="/images/BgTwo.png"
+                        src="/images/PortfolioBg.png"
                         alt="Development Portfolio homepage preview"
                         className="block h-full w-full object-cover"
                         loading="lazy"
@@ -177,7 +189,7 @@ export function IndexPage() {
                     <Button
                       type="button"
                       size="lg"
-                      className="gateway-cta gateway-cta--portfolio w-full sm:w-auto cursor-pointer"
+                      className="gateway-cta gateway-cta--portfolio w-full cursor-pointer sm:w-auto"
                       onClick={() => navigate("/portfolio")}
                     >
                       View Portfolio

@@ -15,7 +15,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { adminQueryKeys } from "@/features/admin/adminQueryKeys";
 import { getAdminAnalytics } from "@/features/admin/adminApi";
 import { getApiErrorMessage } from "@/lib/api/apiError";
-import { ResumeManagerCard } from "./ResumeManagerCard";
+import { ResumeManagerCard } from "../../features/admin/components/ResumeManagerCard";
 
 export function AdminDashboardPage() {
   const analyticsQuery = useQuery({

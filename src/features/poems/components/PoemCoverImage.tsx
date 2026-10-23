@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ImageWithSkeleton } from "@/components/skeletons";
-import { Feather, Images, X, ZoomIn } from "lucide-react";
+import { Feather } from "lucide-react";
 
 interface PoemCoverImageProps {
   src: string | null | undefined;
@@ -118,7 +118,7 @@ export function PoemCoverImage({
 
         <div className="relative flex flex-col items-center gap-3 px-4 text-center">
           <span className="grid size-12 place-items-center rounded-full border border-primary/20 bg-primary/10 text-primary">
-            <Feather className="size-5" />
+            <Feather className="size-50" />
           </span>
 
           <span className="font-serif text-sm">A page yet unwritten</span>
@@ -171,27 +171,10 @@ export function PoemCoverImage({
             </p> */}
           </div>
 
-          <span className="grid size-8 shrink-0 place-items-center rounded-full border border-white/30 bg-black/25 backdrop-blur-sm">
+          {/* <span className="grid size-8 shrink-0 place-items-center rounded-full border border-white/30 bg-black/25 backdrop-blur-sm">
             <ZoomIn aria-hidden="true" className="size-4" />
-          </span>
+          </span> */}
         </div>
-
-        {gallerySrc && (
-          <button
-            type="button"
-            aria-label={`View ${title} in gallery`}
-            title="View full-size artwork"
-            onClick={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              void handleRecordView();
-              setIsGalleryOpen(true);
-            }}
-            className="absolute right-3 top-3 grid size-9 place-items-center rounded-lg border border-white/30 bg-black/45 text-white shadow-lg backdrop-blur-sm transition hover:bg-black/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-          >
-            <Images aria-hidden="true" className="size-4" />
-          </button>
-        )}
       </div>
 
       {isGalleryOpen && gallerySrc && (
@@ -206,27 +189,7 @@ export function PoemCoverImage({
             }
           }}
         >
-          <div className="relative flex max-h-full max-w-full flex-col items-center">
-            <button
-              type="button"
-              aria-label="Close gallery"
-              onClick={() => setIsGalleryOpen(false)}
-              className="absolute -right-1 -top-12 grid size-10 place-items-center rounded-full border border-white/20 bg-white/10 text-white transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:right-0"
-            >
-              <X aria-hidden="true" className="size-5" />
-            </button>
-
-            <img
-              src={gallerySrc}
-              alt={`Full-size artwork for ${title}`}
-              className="max-h-[78vh] max-w-[92vw] rounded-lg object-contain shadow-2xl sm:max-h-[82vh]"
-              onError={() => handleImageError(gallerySrc)}
-            />
-
-            <p className="mt-4 max-w-[92vw] text-center font-serif text-base font-medium text-white sm:text-lg">
-              {title}
-            </p>
-          </div>
+    
         </div>
       )}
     </>

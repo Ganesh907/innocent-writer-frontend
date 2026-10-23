@@ -1,12 +1,12 @@
 export const portfolioProfile = {
   name: "Ganesh Shinde",
-  role: "Full Stack Engineer",
+  role: "Full Stack Developer",
   location: "Mumbai, India",
   experience: "2+ years of experience",
   introduction:
-    "I build web applications with React, TypeScript, Node.js, and relational databases. My experience includes developing reusable interfaces, integrating REST APIs, and working across frontend and backend workflows.",
+    "Full Stack Developer with 2+ years of experience building React and TypeScript interfaces, Node.js and Express APIs, and data-driven workflows with PostgreSQL, Prisma, and SQL Server.",
   about:
-    "I have worked on healthcare applications, government-scale project modules, partner-profile workflows, and a corporate website. I also develop Innocent Writer, a full-stack poetry publishing application, to work with authentication, role-based access control, API design, and structured data management.",
+    "I build across the application stack—from responsive React and TypeScript interfaces to REST APIs, authentication and authorization, backend business logic, and relational data workflows. My professional experience includes healthcare modules and government-scale partner-profile workflows. Innocent Writer is my full-stack project, bringing together React, Express, PostgreSQL, Prisma, local and Google authentication, role-based access control, content interactions, analytics, image storage, and API documentation.",
   email: "ganishinde907@gmail.com",
   phone: "+91-9653426260",
   linkedin: "https://linkedin.com/in/ganesh-shinde0907",
@@ -42,11 +42,13 @@ export const portfolioSkills: PortfolioSkill[] = [
   { name: "CSS3", category: "Frontend", evidence: "Resume" },
   { name: "Tailwind CSS", category: "Frontend", evidence: "Resume" },
   { name: "React Router", category: "Frontend", evidence: "Resume" },
+  { name: "Context API", category: "Frontend", evidence: "Resume" },
   { name: "Material UI", category: "Frontend", evidence: "Resume" },
 
   { name: "Node.js", category: "Backend", evidence: "Resume" },
   { name: "Express.js", category: "Backend", evidence: "Resume" },
   { name: "ASP.NET Web API", category: "Backend", evidence: "Resume" },
+  { name: "REST API Design", category: "Backend", evidence: "Innocent Writer" },
 
   { name: "PostgreSQL", category: "Database", evidence: "Resume" },
   { name: "MS SQL Server", category: "Database", evidence: "Resume" },
@@ -56,6 +58,7 @@ export const portfolioSkills: PortfolioSkill[] = [
   { name: "Postman", category: "Tools", evidence: "Resume" },
   { name: "VS Code", category: "Tools", evidence: "Resume" },
   { name: "Visual Studio", category: "Tools", evidence: "Resume" },
+  { name: "Swagger / OpenAPI", category: "Tools", evidence: "Innocent Writer" },
 
   // Technologies and patterns represented in this project's source
   // and architecture. These are not independent skill ratings.
@@ -77,6 +80,26 @@ export const portfolioSkills: PortfolioSkill[] = [
   },
   {
     name: "JWT Authentication",
+    category: "Architecture",
+    evidence: "Innocent Writer",
+  },
+  {
+    name: "Google OAuth 2.0",
+    category: "Architecture",
+    evidence: "Resume",
+  },
+  {
+    name: "Email OTP Verification",
+    category: "Architecture",
+    evidence: "Innocent Writer",
+  },
+  {
+    name: "API Input Validation",
+    category: "Architecture",
+    evidence: "Innocent Writer",
+  },
+  {
+    name: "API Security (Helmet / Rate Limiting)",
     category: "Architecture",
     evidence: "Innocent Writer",
   },
@@ -114,7 +137,7 @@ export const portfolioProjects: PortfolioProject[] = [
     name: "Innocent Writer",
     category: "Full-stack personal project",
     description:
-      "A poetry publishing application built with a React and TypeScript frontend and a Node.js and Express backend. The project brings public poem browsing, user interactions, authentication, and administration into one application.",
+      "A full-stack poetry publishing platform built with React and TypeScript on the frontend and Node.js, Express, Prisma, and PostgreSQL on the backend. It combines public content discovery, authenticated interactions, analytics, admin workflows, and a portfolio/resume experience.",
     technologies: [
       "React",
       "TypeScript",
@@ -122,18 +145,29 @@ export const portfolioProjects: PortfolioProject[] = [
       "Node.js",
       "Express.js",
       "PostgreSQL",
-      "Prisma",
+      "Prisma ORM",
+      "JWT",
+      "Google OAuth 2.0",
+      "Cloudinary",
+      "TanStack Query",
+      "Swagger / OpenAPI",
     ],
     highlights: [
-      "Public poem listing with search and pagination",
-      "Poem details, likes, comments, and image handling",
-      "JWT authentication and role-based authorization",
-      "Administrative dashboard, user management, and poem moderation",
-      "Layered backend architecture and lifetime-unique poem view tracking",
+      "Built public poem discovery with search, pagination, poem details, likes, and comments",
+      "Integrated local authentication and Google OAuth with application JWT sessions",
+      "Implemented email OTP verification with expiry and attempt controls, plus role-based authorization",
+      "Developed layered REST APIs using Route → Controller → Service → Repository with Prisma and PostgreSQL",
+      "Added admin user management and publication moderation, author analytics, and lifetime-unique poem view tracking",
+      "Integrated Cloudinary image storage, API validation, Helmet security headers, rate limiting, and Swagger/OpenAPI documentation",
+      "Connected the portfolio to the backend-managed active resume download endpoint",
     ],
     links: [
       {
-        label: "Backend repository",
+        label: "Frontend Repository",
+        url: "https://github.com/Ganesh907/innocent-writer-frontend",
+      },
+      {
+        label: "Backend Repository",
         url: "https://github.com/Ganesh907/innocent-writer-backend",
       },
     ],
@@ -204,14 +238,14 @@ export const portfolioExperience = [
     company: "BitByBit Solutions",
     period: "Jan 2025 – May 2026",
     description:
-      "Worked on healthcare application modules, reusable React interfaces, API integrations, backend changes, and partner-profile workflows.",
+      "Worked across healthcare application modules using React and TypeScript, integrated Node.js/Express APIs backed by PostgreSQL, and contributed to partner-profile and data-driven form workflows.",
   },
   {
     role: "Associate Software Engineer",
     company: "BitByBit Solutions",
     period: "May 2024 – Dec 2024",
     description:
-      "Developed React modules for Hamara Kendra, integrated ASP.NET Web APIs, and worked with SQL Server stored procedures and EMS functionality.",
+      "Developed React modules for Hamara Kendra, integrated ASP.NET Web APIs, modified APIs, and worked with SQL Server stored procedures and Enquiry Management System (EMS) functionality.",
   },
   {
     role: "Software Trainee",
