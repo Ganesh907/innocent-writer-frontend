@@ -1,6 +1,3 @@
-
-import React from "react";
-
 const WRITER_IMAGE = "/Writer.jpg";
 const BOOK_COVER_IMAGE = "/BookCover.png";
 
