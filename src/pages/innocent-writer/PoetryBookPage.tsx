@@ -1,4 +1,12 @@
-import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactElement,
+} from "react";
 import HTMLFlipBook from "react-pageflip";
 import { ArrowLeft, ArrowRight, BookOpen, Feather } from "lucide-react";
 
@@ -10,6 +18,22 @@ type BookPageProps = {
   poemName: string;
   image?: string;
   cover?: "front" | "back";
+  /** Desktop spread only: forces left/right page shading. Mobile does not pass it. */
+  side?: "left" | "right";
+};
+
+type FullImagePageProps = {
+  image: string;
+  alt: string;
+  side: "left" | "right";
+  eager?: boolean;
+};
+
+type BookPoem = {
+  id: string;
+  title: string;
+  coverImage: string;
+  poemImage: string;
 };
 
 type FlipBookHandle = {
@@ -20,6 +44,12 @@ type FlipBookHandle = {
 };
 
 const COVER_IMAGE = "/images/BookCover.png";
+
+// Author image shown on the LEFT page of the first spread (desktop only).
+// The project zip contains /images/Writer.jpg. If your file is a PNG, change this to "/images/Writer.png".
+const WRITER_IMAGE = "/images/Writer.jpg";
+
+const MOBILE_QUERY = "(max-width: 767px)";
 
 const PAPER_STYLE = {
   backgroundColor: "var(--gateway-page)",
@@ -44,6 +74,12 @@ const COVER_STYLE = {
   WebkitBackfaceVisibility: "hidden" as const,
 };
 
+// Soft shade next to the spine so full-size image pages look like book pages.
+const SPINE_SHADE_LEFT =
+  "linear-gradient(270deg, color-mix(in srgb, var(--gateway-cover-edge) 38%, transparent), transparent 14%)";
+const SPINE_SHADE_RIGHT =
+  "linear-gradient(90deg, color-mix(in srgb, var(--gateway-cover-edge) 38%, transparent), transparent 14%)";
+
 const CoverRule = () => (
   <div
     aria-hidden="true"
@@ -56,7 +92,7 @@ const CoverRule = () => (
 );
 
 const BookPage = forwardRef<HTMLDivElement, BookPageProps>(function BookPage(
-  { pageNumber, poemName, image, cover },
+  { pageNumber, poemName, image, cover, side },
   ref,
 ) {
   if (cover) {
@@ -188,15 +224,17 @@ const BookPage = forwardRef<HTMLDivElement, BookPageProps>(function BookPage(
     );
   }
 
+  const pageSide = side ?? (pageNumber % 2 === 0 ? "left" : "right");
+
   return (
     <div
       ref={ref}
-      className={`gateway-page relative isolate box-border flex h-full w-full min-w-0 flex-col overflow-hidden p-3 text-[var(--gateway-text)] sm:p-4 ${
-        pageNumber % 2 === 0 ? "gateway-page--left" : "gateway-page--right"
+      className={`gateway-page relative isolate box-border flex h-full w-full min-w-0 flex-col overflow-hidden text-[var(--gateway-text)] sm:p-4 ${
+        pageSide === "left" ? "gateway-page--left" : "gateway-page--right"
       }`}
       style={PAPER_STYLE}
     >
-      <header className="flex min-h-[28px] w-full flex-none items-center justify-between gap-2 border-b border-[var(--gateway-border)] px-0.5 pb-2 font-serif text-[clamp(9px,1vw,12px)]">
+      <header className="flex w-full flex-none items-center justify-between gap-2 border-b border-[var(--gateway-border)]  font-serif text-[clamp(9px,1vw,12px)]">
         <span className="shrink-0 font-semibold">Innocent Writer</span>
 
         <span className="min-w-0 max-w-[60%] truncate text-right">
@@ -204,17 +242,15 @@ const BookPage = forwardRef<HTMLDivElement, BookPageProps>(function BookPage(
         </span>
       </header>
 
-      <div className="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden px-1 py-2 sm:px-2 sm:py-3">
-        {image && (
-          <img
-            src={image}
-            alt={`${poemName}, page ${pageNumber}`}
-            className="block h-full max-h-full w-full max-w-full select-none object-contain object-center"
-            draggable={false}
-            loading={pageNumber <= 2 ? "eager" : "lazy"}
-          />
-        )}
-      </div>
+      {image && (
+        <img
+          src={image}
+          alt={`${poemName}, page ${pageNumber}`}
+          className=" h-[95%]! max-h-full w-full p-1  max-w-full select-none object-contain object-center"
+          draggable={false}
+          loading={pageNumber <= 2 ? "eager" : "lazy"}
+        />
+      )}
 
       <footer className="flex min-h-[22px] w-full flex-none items-center justify-center border-t border-[var(--gateway-border)] pt-1 font-serif text-[11px] text-[var(--gateway-text-muted)]">
         {pageNumber}
@@ -225,26 +261,123 @@ const BookPage = forwardRef<HTMLDivElement, BookPageProps>(function BookPage(
 
 BookPage.displayName = "BookPage";
 
+/**
+ * Desktop spread only.
+ * A full-size image page that fills the whole page exactly like the cover image
+ * (used for the Writer image and for every poem cover image).
+ */
+const FullImagePage = forwardRef<HTMLDivElement, FullImagePageProps>(
+  function FullImagePage({ image, alt, side, eager = false }, ref) {
+    return (
+      <div
+        ref={ref}
+        className="gateway-page relative isolate box-border flex h-full w-full min-w-0 items-stretch justify-stretch overflow-hidden p-0"
+        style={COVER_STYLE}
+      >
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-[4px] z-[1] rounded-[2px] border border-[#e7c99a]/35 sm:inset-[7px]"
+        />
+
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-[12px] z-[1] border border-[#e7c99a]/80 sm:inset-[7px]"
+        />
+
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-[18px] z-[1] border border-white/25 sm:inset-[7px]"
+        />
+
+        <img
+          src={image}
+          alt={alt}
+          draggable={false}
+          loading={eager ? "eager" : "lazy"}
+          className="pointer-events-none absolute inset-0 h-full w-full select-none object-cover object-center"
+        />
+
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background: side === "left" ? SPINE_SHADE_LEFT : SPINE_SHADE_RIGHT,
+          }}
+        />
+      </div>
+    );
+  },
+);
+
+FullImagePage.displayName = "FullImagePage";
+
+/**
+ * Desktop spread only.
+ * Left page for a poem that has no cover image: a simple paper page with the title.
+ */
+const TitlePage = forwardRef<HTMLDivElement, { title: string }>(
+  function TitlePage({ title }, ref) {
+    return (
+      <div
+        ref={ref}
+        className="gateway-page gateway-page--left relative isolate box-border flex h-full w-full min-w-0 flex-col items-center justify-center overflow-hidden p-6 text-center text-[var(--gateway-text)]"
+        style={PAPER_STYLE}
+      >
+        <h2 className="font-serif text-[clamp(20px,3vw,34px)] font-medium leading-tight">
+          {title}
+        </h2>
+      </div>
+    );
+  },
+);
+
+TitlePage.displayName = "TitlePage";
+
+/**
+ * Desktop spread only.
+ * Plain left page placed before the back cover, so the last spread
+ * (ornament page + back cover) is complete.
+ */
+const OrnamentPage = forwardRef<HTMLDivElement>(
+  function OrnamentPage(_props, ref) {
+    return (
+      <div
+        ref={ref}
+        className="gateway-page gateway-page--left relative isolate box-border flex h-full w-full min-w-0 items-center justify-center overflow-hidden p-6 text-[var(--gateway-text-muted)]"
+        style={PAPER_STYLE}
+      >
+        <span aria-hidden="true" className="font-serif text-4xl leading-none">
+          ❦
+        </span>
+      </div>
+    );
+  },
+);
+
+OrnamentPage.displayName = "OrnamentPage";
+
 export function PoetryBookPage() {
   const bookRef = useRef<FlipBookHandle | null>(null);
 
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(
+    () =>
+      typeof window !== "undefined" && window.matchMedia(MOBILE_QUERY).matches,
+  );
   const [isFlipping, setIsFlipping] = useState(false);
   const [isPoemsLoaded, setIsPoemsLoaded] = useState(false);
 
-  const [artworks, setArtworks] = useState<
-    { pageNumber: number; image: string; poemName: string }[]
-  >([]);
+  const [poems, setPoems] = useState<BookPoem[]>([]);
 
   // Load poems before mounting the flipbook.
   useEffect(() => {
     getPoetryBookPoems()
-      .then((poems) => {
-        setArtworks(
-          poems.map((poem, index) => ({
-            pageNumber: index + 1,
-            image: poem.poemImageUrl || poem.coverImageUrl || "",
-            poemName: poem.title,
+      .then((items) => {
+        setPoems(
+          items.map((poem) => ({
+            id: poem.id,
+            title: poem.title,
+            coverImage: poem.coverImageUrl ?? "",
+            poemImage: poem.poemImageUrl ?? "",
           })),
         );
       })
@@ -258,7 +391,7 @@ export function PoetryBookPage() {
 
   // Detect mobile layout.
   useEffect(() => {
-    const media = window.matchMedia("(max-width: 767px)");
+    const media = window.matchMedia(MOBILE_QUERY);
 
     const updateLayout = () => setIsMobile(media.matches);
 
@@ -276,6 +409,88 @@ export function PoetryBookPage() {
     bookRef.current?.pageFlip().flipNext();
   }, []);
 
+  const pages = useMemo<ReactElement[]>(() => {
+    // MOBILE: unchanged. Single pages: front cover, poem pages, back cover.
+    if (isMobile) {
+      return [
+        <BookPage
+          key="front-cover"
+          pageNumber={0}
+          poemName="Innocent Writer"
+          cover="front"
+        />,
+        ...poems.map((poem, index) => (
+          <BookPage
+            key={`poem-${poem.id}`}
+            pageNumber={index + 1}
+            poemName={poem.title}
+            image={poem.poemImage || poem.coverImage}
+          />
+        )),
+        <BookPage
+          key="back-cover"
+          pageNumber={poems.length + 1}
+          poemName="The End"
+          cover="back"
+        />,
+      ];
+    }
+
+    // DESKTOP: two-page spreads.
+    // Spread 1: Writer image (left) | front cover (right)
+    // Spread N: poem cover image (left) | poem image (right)
+    // Last:     ornament page (left) | back cover (right)
+    return [
+      <FullImagePage
+        key="writer"
+        side="left"
+        image={WRITER_IMAGE}
+        alt="Innocent Writer"
+        eager
+      />,
+      <BookPage
+        key="front-cover"
+        pageNumber={0}
+        poemName="Innocent Writer"
+        cover="front"
+      />,
+      ...poems.flatMap((poem, index) => [
+        poem.coverImage ? (
+          <FullImagePage
+            key={`poem-cover-${poem.id}`}
+            side="left"
+            image={poem.coverImage}
+            alt={`${poem.title} cover`}
+            eager={index < 2}
+          />
+        ) : (
+          <TitlePage key={`poem-title-${poem.id}`} title={poem.title} />
+        ),
+        <BookPage
+          key={`poem-${poem.id}`}
+          pageNumber={index + 1}
+          poemName={poem.title}
+          image={poem.poemImage}
+          side="right"
+        />,
+      ]),
+      // <OrnamentPage key="closing" />,
+      <BookPage
+        key="back-cover"
+        pageNumber={poems.length + 1}
+        poemName="The End"
+        cover="back"
+      />,
+      <FullImagePage
+        key="writer"
+        side="right"
+        image={WRITER_IMAGE}
+        alt="Innocent Writer"
+        eager
+      />,
+    ];
+  }, [isMobile, poems]);
+
   return (
     <>
       <SEO
@@ -287,18 +502,19 @@ export function PoetryBookPage() {
       <main
         data-product="gateway"
         id="poetry-book-outer"
-        className="poetry-desk flex min-h-[calc(100svh-64px)] w-full flex-col items-center overflow-x-hidden p-2 sm:p-3 md:p-4"
+        className="poetry-desk flex min-h-[80vh]! w-full flex-1 flex-col items-center justify-center overflow-hidden"
       >
         <section
           aria-label="Poetry book"
           className="flex min-h-0 w-full min-w-0 flex-1 flex-col items-center justify-center"
         >
           <div className="gateway-book flex min-h-0 w-full max-w-[1440px] flex-1 flex-col">
-            <div className="relative flex min-h-0 w-full flex-1 items-center justify-center overflow-hidden rounded-[3px] bg-[var(--gateway-page)] [&_.stf__wrapper]:!mx-auto [&_.stf__block]:!mx-auto [&_.stf__item]:!overflow-hidden">
+            <div className="relative flex min-h-0 w-full bg-info  flex-1 items-center justify-center overflow-hidden rounded-[3px] bg-[var(--gateway-page)] [&_.stf__wrapper]:!mx-auto [&_.stf__block]:!mx-auto [&_.stf__item]:!overflow-hidden">
               {isPoemsLoaded && (
                 <HTMLFlipBook
+                  key={isMobile ? "portrait" : "spread"}
                   ref={bookRef}
-                  width={560}
+                  width={620}
                   height={620}
                   size="stretch"
                   minWidth={260}
@@ -325,31 +541,7 @@ export function PoetryBookPage() {
                   className="gateway-flip-engine"
                   style={{ margin: "0 auto" }}
                 >
-                  {/* Front cover */}
-                  <BookPage
-                    key="front-cover"
-                    pageNumber={0}
-                    poemName="Innocent Writer"
-                    cover="front"
-                  />
-
-                  {/* Dynamic poems from the API */}
-                  {artworks.map(({ pageNumber, image, poemName }) => (
-                    <BookPage
-                      key={`poem-${pageNumber}`}
-                      pageNumber={pageNumber}
-                      poemName={poemName}
-                      image={image}
-                    />
-                  ))}
-
-                  {/* Back cover */}
-                  <BookPage
-                    key="back-cover"
-                    pageNumber={artworks.length + 1}
-                    poemName="The End"
-                    cover="back"
-                  />
+                  {pages}
                 </HTMLFlipBook>
               )}
 
@@ -359,34 +551,33 @@ export function PoetryBookPage() {
                   className="pointer-events-none absolute bottom-0 left-1/2 top-0 z-[5] w-[clamp(10px,1.5vw,20px)] -translate-x-1/2 bg-[linear-gradient(90deg,transparent,var(--gateway-page-shade)_30%,var(--gateway-page-line)_50%,var(--gateway-page-shade)_70%,transparent)]"
                 />
               )}
-
-              <nav
-                aria-label="Book page controls"
-                className="pointer-events-none absolute bottom-2 left-2 right-2 z-20 flex justify-between gap-2"
-              >
-                <button
-                  type="button"
-                  onClick={previousPage}
-                  aria-label="Previous page"
-                  className="pointer-events-auto inline-flex min-h-[31px] items-center justify-center gap-1.5 rounded border border-[var(--gateway-cover-edge)] bg-[var(--gateway-cover)] px-2 py-1.5 text-[11px] font-semibold text-[var(--gateway-page)] shadow-sm transition hover:brightness-110 md:min-h-[34px] md:px-3 md:py-2 md:text-xs"
-                >
-                  <ArrowLeft size={14} aria-hidden="true" />
-                  Previous
-                </button>
-
-                <button
-                  type="button"
-                  onClick={nextPage}
-                  aria-label="Next page"
-                  className="pointer-events-auto inline-flex min-h-[31px] items-center justify-center gap-1.5 rounded border border-[var(--gateway-cover-edge)] bg-[var(--gateway-cover)] px-2 py-1.5 text-[11px] font-semibold text-[var(--gateway-page)] shadow-sm transition hover:brightness-110 md:min-h-[34px] md:px-3 md:py-2 md:text-xs"
-                >
-                  Next
-                  <ArrowRight size={14} aria-hidden="true" />
-                </button>
-              </nav>
             </div>
           </div>
         </section>
+        <nav
+          aria-label="Book page controls"
+          className="pointer-events-none  mt-2 w-full  z-20 flex justify-center gap-2"
+        >
+          <button
+            type="button"
+            onClick={previousPage}
+            aria-label="Previous page"
+            className="pointer-events-auto inline-flex min-h-[31px] items-center justify-center gap-1.5 rounded border border-[var(--gateway-cover-edge)] bg-[var(--gateway-cover)] px-2 py-1.5 text-[11px] font-semibold text-[var(--gateway-page)] shadow-sm transition hover:brightness-110 md:min-h-[34px] md:px-3 md:py-2 md:text-xs"
+          >
+            <ArrowLeft size={14} aria-hidden="true" />
+            {/* Previous */}
+          </button>
+
+          <button
+            type="button"
+            onClick={nextPage}
+            aria-label="Next page"
+            className="pointer-events-auto inline-flex min-h-[31px] items-center justify-center gap-1.5 rounded border border-[var(--gateway-cover-edge)] bg-[var(--gateway-cover)] px-2 py-1.5 text-[11px] font-semibold text-[var(--gateway-page)] shadow-sm transition hover:brightness-110 md:min-h-[34px] md:px-3 md:py-2 md:text-xs"
+          >
+            {/* Next */}
+            <ArrowRight size={14} aria-hidden="true" />
+          </button>
+        </nav>
       </main>
     </>
   );

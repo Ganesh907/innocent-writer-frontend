@@ -1,173 +1,140 @@
-import { ArrowLeft, ArrowRight, BookOpen, Feather } from "lucide-react";
-import { Skeleton } from "@/components/skeletons";
 
-const PAPER_STYLE = {
-  backgroundColor: "var(--gateway-page)",
-  backgroundImage: `
-    repeating-linear-gradient(
-      to bottom,
-      transparent 0,
-      transparent 27px,
-      var(--gateway-page-line) 28px
-    )
-  `,
-  backgroundRepeat: "repeat",
-  backgroundSize: "100% 28px",
-  backgroundClip: "padding-box",
-  backfaceVisibility: "hidden" as const,
-  WebkitBackfaceVisibility: "hidden" as const,
-};
+import React from "react";
 
-const COVER_STYLE = {
-  backgroundColor: "#17313b",
-  backfaceVisibility: "hidden" as const,
-  WebkitBackfaceVisibility: "hidden" as const,
-};
+const WRITER_IMAGE = "/Writer.jpg";
+const BOOK_COVER_IMAGE = "/BookCover.png";
 
-function CoverRuleSkeleton() {
+function NavbarSkeleton() {
   return (
-    <div
+    <header className="sticky top-0 z-40 min-h-16 shrink-0 border-b border-border bg-white text-black dark:bg-black dark:text-white">
+      <div className="mx-auto flex min-h-16 w-full max-w-[1440px] items-center justify-between gap-4 px-3 sm:px-6 md:px-8 lg:px-10">
+        <div className="flex items-center gap-3">
+          <div className="h-9 w-9 animate-pulse rounded-full bg-gray-200 dark:bg-zinc-800" />
+          <div className="space-y-2">
+            <div className="h-4 w-28 animate-pulse rounded bg-gray-200 dark:bg-zinc-800" />
+            <div className="h-3 w-20 animate-pulse rounded bg-gray-100 dark:bg-zinc-900" />
+          </div>
+        </div>
+
+        <div className="hidden items-center gap-5 sm:flex">
+          <div className="h-4 w-14 animate-pulse rounded bg-gray-200 dark:bg-zinc-800" />
+          <div className="h-4 w-16 animate-pulse rounded bg-gray-200 dark:bg-zinc-800" />
+          <div className="h-4 w-14 animate-pulse rounded bg-gray-200 dark:bg-zinc-800" />
+        </div>
+
+        <div className="h-9 w-9 animate-pulse rounded-full bg-gray-200 dark:bg-zinc-800" />
+      </div>
+    </header>
+  );
+}
+
+function WriterImageSkeleton() {
+  return (
+    <div className="relative h-full min-h-0 w-full overflow-hidden bg-gray-100 dark:bg-zinc-900">
+      <img
+        src={WRITER_IMAGE}
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 h-full w-full object-cover object-center"
+      />
+
+      <div className="absolute inset-0 animate-pulse bg-black/[0.03]" />
+    </div>
+  );
+}
+
+function BookCoverSkeleton() {
+  return (
+    <div className="relative h-full min-h-0 w-full overflow-hidden bg-[#f5f0e8]">
+      <img
+        src={BOOK_COVER_IMAGE}
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 h-full w-full object-cover object-center"
+      />
+
+      <div className="absolute inset-0 animate-pulse bg-black/[0.02]" />
+    </div>
+  );
+}
+
+function BookNavigationSkeleton() {
+  return (
+    <nav
       aria-hidden="true"
-      className="flex w-full max-w-[220px] items-center gap-3 text-[var(--gateway-cover-highlight)]"
+      className="pointer-events-none z-20 mt-2 flex w-full shrink-0 justify-center gap-2"
     >
-      <span className="h-px flex-1 bg-current opacity-80" />
-      <Skeleton className="h-5 w-5 rounded-full" />
-      <span className="h-px flex-1 bg-current opacity-80" />
+      <div className="h-9 w-9 animate-pulse rounded-full bg-gray-200 dark:bg-zinc-800" />
+      <div className="h-9 w-20 animate-pulse rounded-full bg-gray-200 dark:bg-zinc-800" />
+      <div className="h-9 w-9 animate-pulse rounded-full bg-gray-200 dark:bg-zinc-800" />
+    </nav>
+  );
+}
+
+function BookSkeleton() {
+  return (
+    <div
+      data-product="gateway"
+      id="poetry-book-outer"
+      className="flex min-h-0 w-full flex-1 flex-col items-center justify-center overflow-hidden"
+    >
+      <section className="flex min-h-0 w-full min-w-0 flex-1 flex-col items-center justify-center">
+        <div className="flex min-h-0 w-full max-w-[1440px] flex-1 flex-col">
+          <div className="relative flex min-h-0 w-full flex-1 items-center justify-center overflow-hidden rounded-[3px] bg-[var(--gateway-page,#f5f0e8)]">
+            {/* Desktop: writer image on the left, book cover on the right */}
+            <div className="hidden h-full min-h-0 w-full min-w-0 grid-cols-2 overflow-hidden md:grid">
+              <div className="h-full min-h-0 min-w-0 overflow-hidden">
+                <WriterImageSkeleton />
+              </div>
+
+              <div className="h-full min-h-0 min-w-0 overflow-hidden">
+                <BookCoverSkeleton />
+              </div>
+            </div>
+
+            {/* Mobile: display only the book cover */}
+            <div className="h-full min-h-0 w-full overflow-hidden md:hidden">
+              <BookCoverSkeleton />
+            </div>
+
+            {/* Book spine / center shadow */}
+            <div className="pointer-events-none absolute bottom-0 left-1/2 top-0 z-[5] hidden w-[clamp(10px,1.5vw,20px)] -translate-x-1/2 bg-gradient-to-r from-black/10 via-black/[0.02] to-black/10 md:block" />
+          </div>
+        </div>
+      </section>
+
+      <BookNavigationSkeleton />
     </div>
   );
 }
 
-function BookCoverSkeleton({ isFront }: { isFront: boolean }) {
+function FooterSkeleton() {
   return (
-    <div
-      className="gateway-page relative isolate box-border flex h-full w-full min-w-0 items-stretch justify-stretch overflow-hidden p-0 text-center"
-      style={COVER_STYLE}
-    >
-      {/* Keep the cover-image slot and tint to prevent layout shift. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/70"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-[4px] z-[1] rounded-[2px] border border-[#e7c99a]/35 sm:inset-[7px]"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-[12px] z-[1] border border-[#e7c99a]/80 sm:inset-[16px]"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-[18px] z-[1] border border-white/25 sm:inset-[23px]"
-      />
-
-      <div className="relative z-[2] flex h-full min-h-0 w-full flex-col items-center justify-between overflow-hidden px-7 py-8 sm:px-10 sm:py-10 md:px-12 md:py-12">
-        <div className="flex flex-col items-center gap-3">
-          <Skeleton className="h-3 w-36 bg-white/20" />
-          <CoverRuleSkeleton />
-        </div>
-
-        <div className="flex w-full flex-col items-center">
-          <div className="mb-4 flex size-12 items-center justify-center rounded-full border border-[#e7c99a]/80 bg-black/20 text-white sm:mb-5 sm:size-14">
-            {isFront ? (
-              <BookOpen size={27} strokeWidth={1.15} aria-hidden="true" />
-            ) : (
-              <Feather size={26} strokeWidth={1.15} aria-hidden="true" />
-            )}
-          </div>
-          <Skeleton className="h-10 w-4/5 max-w-[250px] bg-white/20 sm:h-12" />
-          {isFront && (
-            <Skeleton className="mt-2 h-10 w-5/6 max-w-[270px] bg-amber-200/30 sm:h-12" />
-          )}
-          <div className="my-5 flex w-full justify-center sm:my-6">
-            <CoverRuleSkeleton />
-          </div>
-          <Skeleton className="h-4 w-4/5 max-w-[230px] bg-white/20" />
-          <Skeleton className="mt-2 h-4 w-3/5 max-w-[190px] bg-white/20" />
-        </div>
-
-        <div className="flex flex-col items-center gap-2">
-          <Skeleton className="h-5 w-5 rounded-full bg-amber-200/30" />
-          <Skeleton className="h-3 w-28 bg-white/20" />
-        </div>
+    <footer className="mt-auto shrink-0 border-t border-border/70">
+      <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-2 px-3 py-4 sm:flex-row sm:px-5 lg:px-8">
+        <div className="h-3 w-48 animate-pulse rounded bg-gray-200 dark:bg-zinc-800" />
+        <div className="h-3 w-32 animate-pulse rounded bg-gray-200 dark:bg-zinc-800" />
       </div>
-    </div>
-  );
-}
-
-function PoetryPageSkeleton({ pageNumber }: { pageNumber: number }) {
-  return (
-    <div
-      className={`gateway-page relative isolate box-border flex h-full w-full min-w-0 flex-col overflow-hidden p-3 text-[var(--gateway-text)] sm:p-4 ${
-        pageNumber % 2 === 0 ? "gateway-page--right" : "gateway-page--left"
-      }`}
-      style={PAPER_STYLE}
-    >
-      <header className="flex min-h-[28px] w-full flex-none items-center justify-between gap-2 border-b border-[var(--gateway-border)] px-0.5 pb-2 font-serif text-[clamp(9px,1vw,12px)]">
-        <Skeleton className="h-3 w-24" />
-        <Skeleton className="h-3 w-20 max-w-[60%]" />
-      </header>
-
-      <div className="flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden px-1 py-2 sm:px-2 sm:py-3">
-        <Skeleton className="h-full max-h-full w-full max-w-full rounded-sm" />
-      </div>
-
-      <footer className="flex min-h-[22px] w-full flex-none items-center justify-center border-t border-[var(--gateway-border)] pt-1 font-serif text-[11px] text-[var(--gateway-text-muted)]">
-        <Skeleton className="h-3 w-5" />
-      </footer>
-    </div>
+    </footer>
   );
 }
 
 export function PoetryBookPageSkeleton() {
   return (
-    <main
-      data-product="gateway"
-      aria-busy="true"
-      aria-label="Loading poetry book"
-      className="poetry-desk flex min-h-[calc(100svh-64px)] w-full flex-col items-center overflow-x-hidden p-2 sm:p-3 md:p-4"
+    <div
+      data-product="poetry"
+      className="poetry-layout flex min-h-screen flex-col bg-background text-foreground"
     >
-      <section
-        aria-label="Poetry book loading"
-        className="flex min-h-0 w-full min-w-0 flex-1 flex-col items-center justify-center"
+      <NavbarSkeleton />
+
+      <main
+        id="poetry-main"
+        className="mx-auto flex min-h-0 w-full flex-1 flex-col px-3 pb-0 sm:px-5 lg:px-8"
       >
-        <div className="gateway-book flex min-h-0 w-full max-w-[1440px] flex-1 flex-col">
-          <div className="relative flex min-h-0 w-full flex-1 items-center justify-center overflow-hidden rounded-[3px] bg-[var(--gateway-page)] [&_.stf__wrapper]:!mx-auto [&_.stf__block]:!mx-auto [&_.stf__item]:!overflow-hidden">
-            {/* Cover first, then the first poem on the right-hand page. */}
-            <div className="grid h-full w-full grid-cols-1 overflow-hidden md:grid-cols-2">
-              <div className="min-h-0 min-w-0 overflow-hidden">
-                <BookCoverSkeleton isFront />
-              </div>
-              <div className="hidden min-h-0 min-w-0 overflow-hidden md:block">
-                <PoetryPageSkeleton pageNumber={1} />
-              </div>
-            </div>
+        <BookSkeleton />
+      </main>
 
-            {/* Book spine on desktop */}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute bottom-0 left-1/2 top-0 z-[5] hidden w-[clamp(10px,1.5vw,20px)] -translate-x-1/2 bg-[linear-gradient(90deg,transparent,var(--gateway-page-shade)_30%,var(--gateway-page-line)_50%,var(--gateway-page-shade)_70%,transparent)] md:block"
-            />
-
-            {/* Non-interactive controls preserve the original control footprint. */}
-            <nav
-              aria-label="Book page controls loading"
-              className="pointer-events-none absolute bottom-2 left-2 right-2 z-20 flex justify-between gap-2"
-            >
-              <div className="inline-flex min-h-[31px] items-center justify-center gap-1.5 rounded border border-[var(--gateway-cover-edge)] bg-[var(--gateway-cover)] px-2 py-1.5 shadow-sm md:min-h-[34px] md:px-3 md:py-2">
-                <ArrowLeft size={14} aria-hidden="true" />
-                <Skeleton className="h-3 w-12 bg-white/20" />
-              </div>
-              <div className="inline-flex min-h-[31px] items-center justify-center gap-1.5 rounded border border-[var(--gateway-cover-edge)] bg-[var(--gateway-cover)] px-2 py-1.5 shadow-sm md:min-h-[34px] md:px-3 md:py-2">
-                <Skeleton className="h-3 w-8 bg-white/20" />
-                <ArrowRight size={14} aria-hidden="true" />
-              </div>
-            </nav>
-          </div>
-        </div>
-      </section>
-    </main>
+      <FooterSkeleton />
+    </div>
   );
 }
-
-export default PoetryBookPageSkeleton;

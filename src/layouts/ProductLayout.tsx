@@ -59,6 +59,7 @@ export function ProductLayout() {
 
   const isPoemDetail = /^\/app\/poems\/[^/]+\/?$/.test(location.pathname);
   const isAuthorPage = location.pathname.startsWith("/app/author");
+  const isBookPage = location.pathname.startsWith("/app/book");
   const isAdmin = Boolean(user && hasRole("ADMIN"));
   const displayName = user?.name?.trim() || "My Account";
 
@@ -403,7 +404,8 @@ export function ProductLayout() {
             : [
                 "mx-auto px-3 sm:px-5 lg:px-8",
                 isPoemDetail ? "pb-5 pt-1 sm:pb-8" : "pb-8 pt-5 sm:pt-8",
-                isAuthorPage ? "poetry-author-page" : "",
+                isAuthorPage ? "poetry-author-page" : "pb-8",
+                isBookPage?"pb-0!":""
               ].join(" "),
         ].join(" ")}
       >

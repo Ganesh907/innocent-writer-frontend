@@ -222,7 +222,7 @@ export function AuthorDashboardPage() {
   return (
     <main
       data-product="poetry"
-      className="min-h-screen w-full bg-background px-3 py-5 text-foreground sm:px-5 sm:py-8 lg:px-8"
+      className="min-h-screen w-full bg-background text-foreground"
     >
       <div className="mx-auto w-full max-w-[1500px]">
         {/* Book cover and pages */}

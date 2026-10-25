@@ -575,8 +575,8 @@ img {
 [data-product="poetry"] .poetry-desk {
   position: relative;
   min-height: 100%;
-  padding: clamp(1rem, 3vw, 2.75rem);
-
+  /* background-color: yellow; */
+  /* padding: clamp(1rem, 3vw, 2.75rem); */
   color: var(--gateway-text, #2b2118);
   overflow: hidden;
 }
@@ -1133,7 +1133,7 @@ img {
 [data-product="gateway"] .gateway-page {
   position: relative;
   min-width: 0;
-  padding: clamp(1.1rem, 3vw, 2.5rem);
+  padding: clamp(1.1rem, 1vw, 2.5rem);
   background-color: var(--gateway-page);
   background-image:
     radial-gradient(
@@ -1313,15 +1313,15 @@ img {
    Keep book surfaces readable and consistent
    ========================================== */
 
-[data-theme="dark"] [data-product="poetry"] .poetry-desk {
-  background:
+/* [data-theme="dark"] [data-product="poetry"] .poetry-desk { */
+  /* background:
     radial-gradient(
       ellipse at 50% 0%,
       rgb(255 255 255 / 0.035),
       transparent 60%
     ),
-    linear-gradient(135deg, var(--gateway-desk-from), var(--gateway-desk-to));
-}
+    linear-gradient(135deg, var(--gateway-desk-from), var(--gateway-desk-to)); */
+/* } */
 
 [data-theme="dark"] [data-product="poetry"] .book-shell {
   border-color: var(--poetry-binding-edge);
@@ -1608,5 +1608,43 @@ img {
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+}
+@media (max-width: 767px) {
+  /* Let the book page use only the space available above the footer */
+  #poetry-main:has(#poetry-book-outer) {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  #poetry-book-outer {
+    flex: 1 1 0%;
+    min-height: 0;
+    height: auto;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  /* Keep the book at a controlled size instead of stretching */
+  #poetry-book-outer .gateway-book {
+    flex: 0 0 auto !important;
+    width: min(calc(100vw - 48px), calc(100svh - 260px)) !important;
+    height: min(calc(100vw - 48px), calc(100svh - 260px)) !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    margin: 0 auto !important;
+  }
+
+  #poetry-book-outer .gateway-book > div {
+    flex: 0 0 auto;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+  }
+
+  #poetry-book-outer nav {
+    flex: 0 0 auto;
+    margin-top: 0;
   }
 }
